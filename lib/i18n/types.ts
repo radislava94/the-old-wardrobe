@@ -135,6 +135,13 @@ export type Dictionary = {
     offerRecipients: string;
     offerNeedRecipient: string;
     offersTitle: string;
+    bundleRemove: string;
+    bundleAdd: string;
+    bundleAdded: string;
+    bundleTitle: string;
+    bundleHint: string;
+    bundleMet: (title: string, total: string, threshold: string) => string;
+    bundleShort: (title: string, total: string, threshold: string) => string;
     shippingFree: string;
     shippingOver: (amount: string) => string;
     shippingNone: string;

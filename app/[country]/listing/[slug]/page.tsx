@@ -25,6 +25,8 @@ import { makeOffer, sendPrivateOffer } from "@/lib/offers/actions";
 import { saversOf } from "@/lib/offers/queries";
 import { OfferRecipients } from "@/components/offer-recipients";
 import { addToBundle } from "@/lib/bundles/actions";
+import { placeOrder } from "@/lib/orders/actions";
+import { courierChoices } from "@/lib/couriers";
 import { shippingLabels } from "@/lib/listings/shipping-label";
 import { emptySummary, formatRating } from "@/lib/ratings";
 import {
@@ -84,7 +86,7 @@ export default async function ListingPage({
   searchParams,
 }: {
   params: Promise<{ country: string; slug: string }>;
-  searchParams: Promise<{ offer?: string; bundle?: string }>;
+  searchParams: Promise<{ offer?: string; bundle?: string; order?: string }>;
 }) {
   const { country: raw, slug } = await params;
   const query = await searchParams;
@@ -345,6 +347,38 @@ export default async function ListingPage({
                   </Link>
                 </p>
               )}
+              {viewer && seller && viewer.id !== seller.id && listing.status === "available" ? (
+                <form className="sell-form offer-form" action={placeOrder}>
+                  <h2>{dict.order.place}</h2>
+                  <input type="hidden" name="listingId" value={listing.id} />
+                  <input type="hidden" name="slug" value={listing.slug} />
+                  <input type="hidden" name="country" value={raw} />
+                  <label>
+                    <span>{dict.order.courier}</span>
+                    <select name="courier" required defaultValue="">
+                      <option value="" disabled>
+                        —
+                      </option>
+                      {courierChoices[raw].map((name) => (
+                        <option key={name} value={name}>
+                          {name}
+                        </option>
+                      ))}
+                    </select>
+                    <small>{dict.order.courierHint}</small>
+                  </label>
+                  <p>
+                    {dict.order.buyerPays}: {price.formatted}
+                  </p>
+                  <p className="hint">{dict.order.noFee}</p>
+                  <p className="hint">
+                    {listing.freeShipping ? dict.order.shippingFree : dict.order.shippingExtra}
+                  </p>
+                  <button type="submit" className="btn btn-primary">
+                    {dict.order.place}
+                  </button>
+                </form>
+              ) : null}
               {listing.status === "available" ? (
                 <ReserveButton
                   label={dict.listing.reserve}

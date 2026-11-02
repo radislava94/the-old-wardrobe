@@ -27,6 +27,26 @@ export type Dictionary = {
     sellerDescription: (name: string, city: string) => string;
   };
   tagline: string;
+  order: {
+    place: string;
+    courier: string;
+    courierHint: string;
+    buyerPays: string;
+    noFee: string;
+    shippingFree: string;
+    shippingExtra: string;
+    signIn: string;
+    pending: string;
+    paid: string;
+    refused: string;
+    cancelled: string;
+    markPaid: string;
+    markRefused: string;
+    cancel: string;
+    yourOrders: string;
+    remit: string;
+    bundlePlace: string;
+  };
   topbar: string;
   nav: { browse: string; sell: string; about: string; main: string };
   searchPlaceholder: string;

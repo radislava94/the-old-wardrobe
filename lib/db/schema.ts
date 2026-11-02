@@ -10,6 +10,8 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
+export { account, session, user, verification } from "./auth-schema";
+
 /**
  * Marketplace people. One row buys and sells.
  * Auth accounts (added with Better Auth) point here; the seeded
@@ -25,6 +27,8 @@ export const profiles = pgTable(
     country: text("country").notNull(),
     memberSince: date("member_since", { mode: "string" }).notNull(),
     bio: text("bio").notNull(),
+    /** Set when this person signs in. Seeded sellers stay null. */
+    authUserId: text("auth_user_id").unique(),
   },
   (table) => [
     uniqueIndex("profiles_country_handle").on(table.country, table.handle),

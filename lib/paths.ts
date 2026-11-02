@@ -25,3 +25,23 @@ export function searchPath(country: CountryCode): string {
 export function sellerPath(country: CountryCode, handle: string): string {
   return `/${country}/seller/${handle}`;
 }
+
+export function accountPath(country: CountryCode): string {
+  return `/${country}/account`;
+}
+
+export function signInPath(country: CountryCode): string {
+  return `/${country}/sign-in`;
+}
+
+export function privacyPath(country: CountryCode): string {
+  return `/${country}/privacy`;
+}
+
+/** Stay on this site. Reject protocol-relative and other-country targets. */
+export function safeNextPath(country: CountryCode, next: string | undefined): string {
+  if (!next || !next.startsWith(`/${country}/`) || next.startsWith("//") || next.includes("\\")) {
+    return accountPath(country);
+  }
+  return next;
+}

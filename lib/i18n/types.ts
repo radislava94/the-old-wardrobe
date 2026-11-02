@@ -72,6 +72,7 @@ export type Dictionary = {
     returns: string;
     about: string;
     contact: string;
+    privacy: string;
     letterTitle: string;
     letterBody: string;
     emailLabel: string;
@@ -142,5 +143,72 @@ export type Dictionary = {
     commentPlaceholder: string;
     submit: string;
     bought: string;
+  };
+  /**
+   * Account, consent, and privacy copy. Drafted with the rest of the
+   * dictionary and still wants a native read.
+   */
+  account: {
+    signIn: string;
+    nav: string;
+    title: string;
+    intro: string;
+    name: string;
+    email: string;
+    city: string;
+    cityHint: string;
+    country: string;
+    bio: string;
+    save: string;
+    saved: string;
+    exportTitle: string;
+    exportBody: string;
+    export: string;
+    deleteTitle: string;
+    deleteBody: string;
+    deleteConfirm: string;
+    deletePassword: string;
+    deleteButton: string;
+    needAuth: string;
+    confirmError: string;
+  };
+  auth: {
+    signInTitle: string;
+    signUpTitle: string;
+    email: string;
+    password: string;
+    passwordHint: string;
+    name: string;
+    signIn: string;
+    signUp: string;
+    switchToSignUp: string;
+    switchToSignIn: string;
+    google: string;
+    facebook: string;
+    or: string;
+    both: string;
+    privacy: string;
+    error: string;
+    configured: string;
+  };
+  consent: {
+    text: string;
+    essential: string;
+    optional: string;
+    privacy: string;
+  };
+  privacy: {
+    title: string;
+    intro: string;
+    whoTitle: string;
+    whoBody: string;
+    dataTitle: string;
+    dataBody: string;
+    cookiesTitle: string;
+    cookiesBody: string;
+    rightsTitle: string;
+    rightsBody: string;
+    contactTitle: string;
+    contactBody: string;
   };
 };

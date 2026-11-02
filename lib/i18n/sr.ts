@@ -211,6 +211,7 @@ const sr: Dictionary = {
     saveDraft: "Sačuvaj nacrt",
     photoLocal: "Fotografija ide direktno na Vercel Blob. Ključ nije postavljen i oglas ostaje na formi.",
     signIn: "Prijavite se da sačuvate oglas.",
+    priceDropNote: "Ako spustite cenu, ljudi koji su sačuvali komad dobijaju imejl kad je pošta uključena.",
     sellerKind: "Kakav ste prodavac",
     sellerPrivate: "Privatan",
     sellerBusiness: "Trgovac",

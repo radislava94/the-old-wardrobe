@@ -35,6 +35,10 @@ export type User = {
   /** ISO date (YYYY-MM-DD). */
   memberSince: string;
   bio: string;
+  /** Missing on the placeholder catalog. Real accounts default to private. */
+  sellerKind?: "private" | "business";
+  /** Stored flag only. The product does not send SMS. */
+  phoneVerified?: boolean;
 };
 
 /**
@@ -95,4 +99,27 @@ export type Listing = {
   /** ISO date (YYYY-MM-DD). */
   createdAt: string;
   brand?: string;
+  /** Uploaded photo. Catalog pieces use `photo` instead. */
+  photoUrl?: string | null;
+  /** This piece ships free. */
+  freeShipping?: boolean;
+  /** Bundle amount, in `currency`, above which shipping is free. */
+  freeShippingOver?: number | null;
+};
+
+/** Fields a signed-in person sends when they create or edit a listing. */
+export type ListingDraft = {
+  country: CountryCode;
+  title: string;
+  description: string;
+  category: CategoryKey;
+  priceAmount: number;
+  currency: CurrencyCode;
+  size: string;
+  condition: string;
+  city: string;
+  brand: string;
+  photoUrl: string | null;
+  freeShipping: boolean;
+  freeShippingOver: number | null;
 };

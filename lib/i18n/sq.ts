@@ -156,11 +156,15 @@ const sq: Dictionary = {
       instagramFailed: "Ndarja nuk u krye. Kopjo lidhjen dhe provo sërish.",
       copyFailed: "Lidhja nuk u kopjua. Shëno adresën te shfletuesi.",
     },
+    sellerPrivate: "Shitës privat",
+    sellerBusiness: "Tregtar",
+    returnsPrivate:
+      "Ky është shitës privat. E drejta e kthimit që vlen kur blini nga një tregtar nuk vlen këtu.",
   },
   sell: {
     title: "Shit një copë",
     intro:
-      "Trego historinë dhe vër një çmim në lekë. Publikimi vjen bashkë me llogaritë — asgjë nga formulari nuk ruhet.",
+      "Trego historinë dhe vër një çmim në lekë. Shpallja ruhet në llogarinë tënde.",
     name: "Emri i copës",
     namePlaceholder: "Pallto prej leshi deveje",
     category: "Stenda",
@@ -171,13 +175,33 @@ const sq: Dictionary = {
     story: "Historia",
     storyPlaceholder: "Nga vjen, çfarë ka kaluar, çfarë i mungon.",
     photo: "Fotografia",
-    photoHint: "Fotografia shfaqet vetëm në këtë ekran dhe nuk dërgohet askund.",
+    photoHint: "Fotografi e qartë, deri në 5 MB. Ruhet me shpalljen.",
     submit: "Lëre te pragu",
     successTitle: "Mbetet te ti",
     successBody: (name) =>
       `„${name}“ nuk është publikuar. Kur të ketë llogari, kjo shpallje do të mund të ruhet.`,
     ratesNote:
       "Çmimi ruhet në monedhën e shitësit dhe këtu shfaqet në lekë. Tabela e kurseve është e përkohshme dhe zëvendësohet para pagesës së vërtetë.",
+    brand: "Marka",
+    condition: "Gjendja",
+    conditions: {
+      loved: "E mbajtur me dashuri",
+      kept: "E ruajtur mirë",
+      repair: "Do një riparim të vogël",
+    },
+    country: "Vendi",
+    currency: "Monedha",
+    freeShipping: "Dërgesa e kësaj cope është falas",
+    freeShippingHint: "Kjo vlen për copën vetë, jo për gjithë porosinë.",
+    freeShippingOver: "Dërgesë falas mbi një shumë",
+    freeShippingOverHint:
+      "Me dëshirë, për një paketë. Lëreni bosh nëse nuk e ofroni. Shuma është në monedhën e shpalljes.",
+    photoMissing: "Duhet një fotografi.",
+    photoLocal: "Fotografia ruhet në këtë server. Vercel Blob përdoret kur ka çelës.",
+    signIn: "Hyni që ta ruani shpalljen.",
+    sellerKind: "Çfarë shitësi jeni",
+    sellerPrivate: "Privat",
+    sellerBusiness: "Tregtar",
   },
   search: {
     allTitle: "Gjithçka në garderobë",
@@ -232,6 +256,11 @@ const sq: Dictionary = {
     deleteButton: "Fshi llogarinë",
     needAuth: "Llogaritë në këtë server duan bazë dhe çelës të fshehtë. Emaili punon edhe pa Google ose Facebook.",
     confirmError: "Emaili nuk përputhet me llogarinë.",
+    sellerKind: "Çfarë shitësi jeni",
+    sellerPrivate: "Privat",
+    sellerBusiness: "Tregtar",
+    phone: "Telefoni është shënuar si i verifikuar",
+    phoneHint: "Nuk dërgojmë mesazh. Ky është vetëm një fushë që ruhet.",
   },
   auth: {
     signInTitle: "Hyrje",

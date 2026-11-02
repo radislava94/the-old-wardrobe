@@ -29,6 +29,10 @@ export const profiles = pgTable(
     bio: text("bio").notNull(),
     /** Set when this person signs in. Seeded sellers stay null. */
     authUserId: text("auth_user_id").unique(),
+    /** Private persons and businesses use the same account. */
+    sellerKind: text("seller_kind").notNull().default("private"),
+    /** Placeholder only. Nothing sends an SMS. */
+    phoneVerified: boolean("phone_verified").notNull().default(false),
   },
   (table) => [
     uniqueIndex("profiles_country_handle").on(table.country, table.handle),
@@ -36,6 +40,7 @@ export const profiles = pgTable(
       "profiles_country",
       sql`${table.country} in ('mk', 'bg', 'sr-rs', 'sq-al')`,
     ),
+    check("profiles_seller_kind", sql`${table.sellerKind} in ('private', 'business')`),
   ],
 );
 
@@ -61,6 +66,11 @@ export const listings = pgTable(
     photo: text("photo").notNull(),
     createdAt: date("created_at", { mode: "string" }).notNull(),
     brand: text("brand"),
+    photoUrl: text("photo_url"),
+    /** This piece ships free. Separate from a bundle threshold. */
+    freeShipping: boolean("free_shipping").notNull().default(false),
+    /** Bundle total, in `currency`, at which shipping becomes free. */
+    freeShippingOver: integer("free_shipping_over"),
   },
   (table) => [
     uniqueIndex("listings_country_slug").on(table.country, table.slug),
@@ -80,6 +90,10 @@ export const listings = pgTable(
     ),
     check("listings_status", sql`${table.status} in ('available', 'sold')`),
     check("listings_price_positive", sql`${table.priceAmount} > 0`),
+    check(
+      "listings_free_shipping_over",
+      sql`${table.freeShippingOver} is null or ${table.freeShippingOver} > 0`,
+    ),
   ],
 );
 

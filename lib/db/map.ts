@@ -81,6 +81,8 @@ export function toUser(row: typeof profiles.$inferSelect): User {
     country: countryOf(row.country),
     memberSince: row.memberSince,
     bio: row.bio,
+    sellerKind: row.sellerKind === "business" ? "business" : "private",
+    phoneVerified: row.phoneVerified,
   };
 }
 
@@ -103,6 +105,9 @@ export function toListing(row: typeof listings.$inferSelect): Listing {
     photo: photoOf(row.photo),
     createdAt: row.createdAt,
     ...(row.brand ? { brand: row.brand } : {}),
+    ...(row.photoUrl ? { photoUrl: row.photoUrl } : {}),
+    freeShipping: row.freeShipping,
+    freeShippingOver: row.freeShippingOver,
   };
 }
 

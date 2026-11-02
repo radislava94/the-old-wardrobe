@@ -7,7 +7,8 @@ import { ensureProfile } from "@/lib/auth/profile";
 import { getSession } from "@/lib/auth/session";
 import { countries, countryCodes, isCountry } from "@/lib/countries";
 import { getDictionary } from "@/lib/i18n";
-import { privacyPath, signInPath } from "@/lib/paths";
+import { listingsRepo } from "@/lib/data";
+import { privacyPath, sellPath, signInPath } from "@/lib/paths";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -94,10 +95,48 @@ export default async function AccountPage({
             <span>{dict.account.bio}</span>
             <textarea name="bio" rows={4} maxLength={600} defaultValue={profile.bio} />
           </label>
+          <fieldset className="choice-set">
+            <legend>{dict.account.sellerKind}</legend>
+            <label className="choice">
+              <input
+                type="radio"
+                name="sellerKind"
+                value="private"
+                defaultChecked={profile.sellerKind !== "business"}
+              />
+              <span>{dict.account.sellerPrivate}</span>
+            </label>
+            <label className="choice">
+              <input
+                type="radio"
+                name="sellerKind"
+                value="business"
+                defaultChecked={profile.sellerKind === "business"}
+              />
+              <span>{dict.account.sellerBusiness}</span>
+            </label>
+          </fieldset>
+          <label className="choice">
+            <input type="checkbox" name="phoneVerified" defaultChecked={Boolean(profile.phoneVerified)} />
+            <span>{dict.account.phone}</span>
+            <small>{dict.account.phoneHint}</small>
+          </label>
           <button type="submit" className="btn btn-primary">
             {dict.account.save}
           </button>
         </form>
+
+        <section className="account-block">
+          <h2>{dict.rating.listings}</h2>
+          <ul className="own-listings">
+            {(await listingsRepo.listBySeller(profile.id)).map((listing) => (
+              <li key={listing.id}>
+                <Link href={`/${listing.country}/listing/${listing.slug}`}>{listing.title}</Link>
+                <Link href={`${sellPath(listing.country)}/${listing.id}`}>{dict.sell.submit}</Link>
+              </li>
+            ))}
+          </ul>
+        </section>
 
         <section className="account-block">
           <h2>{dict.account.exportTitle}</h2>

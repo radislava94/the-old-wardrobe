@@ -156,11 +156,15 @@ const sr: Dictionary = {
       instagramFailed: "Deljenje nije uspelo. Kopiraj link i pokušaj ponovo.",
       copyFailed: "Link se nije kopirao. Označi adresu u pregledaču.",
     },
+    sellerPrivate: "Privatni prodavac",
+    sellerBusiness: "Trgovac",
+    returnsPrivate:
+      "Ovo je privatni prodavac. Pravo na odustanak koje važi kad kupujete od trgovca ovde ne važi.",
   },
   sell: {
     title: "Prodaj jedan komad",
     intro:
-      "Ispričaj priču i stavi cenu u dinarima. Objave stižu zajedno sa nalozima — ništa iz formulara se ne čuva.",
+      "Ispričaj priču i stavi cenu u dinarima. Oglas se čuva na tvom nalogu.",
     name: "Naziv komada",
     namePlaceholder: "Kaput od kamel vune",
     category: "Štand",
@@ -171,13 +175,33 @@ const sr: Dictionary = {
     story: "Priča",
     storyPlaceholder: "Odakle je, šta je preživelo, šta nedostaje.",
     photo: "Fotografija",
-    photoHint: "Fotografija se vidi samo na ovom ekranu i ne šalje se nikuda.",
+    photoHint: "Jasna fotografija, do 5 MB. Čuva se uz oglas.",
     submit: "Ostavi ga na pragu",
     successTitle: "Ostaje kod tebe",
     successBody: (name) =>
       `„${name}“ nije objavljen. Kad budu nalozi, ovaj oglas će moći da se sačuva.`,
     ratesNote:
       "Cena se čuva u valuti prodavca i ovde se prikazuje u dinarima. Tabela kurseva je privremena i menja se pre pravog plaćanja.",
+    brand: "Marka",
+    condition: "Stanje",
+    conditions: {
+      loved: "Nošeno s ljubavlju",
+      kept: "Dobro očuvano",
+      repair: "Traži malu popravku",
+    },
+    country: "Zemlja",
+    currency: "Valuta",
+    freeShipping: "Dostava ovog komada je besplatna",
+    freeShippingHint: "Ovo važi za sam komad, ne za celu porudžbinu.",
+    freeShippingOver: "Besplatna dostava preko iznosa",
+    freeShippingOverHint:
+      "Opciono, za paket. Ostavite prazno ako to ne nudite. Iznos je u valuti oglasa.",
+    photoMissing: "Treba fotografija.",
+    photoLocal: "Fotografija se čuva na ovom serveru. Vercel Blob se koristi kad postoji ključ.",
+    signIn: "Prijavite se da sačuvate oglas.",
+    sellerKind: "Kakav ste prodavac",
+    sellerPrivate: "Privatan",
+    sellerBusiness: "Trgovac",
   },
   search: {
     allTitle: "Sve u ormaru",
@@ -237,6 +261,11 @@ const sr: Dictionary = {
     deleteButton: "Obriši nalog",
     needAuth: "Nalozi na ovom serveru traže bazu i tajni ključ. Imejl radi i bez Google ili Facebook ključeva.",
     confirmError: "Imejl se ne poklapa sa nalogom.",
+    sellerKind: "Kakav ste prodavac",
+    sellerPrivate: "Privatan",
+    sellerBusiness: "Trgovac",
+    phone: "Telefon je označen kao potvrđen",
+    phoneHint: "Ne šaljemo poruku. Ovo je samo polje koje se pamti.",
   },
   auth: {
     signInTitle: "Prijava",

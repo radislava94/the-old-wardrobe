@@ -137,6 +137,24 @@ const mk: Dictionary = {
     sold: "Продадено",
     ships: "Подигнување или достава во Северна Македонија",
     story: "Приказната",
+    share: {
+      heading: "Сподели",
+      instagram: "Instagram Stories",
+      facebook: "Facebook",
+      viber: "Viber",
+      whatsapp: "WhatsApp",
+      copy: "Копирај линк",
+      copied: "Копирано",
+      hint: "Facebook, Viber и WhatsApp го носат линкот. Instagram Stories нема веб-адреса — копчето ја дава фотографијата, како што Stories ја прифаќа.",
+      instagramSheet:
+        "Се отвори споделувањето. Избери Instagram Stories — ја добива фотографијата.",
+      instagramLinkCopied:
+        "Линкот е копиран. Избери Instagram Stories за фотографијата, па залепи го линкот во сторијата.",
+      instagramSaved:
+        "Фотографијата е зачувана, линкот е копиран. Отвори го Instagram и додај ги во Stories.",
+      instagramFailed: "Споделувањето не успеа. Копирај го линкот и обиди се повторно.",
+      copyFailed: "Линкот не се копира. Обележи ја адресата од прелистувачот.",
+    },
   },
   sell: {
     title: "Продај едно парче",

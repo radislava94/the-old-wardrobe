@@ -101,6 +101,21 @@ export type Dictionary = {
     sold: string;
     ships: string;
     story: string;
+    share: {
+      heading: string;
+      instagram: string;
+      facebook: string;
+      viber: string;
+      whatsapp: string;
+      copy: string;
+      copied: string;
+      hint: string;
+      instagramSheet: string;
+      instagramLinkCopied: string;
+      instagramSaved: string;
+      instagramFailed: string;
+      copyFailed: string;
+    };
   };
   sell: {
     title: string;

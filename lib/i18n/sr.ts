@@ -137,6 +137,24 @@ const sr: Dictionary = {
     sold: "Prodato",
     ships: "Preuzimanje ili dostava u Srbiji",
     story: "Priča",
+    share: {
+      heading: "Podeli",
+      instagram: "Instagram Stories",
+      facebook: "Facebook",
+      viber: "Viber",
+      whatsapp: "WhatsApp",
+      copy: "Kopiraj link",
+      copied: "Kopirano",
+      hint: "Facebook, Viber i WhatsApp nose link. Instagram Stories nema veb adresu — dugme daje fotografiju, onako kako je Stories prima.",
+      instagramSheet:
+        "Otvoreno je deljenje. Izaberi Instagram Stories — dobija fotografiju.",
+      instagramLinkCopied:
+        "Link je kopiran. Izaberi Instagram Stories za fotografiju, pa nalepi link u priču.",
+      instagramSaved:
+        "Fotografija je sačuvana, link je kopiran. Otvori Instagram i dodaj oboje u Stories.",
+      instagramFailed: "Deljenje nije uspelo. Kopiraj link i pokušaj ponovo.",
+      copyFailed: "Link se nije kopirao. Označi adresu u pregledaču.",
+    },
   },
   sell: {
     title: "Prodaj jedan komad",

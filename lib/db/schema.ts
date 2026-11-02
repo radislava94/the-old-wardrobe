@@ -101,6 +101,25 @@ export const listings = pgTable(
  * `firstParty` is false for the seeded sample copy. Pages may add
  * aggregateRating only when every stored review was collected from a buyer.
  */
+/** A buyer saved a listing. One row per person per piece. */
+export const favourites = pgTable(
+  "favourites",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    listingId: text("listing_id")
+      .notNull()
+      .references(() => listings.id, { onDelete: "cascade" }),
+    createdAt: date("created_at", { mode: "string" }).notNull(),
+  },
+  (table) => [
+    uniqueIndex("favourites_user_listing").on(table.userId, table.listingId),
+    index("favourites_listing").on(table.listingId),
+  ],
+);
+
 export const reviews = pgTable(
   "reviews",
   {

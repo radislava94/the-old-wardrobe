@@ -151,6 +151,15 @@ const sr: Dictionary = {
     offerEmpty: "Još niko nije sačuvao komad.",
     offerHint: "Ovo je samo poruka. Nema plaćanja.",
     offersTitle: "Ponude",
+    bundleRemove: "Skini iz grupe",
+    bundleAdd: "Dodaj u grupu od ovog prodavca",
+    bundleAdded: "Komad je u grupi. Ništa nije naplaćeno.",
+    bundleTitle: "Grupe od jednog prodavca",
+    bundleHint: "Ovo je grupa za kasniju cenu. Ovde se ništa ne naplaćuje.",
+    bundleMet: (title, total, threshold) =>
+      `„${title}“: zbir ${total} je preko ${threshold}, iznosa za besplatnu dostavu paketa. Ovo je samo informacija.`,
+    bundleShort: (title, total, threshold) =>
+      `„${title}“: zbir ${total} je ispod ${threshold}, iznosa za besplatnu dostavu paketa. Ovo je samo informacija.`,
     shippingFree: "Dostava ovog komada je besplatna.",
     shippingOver: (amount) => `Besplatna dostava za porudžbinu preko ${amount}.`,
     shippingNone: "Dostava nije uračunata u cenu.",

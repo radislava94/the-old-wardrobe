@@ -695,6 +695,50 @@ footer .brand p { margin-top: 10px; font-style: italic; opacity: 0.85; max-width
 .seller-card { display: block; margin-top: 8px; }
 .seller-card .avatar { width: 54px; height: 54px; font-size: 20px; }
 
+.account-link {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--mustard);
+  white-space: nowrap;
+}
+.consent {
+  position: fixed;
+  z-index: 30;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  max-width: 760px;
+  margin: 0 auto;
+  background: #fbf6ea;
+  color: var(--ink);
+  border: 1px solid rgba(59, 47, 36, 0.25);
+  box-shadow: 6px 6px 0 rgba(201, 161, 74, 0.35);
+  padding: 16px 18px;
+  display: grid;
+  gap: 12px;
+}
+.consent p { font-size: 16px; }
+.consent-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.consent-actions a {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--mustard);
+  margin-right: auto;
+}
+.auth-switch, .auth-social { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.auth-switch .is-on, .btn.is-on { background: var(--forest); color: var(--cream); border-color: var(--forest); }
+.form-error { color: #8a3d32; font-family: var(--font-mono); font-size: 14px; }
+.account-block { margin-top: 36px; display: grid; gap: 12px; }
+.account-block h2 { font-size: 32px; }
+.privacy-copy h2 { font-size: 28px; margin-top: 28px; }
+.privacy-copy p { max-width: 62ch; margin-top: 8px; }
+.privacy-copy a { border-bottom: 2px solid var(--mustard); }
+.sell-layout > h1 { font-size: 56px; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .card, .polaroid, .country-card, .door .tag { transform: none; }

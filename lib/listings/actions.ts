@@ -12,6 +12,7 @@ import { profiles } from "../db/schema";
 import { categoryKeys } from "../categories";
 import { listingPath, sellPath, signInPath } from "../paths";
 import type { CategoryKey, ListingDraft } from "../types";
+import { notifyPriceDrop } from "../favourites/price-drop";
 import { storeListingPhoto } from "./photos";
 
 function fail(country: CountryCode, id: string | null, code: string): never {
@@ -93,9 +94,17 @@ export async function saveListing(formData: FormData) {
     freeShippingOver,
   };
 
+  const previous = id ? await listingsRepo.getById(id) : null;
   const saved = id
     ? await listingsRepo.updateListing(id, profile.id, draft)
     : await listingsRepo.createListing(profile.id, draft);
   if (!saved) fail(country, id, "forbidden");
+  if (
+    previous &&
+    previous.currency === saved.currency &&
+    saved.priceAmount < previous.priceAmount
+  ) {
+    await notifyPriceDrop(saved, previous.priceAmount, session.user.email);
+  }
   redirect(listingPath(saved.country, saved.slug));
 }

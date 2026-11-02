@@ -184,6 +184,7 @@ const sr: Dictionary = {
     photoMissing: "Treba fotografija.",
     photoLocal: "Fotografija se čuva na ovom serveru. Vercel Blob se koristi kad postoji ključ.",
     signIn: "Prijavite se da sačuvate oglas.",
+    priceDropNote: "Ako spustite cenu, ljudi koji su sačuvali komad dobijaju imejl kad je pošta uključena.",
     sellerKind: "Kakav ste prodavac",
     sellerPrivate: "Privatan",
     sellerBusiness: "Trgovac",

@@ -185,6 +185,7 @@ const sq: Dictionary = {
     photoMissing: "Duhet një fotografi.",
     photoLocal: "Fotografia ruhet në këtë server. Vercel Blob përdoret kur ka çelës.",
     signIn: "Hyni që ta ruani shpalljen.",
+    priceDropNote: "Nëse e ulni çmimin, njerëzit që e kanë ruajtur copën marrin email kur posta është e ndezur.",
     sellerKind: "Çfarë shitësi jeni",
     sellerPrivate: "Privat",
     sellerBusiness: "Tregtar",

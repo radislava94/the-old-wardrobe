@@ -105,6 +105,9 @@ export type Dictionary = {
     sellerPrivate: string;
     sellerBusiness: string;
     returnsPrivate: string;
+    shippingFree: string;
+    shippingOver: (amount: string) => string;
+    shippingNone: string;
   };
   sell: {
     title: string;

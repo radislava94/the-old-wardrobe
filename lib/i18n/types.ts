@@ -197,6 +197,11 @@ export type Dictionary = {
     sellerBusiness: string;
     phone: string;
     phoneHint: string;
+    favourite: string;
+    unfavourite: string;
+    savedTitle: string;
+    savedEmpty: string;
+    savedNote: string;
   };
   auth: {
     signInTitle: string;

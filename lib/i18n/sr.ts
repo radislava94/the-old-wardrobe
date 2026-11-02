@@ -251,6 +251,11 @@ const sr: Dictionary = {
     sellerBusiness: "Trgovac",
     phone: "Telefon je označen kao potvrđen",
     phoneHint: "Ne šaljemo poruku. Ovo je samo polje koje se pamti.",
+    favourite: "Sačuvaj komad",
+    unfavourite: "Skini iz sačuvanih",
+    savedTitle: "Sačuvani komadi",
+    savedEmpty: "Još nema sačuvanih komada.",
+    savedNote: "Kad sačuvaš komad, prodavac dobija imejl ako je pošta uključena. Nema Vibera.",
   },
   auth: {
     signInTitle: "Prijava",

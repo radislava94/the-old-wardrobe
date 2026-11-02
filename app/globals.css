@@ -780,6 +780,7 @@ footer .brand p { margin-top: 10px; font-style: italic; opacity: 0.85; max-width
 .own-listings { list-style: none; display: grid; gap: 8px; }
 .own-listings li { display: flex; justify-content: space-between; gap: 12px; }
 .own-listings a { border-bottom: 1px solid var(--mustard); }
+.favourite-form { margin-top: 14px; display: grid; gap: 8px; justify-items: start; }
 .sell-layout > h1 { font-size: 56px; }
 
 @media (prefers-reduced-motion: reduce) {

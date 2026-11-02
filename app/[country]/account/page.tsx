@@ -8,6 +8,8 @@ import { getSession } from "@/lib/auth/session";
 import { countries, countryCodes, isCountry } from "@/lib/countries";
 import { getDictionary } from "@/lib/i18n";
 import { listingsRepo } from "@/lib/data";
+import { savedListings } from "@/lib/favourites/queries";
+import { toggleFavourite } from "@/lib/favourites/actions";
 import { privacyPath, sellPath, signInPath } from "@/lib/paths";
 
 export const metadata: Metadata = {
@@ -41,6 +43,7 @@ export default async function AccountPage({
   const session = await getSession();
   if (!session) redirect(signInPath(raw));
   const profile = await ensureProfile(session.user, raw);
+  const saved = await savedListings(profile.id);
 
   return (
     <section className="page-block">
@@ -125,6 +128,27 @@ export default async function AccountPage({
             {dict.account.save}
           </button>
         </form>
+
+        <section className="account-block">
+          <h2>{dict.account.savedTitle}</h2>
+          <p className="hint">{dict.account.savedNote}</p>
+          <ul className="own-listings">
+            {saved.map((item) => (
+              <li key={item.id}>
+                <Link href={`/${item.country}/listing/${item.slug}`}>{item.title}</Link>
+                <form action={toggleFavourite}>
+                  <input type="hidden" name="listingId" value={item.listingId} />
+                  <input type="hidden" name="slug" value={item.slug} />
+                  <input type="hidden" name="country" value={item.country} />
+                  <button type="submit" className="btn btn-ghost">
+                    {dict.account.unfavourite}
+                  </button>
+                </form>
+              </li>
+            ))}
+          </ul>
+          {saved.length === 0 ? <p>{dict.account.savedEmpty}</p> : null}
+        </section>
 
         <section className="account-block">
           <h2>{dict.rating.listings}</h2>

@@ -15,7 +15,11 @@ import { listingsRepo, reviewsRepo } from "@/lib/data";
 import { getDictionary } from "@/lib/i18n";
 import { euroEquivalent, formatEuro, priceFor } from "@/lib/money";
 import { photos } from "@/lib/photos";
-import { categoryPath, homePath, listingPath, sellerPath } from "@/lib/paths";
+import { categoryPath, homePath, listingPath, sellerPath, signInPath } from "@/lib/paths";
+import { FavouriteButton } from "@/components/favourite-button";
+import { getSession } from "@/lib/auth/session";
+import { profileForAuthUser } from "@/lib/auth/profile";
+import { isFavourite } from "@/lib/favourites/queries";
 import { shippingLabels } from "@/lib/listings/shipping-label";
 import { emptySummary, formatRating } from "@/lib/ratings";
 import {
@@ -89,6 +93,9 @@ export default async function ListingPage({
   if (!listing) notFound();
 
   const dict = getDictionary(raw);
+  const session = await getSession();
+  const viewer = session ? await profileForAuthUser(session.user.id) : null;
+  const saved = viewer ? await isFavourite(viewer.id, listing.id) : false;
   const [seller, all, summaries] = await Promise.all([
     listingsRepo.getUser(listing.sellerId),
     listingsRepo.listByCountry(raw),
@@ -225,6 +232,23 @@ export default async function ListingPage({
                 </p>
               </Link>
             ) : null}
+            {viewer ? (
+              <FavouriteButton
+                listingId={listing.id}
+                slug={listing.slug}
+                country={raw}
+                saved={saved}
+                save={dict.account.favourite}
+                unsave={dict.account.unfavourite}
+                note={dict.account.savedNote}
+              />
+            ) : (
+              <p className="hint">
+                <Link href={`${signInPath(raw)}?next=${encodeURIComponent(listingPath(raw, listing.slug))}`}>
+                  {dict.account.favourite}
+                </Link>
+              </p>
+            )}
             {listing.status === "available" ? (
               <ReserveButton
                 label={dict.listing.reserve}

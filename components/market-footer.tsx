@@ -3,7 +3,7 @@ import { categoryKeys } from "@/lib/categories";
 import type { CountryCode } from "@/lib/countries";
 import type { Dictionary } from "@/lib/i18n";
 import { journalChrome } from "@/lib/journal/chrome";
-import { blogIndexPath, categoryPath, homePath, searchPath, sellPath } from "@/lib/paths";
+import { blogIndexPath, categoryPath, homePath, privacyPath, searchPath, sellPath } from "@/lib/paths";
 import { CONTACT_EMAIL } from "@/lib/site";
 import { LetterForm } from "./letter-form";
 
@@ -55,6 +55,9 @@ export function MarketFooter({
               </li>
               <li>
                 <a href={`mailto:${CONTACT_EMAIL}`}>{dict.footer.contact}</a>
+              </li>
+              <li>
+                <Link href={privacyPath(country)}>{dict.footer.privacy}</Link>
               </li>
             </ul>
           </div>

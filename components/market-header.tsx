@@ -11,9 +11,13 @@ import { MainNav } from "./main-nav";
 export function MarketHeader({
   country,
   dict,
+  accountHref,
+  accountLabel,
 }: {
   country: CountryCode;
   dict: Dictionary;
+  accountHref: string;
+  accountLabel: string;
 }) {
   return (
     <header>
@@ -35,6 +39,9 @@ export function MarketHeader({
           sell={dict.nav.sell}
           about={dict.nav.about}
         />
+        <Link className="account-link" href={accountHref}>
+          {accountLabel}
+        </Link>
         <form className="search" action={searchPath(country)} method="get" role="search">
           <button type="submit" aria-label={dict.searchLabel}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b5a48" strokeWidth="2" aria-hidden="true">

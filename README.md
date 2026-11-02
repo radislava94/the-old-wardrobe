@@ -89,6 +89,9 @@ Every variable the product knows about, and the milestone that needs it. Copy [`
 | `/{country}/search?q=` | Search. `noindex` |
 | `/{country}/blog` | Journal index |
 | `/{country}/blog/{slug}` | Journal article. The slug is the MDX filename |
+| `/{country}/sign-in` | Email sign-in and sign-up. Google and Facebook appear only when their keys are set. `noindex` |
+| `/{country}/account` | Profile, data export, account deletion. One account buys and sells. `noindex` |
+| `/{country}/privacy`, `/privacy` | Privacy notice |
 
 `listing`, `sell`, `search` and `blog` are reserved segments, not category slugs. The header switcher keeps the same kind of page when the country changes. A listing has no twin in another country, so the switcher goes to that country's home. A journal article switches to the same topic in the other country. If that topic does not exist there, the switch opens that country's journal index and the control says so.
 
@@ -122,8 +125,8 @@ Every seller is the same `User` type. Buyers rate that person after a purchase. 
 ## What is still placeholder
 
 - Exchange rates in `lib/rates.ts`. They are round reference figures, marked in that file, and are not for payment. Bulgaria is euros only (the lev was replaced on 1 January 2026).
-- Listings, sellers, the sample seller reviews, hero statistics (12,400 pieces and the rest), the door-tag count, and the homepage quote. The "leave a review" form is disabled until accounts exist.
-- Accounts, checkout, favourites, the cart icons, and the attic letter. The sell form and the letter form keep what you type in the browser and then discard it.
+- Listings, sellers, the sample seller reviews, hero statistics (12,400 pieces and the rest), the door-tag count, and the homepage quote. The "leave a review" form stays closed: a review still needs a completed order, and checkout is not built.
+- Checkout, favourites, the cart icons, and the attic letter. The sell form and the letter form keep what you type in the browser and then discard it. An account can sign in with email, and with Google or Facebook when those keys are set. The same account buys and sells. Deleting it removes the profile, that person's listings, and their reviews. A JSON export is on the account page.
 - The contact address `hello@theoldwardrobe.example`.
 - Shipping lines in the top bar illustrate the mockup's "free over about €60" sentence. They are not a delivery policy.
 - Strings marked `TODO` in `lib/i18n` and `lib/rates.ts` need a native check or a live rate.

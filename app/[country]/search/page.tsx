@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ListingCard } from "@/components/listing-card";
-import { cardProps } from "@/lib/cards";
+import { cardsFor } from "@/lib/cards";
 import { countries, countryCodes, isCountry, type CountryCode } from "@/lib/countries";
 import { listingsRepo } from "@/lib/data";
 import { getDictionary } from "@/lib/i18n";
@@ -81,8 +81,8 @@ export default async function SearchPage({
           <p className="placeholder-note">{dict.search.empty}</p>
         ) : (
           <div className="grid">
-            {items.map((listing, index) => (
-              <ListingCard key={listing.id} {...cardProps(listing, index, raw, dict)} />
+            {(await cardsFor(items, raw, dict)).map((card) => (
+              <ListingCard key={card.href} {...card} />
             ))}
           </div>
         )}

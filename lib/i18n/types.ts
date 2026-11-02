@@ -23,6 +23,8 @@ export type Dictionary = {
     sellDescription: string;
     searchTitle: (query: string) => string;
     searchDescription: string;
+    sellerTitle: (name: string) => string;
+    sellerDescription: (name: string, city: string) => string;
   };
   tagline: string;
   topbar: string;
@@ -126,4 +128,19 @@ export type Dictionary = {
   };
   missing: { title: string; body: string; home: string };
   pickerEnter: string;
+  rating: {
+    aria: (average: string, countLabel: string) => string;
+    count: (count: number) => string;
+    reviews: string;
+    breakdown: string;
+    noReviews: string;
+    listings: string;
+    leaveTitle: string;
+    leaveRule: string;
+    stars: string;
+    comment: string;
+    commentPlaceholder: string;
+    submit: string;
+    bought: string;
+  };
 };

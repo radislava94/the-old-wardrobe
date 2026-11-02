@@ -1,5 +1,7 @@
 import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
+import type { RatingSummary } from "@/lib/types";
+import { Stars } from "./stars";
 
 export function ListingCard({
   href,
@@ -12,6 +14,11 @@ export function ListingCard({
   soldSmall,
   rotation,
   image,
+  sellerName,
+  sellerHref,
+  summary,
+  ratingLabel,
+  ratingFigure,
 }: {
   href: string;
   title: string;
@@ -23,6 +30,11 @@ export function ListingCard({
   soldSmall: string;
   rotation: string;
   image: StaticImageData;
+  sellerName: string;
+  sellerHref: string;
+  summary: RatingSummary;
+  ratingLabel: string;
+  ratingFigure: string;
 }) {
   return (
     <article className={sold ? "card sold" : "card"} style={{ ["--r" as string]: rotation }}>
@@ -54,6 +66,10 @@ export function ListingCard({
           </div>
           <span className="price">{price}</span>
         </div>
+      </Link>
+      <Link href={sellerHref} className="card-seller">
+        <span>{sellerName}</span>
+        <Stars summary={summary} label={ratingLabel} figure={ratingFigure} />
       </Link>
     </article>
   );

@@ -21,3 +21,7 @@ export function sellPath(country: CountryCode): string {
 export function searchPath(country: CountryCode): string {
   return `/${country}/search`;
 }
+
+export function sellerPath(country: CountryCode, handle: string): string {
+  return `/${country}/seller/${handle}`;
+}

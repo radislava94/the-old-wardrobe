@@ -6,10 +6,11 @@ import {
   languageAlternates,
   listingAlternatePaths,
   sellAlternatePaths,
+  sellerAlternatePaths,
   absoluteUrl,
 } from "./seo";
 import { countryCodes, type CountryCode } from "./countries";
-import { categoryPath, homePath, listingPath, sellPath } from "./paths";
+import { categoryPath, homePath, listingPath, sellerPath, sellPath } from "./paths";
 
 function escapeXml(value: string): string {
   return value
@@ -87,6 +88,20 @@ export async function countrySitemapXml(country: CountryCode): Promise<string> {
       priority: 0.4,
     }),
   );
+
+  const sellers = await listingsRepo.listSellers(country);
+  for (const seller of sellers) {
+    entries.push(
+      urlEntry({
+        path: sellerPath(country, seller.handle),
+        languages: languageAlternates(
+          sellerAlternatePaths(seller),
+          sellerPath(country, seller.handle),
+        ),
+        priority: 0.5,
+      }),
+    );
+  }
 
   for (const listing of items) {
     entries.push(

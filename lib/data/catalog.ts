@@ -4,6 +4,7 @@ import type { Listing, User } from "../types";
 export const users: User[] = [
   {
     id: "ana",
+    handle: "ana-petrova",
     name: "Ана Петрова",
     city: "Скопје",
     country: "mk",
@@ -12,6 +13,7 @@ export const users: User[] = [
   },
   {
     id: "ile",
+    handle: "ile-nikolov",
     name: "Иле Николов",
     city: "Битола",
     country: "mk",
@@ -20,6 +22,7 @@ export const users: User[] = [
   },
   {
     id: "mira",
+    handle: "mira-georgieva",
     name: "Мира Георгиева",
     city: "София",
     country: "bg",
@@ -28,6 +31,7 @@ export const users: User[] = [
   },
   {
     id: "petar",
+    handle: "petar-ivanov",
     name: "Петър Иванов",
     city: "Пловдив",
     country: "bg",
@@ -36,6 +40,7 @@ export const users: User[] = [
   },
   {
     id: "jovana",
+    handle: "jovana-kostic",
     name: "Jovana Kostić",
     city: "Beograd",
     country: "sr-rs",
@@ -44,6 +49,7 @@ export const users: User[] = [
   },
   {
     id: "marko",
+    handle: "marko-jovic",
     name: "Marko Jović",
     city: "Novi Sad",
     country: "sr-rs",
@@ -52,6 +58,7 @@ export const users: User[] = [
   },
   {
     id: "era",
+    handle: "era-hoxha",
     name: "Era Hoxha",
     city: "Tiranë",
     country: "sq-al",
@@ -60,11 +67,84 @@ export const users: User[] = [
   },
   {
     id: "ledi",
+    handle: "ledi-shehu",
     name: "Ledi Shehu",
     city: "Durrës",
     country: "sq-al",
     memberSince: "2025-04-11",
     bio: "Fustanet e dasmave i lan me livando dhe i nis përtej.",
+  },
+  {
+    id: "elena",
+    handle: "elena-risteska",
+    name: "Елена Ристеска",
+    city: "Скопје",
+    country: "mk",
+    memberSince: "2025-02-11",
+    bio: "Купува фустан кога приказната ѝ одговара.",
+  },
+  {
+    id: "boris",
+    handle: "boris-trajkov",
+    name: "Борис Трајков",
+    city: "Битола",
+    country: "mk",
+    memberSince: "2025-06-08",
+    bio: "Бара капути што уште држат форма.",
+  },
+  {
+    id: "nia",
+    handle: "nia-dimitrova",
+    name: "Ния Димитрова",
+    city: "София",
+    country: "bg",
+    memberSince: "2024-12-02",
+    bio: "Пази роклите и пише честно, когато нещо не пасва.",
+  },
+  {
+    id: "kaloyan",
+    handle: "kaloyan-petrov",
+    name: "Калоян Петров",
+    city: "Пловдив",
+    country: "bg",
+    memberSince: "2025-03-19",
+    bio: "Купува якета за пролетта в Пловдив.",
+  },
+  {
+    id: "sofija",
+    handle: "sofija-ilic",
+    name: "Sofija Ilić",
+    city: "Beograd",
+    country: "sr-rs",
+    memberSince: "2024-09-27",
+    bio: "Traži kožne jakne kojima se još vidi patina.",
+  },
+  {
+    id: "luka",
+    handle: "luka-nedic",
+    name: "Luka Nedić",
+    city: "Novi Sad",
+    country: "sr-rs",
+    memberSince: "2025-05-14",
+    bio: "Kupuje farmerke i kape, retko haljine.",
+  },
+  {
+    id: "arta",
+    handle: "arta-krasniqi",
+    name: "Arta Krasniqi",
+    city: "Tiranë",
+    country: "sq-al",
+    memberSince: "2025-01-23",
+    bio: "Blen pallto për dimrin dhe i mban me kujdes.",
+  },
+  {
+    id: "genti",
+    handle: "genti-duka",
+    name: "Genti Duka",
+    city: "Durrës",
+    country: "sq-al",
+    memberSince: "2025-07-01",
+    bio: "Kërkon xhins që janë zbutur, jo të shqyera.",
   },
 ];
 
@@ -537,7 +617,17 @@ export const listings: Listing[] = [
 
 function assertCatalog() {
   const slugs = new Set<string>();
+  const handles = new Set<string>();
   const userById = new Map(users.map((user) => [user.id, user]));
+
+  for (const user of users) {
+    const handleKey = `${user.country}:${user.handle}`;
+    if (handles.has(handleKey)) throw new Error(`Duplicate handle ${handleKey}`);
+    handles.add(handleKey);
+    if (!countries[user.country].cities.includes(user.city)) {
+      throw new Error(`Unknown city on user ${user.id}`);
+    }
+  }
 
   if (listings.length < 24) {
     throw new Error(`Expected at least 24 listings, found ${listings.length}`);

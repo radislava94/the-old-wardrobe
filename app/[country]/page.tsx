@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { CategoryRow } from "@/components/category-row";
 import { ListingCard } from "@/components/listing-card";
 import { categoryKeys } from "@/lib/categories";
-import { cardProps } from "@/lib/cards";
+import { cardsFor } from "@/lib/cards";
 import { countries, isCountry } from "@/lib/countries";
 import { listingsRepo } from "@/lib/data";
 import { getDictionary } from "@/lib/i18n";
@@ -127,8 +127,8 @@ export default async function CountryHome({
             <Link href={searchPath(raw)}>{dict.fresh.seeAll} →</Link>
           </div>
           <div className="grid">
-            {items.map((listing, index) => (
-              <ListingCard key={listing.id} {...cardProps(listing, index, raw, dict)} />
+            {(await cardsFor(items, raw, dict)).map((card) => (
+              <ListingCard key={card.href} {...card} />
             ))}
           </div>
           <p className="placeholder-note">{dict.placeholderNote}</p>

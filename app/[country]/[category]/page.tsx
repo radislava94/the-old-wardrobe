@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ListingCard } from "@/components/listing-card";
 import { categoryFromSlug, categoryKeys, categorySlugs } from "@/lib/categories";
-import { cardProps } from "@/lib/cards";
+import { cardsFor } from "@/lib/cards";
 import { countries, countryCodes, isCountry } from "@/lib/countries";
 import { listingsRepo } from "@/lib/data";
 import { getDictionary } from "@/lib/i18n";
@@ -85,8 +85,8 @@ export default async function CategoryPage({
           <p className="placeholder-note">{dict.emptyCategory}</p>
         ) : (
           <div className="grid">
-            {items.map((listing, index) => (
-              <ListingCard key={listing.id} {...cardProps(listing, index, raw, dict)} />
+            {(await cardsFor(items, raw, dict)).map((card) => (
+              <ListingCard key={card.href} {...card} />
             ))}
           </div>
         )}

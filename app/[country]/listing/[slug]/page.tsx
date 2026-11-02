@@ -1,18 +1,22 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Avatar } from "@/components/avatar";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { JsonLd } from "@/components/json-ld";
 import { ListingCard } from "@/components/listing-card";
 import { ReserveButton } from "@/components/reserve-button";
-import { cardProps } from "@/lib/cards";
+import { Stars } from "@/components/stars";
+import { cardsFor } from "@/lib/cards";
 import { countries, isCountry } from "@/lib/countries";
 import { listings } from "@/lib/data/catalog";
-import { listingsRepo } from "@/lib/data";
+import { listingsRepo, reviewsRepo } from "@/lib/data";
 import { getDictionary } from "@/lib/i18n";
 import { euroEquivalent, formatEuro, priceFor } from "@/lib/money";
 import { photos } from "@/lib/photos";
-import { categoryPath, homePath, listingPath } from "@/lib/paths";
+import { categoryPath, homePath, listingPath, sellerPath } from "@/lib/paths";
+import { emptySummary, formatRating } from "@/lib/ratings";
 import {
   absoluteUrl,
   languageAlternates,
@@ -77,10 +81,15 @@ export default async function ListingPage({
   if (!listing) notFound();
 
   const dict = getDictionary(raw);
-  const [seller, all] = await Promise.all([
+  const [seller, all, summaries] = await Promise.all([
     listingsRepo.getUser(listing.sellerId),
     listingsRepo.listByCountry(raw),
+    reviewsRepo.summariesFor([listing.sellerId]),
   ]);
+  const summary = summaries[listing.sellerId] ?? emptySummary();
+  const ratingFigure = summary.count
+    ? formatRating(summary.average, countries[raw].intlLocale)
+    : "";
   const price = priceFor(listing, raw);
   const approx = euroEquivalent(listing.priceAmount, listing.currency);
   const image = photos[listing.photo];
@@ -161,14 +170,28 @@ export default async function ListingPage({
               </div>
             </dl>
             {seller ? (
-              <aside className="seller-card">
-                <h2>{dict.listing.seller}</h2>
-                <p className="seller-name">{seller.name}</p>
+              <Link href={sellerPath(raw, seller.handle)} className="seller-card">
+                <div className="seller-top">
+                  <Avatar name={seller.name} />
+                  <div>
+                    <h2>{dict.listing.seller}</h2>
+                    <p className="seller-name">{seller.name}</p>
+                    <Stars
+                      summary={summary}
+                      figure={ratingFigure}
+                      label={
+                        summary.count
+                          ? dict.rating.aria(ratingFigure, dict.rating.count(summary.count))
+                          : dict.rating.noReviews
+                      }
+                    />
+                  </div>
+                </div>
                 <p>{seller.bio}</p>
                 <p className="hint">
                   {dict.listing.memberSince} {joined}
                 </p>
-              </aside>
+              </Link>
             ) : null}
             {listing.status === "available" ? (
               <ReserveButton
@@ -185,8 +208,8 @@ export default async function ListingPage({
         <section className="similar">
           <h2>{dict.listing.similar}</h2>
           <div className="grid">
-            {related(listing, all).map((item, index) => (
-              <ListingCard key={item.id} {...cardProps(item, index, raw, dict)} />
+            {(await cardsFor(related(listing, all), raw, dict)).map((card) => (
+              <ListingCard key={card.href} {...card} />
             ))}
           </div>
         </section>

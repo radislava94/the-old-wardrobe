@@ -15,6 +15,9 @@ const bg: Dictionary = {
       "Подготви обява за дрехи втора ръка в България. Публикуването идва заедно с профилите — формулярът още нищо не запазва.",
     searchTitle: (query) => (query ? `Търсене: ${query}` : "Търсене в гардероба"),
     searchDescription: "Претърси дрехите, обявени в България, в евро.",
+    sellerTitle: (name) => name,
+    sellerDescription: (name, city) =>
+      `${name} продава дрехи втора ръка в ${city}. Оценки от купувачи в The Old Wardrobe.`,
   },
   tagline: "Втора ръка · Осн. 2026",
   topbar:
@@ -167,6 +170,22 @@ const bg: Dictionary = {
     home: "Обратно към вратата",
   },
   pickerEnter: "Влез вътре",
+  rating: {
+    aria: (average, countLabel) => `Средна оценка ${average} от 5, ${countLabel}`,
+    count: (count) => (count === 1 ? "1 отзив" : `${count} отзива`),
+    reviews: "Отзиви",
+    breakdown: "По оценки",
+    noReviews: "Още няма отзиви",
+    listings: "Обяви от този гардероб",
+    leaveTitle: "Остави отзив",
+    leaveRule:
+      "Отзив може да остави само купувач със завършена поръчка от този продавач — един отзив на поръчка. Профили още няма, затова формулярът е затворен.",
+    stars: "Оценка",
+    comment: "Коментар",
+    commentPlaceholder: "Как мина покупката?",
+    submit: "Изпрати отзива",
+    bought: "За",
+  },
 };
 
 export default bg;

@@ -16,6 +16,9 @@ const mk: Dictionary = {
     searchTitle: (query) => (query ? `Барај: ${query}` : "Барај во гардеробата"),
     searchDescription:
       "Пребарај ги парчињата објавени во Северна Македонија, во денари.",
+    sellerTitle: (name) => name,
+    sellerDescription: (name, city) =>
+      `${name} продава алишта од втора рака во ${city}. Оценки од купувачи на The Old Wardrobe.`,
   },
   tagline: "Од втора рака · Осн. 2026",
   topbar:
@@ -169,6 +172,22 @@ const mk: Dictionary = {
     home: "Назад кон вратата",
   },
   pickerEnter: "Влези внатре",
+  rating: {
+    aria: (average, countLabel) => `Просечна оценка ${average} од 5, ${countLabel}`,
+    count: (count) => (count === 1 ? "1 рецензија" : `${count} рецензии`),
+    reviews: "Рецензии",
+    breakdown: "По оценки",
+    noReviews: "Сè уште нема рецензии",
+    listings: "Парчиња од оваа гардероба",
+    leaveTitle: "Остави рецензија",
+    leaveRule:
+      "Рецензија може да остави само купувач со завршена нарачка од овој продавач, и тоа една рецензија по нарачка. Сметките сè уште не постојат, па формуларот е затворен.",
+    stars: "Оценка",
+    comment: "Коментар",
+    commentPlaceholder: "Како помина купувањето?",
+    submit: "Испрати рецензија",
+    bought: "За",
+  },
 };
 
 export default mk;

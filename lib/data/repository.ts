@@ -14,6 +14,9 @@ export interface ListingRepository {
   listByCategory(country: CountryCode, category: CategoryKey): Promise<Listing[]>;
   getBySlug(country: CountryCode, slug: string): Promise<Listing | null>;
   getUser(id: string): Promise<User | null>;
+  getUserByHandle(country: CountryCode, handle: string): Promise<User | null>;
+  /** Users in this country who have at least one listing. */
+  listSellers(country: CountryCode): Promise<User[]>;
   /** Case-insensitive substring match on the listing's own text. */
   search(country: CountryCode, query: string): Promise<Listing[]>;
 }

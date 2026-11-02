@@ -16,6 +16,9 @@ const sr: Dictionary = {
     searchTitle: (query) => (query ? `Pretraga: ${query}` : "Pretraga ormara"),
     searchDescription:
       "Pretraži komade objavljene u Srbiji, u dinarima.",
+    sellerTitle: (name) => name,
+    sellerDescription: (name, city) =>
+      `${name} prodaje odeću iz druge ruke u gradu ${city}. Ocene kupaca na The Old Wardrobe.`,
   },
   tagline: "Iz druge ruke · Osn. 2026",
   topbar:
@@ -168,6 +171,28 @@ const sr: Dictionary = {
     home: "Nazad do vrata",
   },
   pickerEnter: "Zakorači unutra",
+  rating: {
+    aria: (average, countLabel) => `Prosečna ocena ${average} od 5, ${countLabel}`,
+    count: (count) => {
+      const mod10 = count % 10;
+      const mod100 = count % 100;
+      if (mod10 === 1 && mod100 !== 11) return `${count} utisak`;
+      if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return `${count} utiska`;
+      return `${count} utisaka`;
+    },
+    reviews: "Utisci",
+    breakdown: "Po ocenama",
+    noReviews: "Još nema utisaka",
+    listings: "Komadi iz ovog ormara",
+    leaveTitle: "Ostavi utisak",
+    leaveRule:
+      "Utisak može da ostavi samo kupac sa završenom porudžbinom od ovog prodavca, jedan utisak po porudžbini. Nalozi još ne postoje, pa je formular zatvoren.",
+    stars: "Ocena",
+    comment: "Komentar",
+    commentPlaceholder: "Kako je prošla kupovina?",
+    submit: "Pošalji utisak",
+    bought: "Za",
+  },
 };
 
 export default sr;

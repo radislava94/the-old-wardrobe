@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { categoryPath, homePath, listingPath, sellPath } from "./paths";
+import { categoryPath, homePath, listingPath, sellerPath, sellPath } from "./paths";
 import { countries, countryCodes, type CountryCode } from "./countries";
 import { siteUrl } from "./site";
-import type { CategoryKey, Listing } from "./types";
+import type { CategoryKey, Listing, RatingSummary, User } from "./types";
 
 export function absoluteUrl(path: string): string {
   if (path.startsWith("http://") || path.startsWith("https://")) return path;
@@ -58,6 +58,20 @@ export function listingAlternatePaths(
       code === listing.country
         ? listingPath(code, listing.slug)
         : categoryPath(code, listing.category),
+    ]),
+  ) as Record<CountryCode, string>;
+}
+
+/**
+ * A person sells in one country. Their own locale and x-default point
+ * at the profile. The other three locales point at that country's home,
+ * because this seller is not listed there.
+ */
+export function sellerAlternatePaths(user: User): Record<CountryCode, string> {
+  return Object.fromEntries(
+    countryCodes.map((code) => [
+      code,
+      code === user.country ? sellerPath(code, user.handle) : homePath(code),
     ]),
   ) as Record<CountryCode, string>;
 }
@@ -154,6 +168,10 @@ export function breadcrumbJsonLd(
   };
 }
 
+/**
+ * Product/Offer only. Seller reviews are about the person, not the garment,
+ * so this object must not grow an aggregateRating.
+ */
 export function productJsonLd(options: {
   listing: Listing;
   description: string;
@@ -188,4 +206,50 @@ export function productJsonLd(options: {
       areaServed: countries[listing.country].name,
     },
   };
+}
+
+/**
+ * Person markup for a seller profile.
+ *
+ * Google's review-snippet guidelines allow aggregateRating only when the
+ * ratings were collected by this site from real users, about this person,
+ * and are visible on the page. Sample reviews are not first-party, so
+ * `firstParty` must be false for them and the field is left out.
+ */
+export function sellerJsonLd(options: {
+  user: User;
+  path: string;
+  summary: RatingSummary;
+  firstParty: boolean;
+}) {
+  const country = countries[options.user.country];
+  const person: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: options.user.name,
+    url: absoluteUrl(options.path),
+    description: options.user.bio,
+    homeLocation: {
+      "@type": "Place",
+      name: options.user.city,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: options.user.city,
+        addressCountry: country.name,
+      },
+    },
+    memberOf: { "@id": `${siteUrl()}/#organization` },
+  };
+
+  if (options.firstParty && options.summary.count > 0) {
+    person.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: options.summary.average.toFixed(1),
+      reviewCount: String(options.summary.count),
+      bestRating: "5",
+      worstRating: "1",
+    };
+  }
+
+  return person;
 }

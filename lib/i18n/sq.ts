@@ -16,6 +16,9 @@ const sq: Dictionary = {
     searchTitle: (query) => (query ? `Kërkim: ${query}` : "Kërko në garderobë"),
     searchDescription:
       "Kërko copët e shpallura në Shqipëri, në lekë.",
+    sellerTitle: (name) => name,
+    sellerDescription: (name, city) =>
+      `${name} shet rroba të dorës së dytë në ${city}. Vlerësime nga blerësit te The Old Wardrobe.`,
   },
   tagline: "Dorë e dytë · Them. 2026",
   topbar:
@@ -169,6 +172,23 @@ const sq: Dictionary = {
     home: "Prapa te dera",
   },
   pickerEnter: "Hyr brenda",
+  rating: {
+    aria: (average, countLabel) => `Vlerësimi mesatar ${average} nga 5, ${countLabel}`,
+    count: (count) => (count === 1 ? "1 koment" : `${count} komente`),
+    reviews: "Komente",
+    breakdown: "Sipas vlerësimit",
+    noReviews: "Ende pa komente",
+    listings: "Shpalljet e kësaj garderobe",
+    leaveTitle: "Lër një koment",
+    // TODO: "porosi të përfunduar" for a completed order — confirm against "porosi e kryer".
+    leaveRule:
+      "Një koment mund ta lërë vetëm blerësi me një porosi të përfunduar te ky shitës, një koment për çdo porosi. Llogaritë ende s'janë hapur, ndaj formulari është i mbyllur.",
+    stars: "Vlerësimi",
+    comment: "Komenti",
+    commentPlaceholder: "Si shkoi blerja?",
+    submit: "Dërgo komentin",
+    bought: "Për",
+  },
 };
 
 export default sq;

@@ -1,15 +1,13 @@
 import type { CountryCode } from "../countries";
 import type { CategoryKey, Listing, User } from "../types";
 import { listings, users } from "./catalog";
+import { byNewest, searchListings } from "./listing-query";
 import type { ListingRepository } from "./repository";
 
-function byNewest(a: Listing, b: Listing): number {
-  return b.createdAt.localeCompare(a.createdAt);
-}
-
 /**
- * In-memory stand-in for Postgres. Reads the placeholder catalog only.
- * Swap `listingsRepo` in `index.ts` for a Neon implementation later.
+ * Reads the placeholder catalog from memory.
+ * Used when DATABASE_URL is unset (including `npm run build`).
+ * The same rows are seeded into Postgres by `scripts/db-seed.ts`.
  */
 export class MemoryListingRepository implements ListingRepository {
   async listByCountry(country: CountryCode): Promise<Listing[]> {
@@ -50,23 +48,7 @@ export class MemoryListingRepository implements ListingRepository {
   }
 
   async search(country: CountryCode, query: string): Promise<Listing[]> {
-    const needle = query.trim().toLowerCase();
     const all = await this.listByCountry(country);
-    if (!needle) return all;
-    return all.filter((listing) => {
-      const haystack = [
-        listing.title,
-        listing.description,
-        listing.city,
-        listing.era,
-        listing.condition,
-        listing.size,
-        listing.brand ?? "",
-        listing.category,
-      ]
-        .join(" ")
-        .toLowerCase();
-      return haystack.includes(needle);
-    });
+    return searchListings(all, query);
   }
 }

@@ -15,7 +15,8 @@ import { listingsRepo, reviewsRepo } from "@/lib/data";
 import { getDictionary } from "@/lib/i18n";
 import { euroEquivalent, formatEuro, priceFor } from "@/lib/money";
 import { photos } from "@/lib/photos";
-import { categoryPath, homePath, listingPath, sellerPath } from "@/lib/paths";
+import { categoryCityPath, categoryPath, homePath, listingPath, sellerPath } from "@/lib/paths";
+import { citySlug } from "@/lib/seo/places";
 import { emptySummary, formatRating } from "@/lib/ratings";
 import {
   absoluteUrl,
@@ -95,6 +96,10 @@ export default async function ListingPage({
   const image = photos[listing.photo];
   const path = listingPath(raw, listing.slug);
   const categoryName = dict.categories[listing.category];
+  const placeSlug = citySlug(raw, listing.city);
+  const placePath = placeSlug
+    ? categoryCityPath(raw, listing.category, placeSlug)
+    : null;
   const joined = seller
     ? new Intl.DateTimeFormat(countries[raw].intlLocale, {
         month: "long",
@@ -111,6 +116,7 @@ export default async function ListingPage({
           items={[
             { name: dict.home, path: homePath(raw) },
             { name: categoryName, path: categoryPath(raw, listing.category) },
+            ...(placePath ? [{ name: listing.city, path: placePath }] : []),
             { name: listing.title, path },
           ]}
         />
@@ -162,7 +168,9 @@ export default async function ListingPage({
               </div>
               <div>
                 <dt>{dict.listing.city}</dt>
-                <dd>{listing.city}</dd>
+                <dd>
+                  {placePath ? <Link href={placePath}>{listing.city}</Link> : listing.city}
+                </dd>
               </div>
               <div>
                 <dt>{dict.sell.size}</dt>

@@ -10,6 +10,15 @@ export function categoryPath(country: CountryCode, key: CategoryKey): string {
   return `/${country}/${categorySlug(country, key)}`;
 }
 
+/** City landing under a category. `city` is the latin slug, not the native name. */
+export function categoryCityPath(
+  country: CountryCode,
+  key: CategoryKey,
+  city: string,
+): string {
+  return `${categoryPath(country, key)}/${city}`;
+}
+
 export function listingPath(country: CountryCode, slug: string): string {
   return `/${country}/listing/${slug}`;
 }

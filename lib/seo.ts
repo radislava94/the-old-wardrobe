@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
-import { categoryPath, homePath, listingPath, sellerPath, sellPath } from "./paths";
+import {
+  categoryCityPath,
+  categoryPath,
+  homePath,
+  listingPath,
+  sellerPath,
+  sellPath,
+} from "./paths";
 import { countries, countryCodes, type CountryCode } from "./countries";
 import { siteUrl } from "./site";
 import type { CategoryKey, Listing, RatingSummary, User } from "./types";
@@ -34,6 +41,26 @@ export function categoryAlternatePaths(
 ): Record<CountryCode, string> {
   return Object.fromEntries(
     countryCodes.map((code) => [code, categoryPath(code, key)]),
+  ) as Record<CountryCode, string>;
+}
+
+/**
+ * A city landing exists in one country. Its own locale points at the
+ * city page. The other three point at that category in their country,
+ * the same way a listing does: Skopje is not a translated Sofia page.
+ * `x-default` is the city page itself, passed separately by the caller.
+ */
+export function categoryCityAlternatePaths(
+  country: CountryCode,
+  key: CategoryKey,
+  city: string,
+): Record<CountryCode, string> {
+  const own = categoryCityPath(country, key, city);
+  return Object.fromEntries(
+    countryCodes.map((code) => [
+      code,
+      code === country ? own : categoryPath(code, key),
+    ]),
   ) as Record<CountryCode, string>;
 }
 

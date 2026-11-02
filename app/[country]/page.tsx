@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CategoryRow } from "@/components/category-row";
+import { CityIndex } from "@/components/city-index";
 import { ListingCard } from "@/components/listing-card";
 import { categoryKeys } from "@/lib/categories";
 import { cardsFor } from "@/lib/cards";
@@ -114,6 +115,8 @@ export default async function CountryHome({
       </section>
 
       <CategoryRow country={raw} dict={dict} counts={counts} />
+
+      <CityIndex country={raw} dict={dict} items={items} />
 
       <section className="finds" id="fresh">
         <div className="wrap">

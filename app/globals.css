@@ -700,8 +700,79 @@ footer .brand p { margin-top: 10px; font-style: italic; opacity: 0.85; max-width
   .card, .polaroid, .country-card, .door .tag { transform: none; }
   .btn { transition: none; }
 }
+.facts dd a { border-bottom: 1px solid var(--mustard); }
+.landing { max-width: 68ch; margin-bottom: 28px; }
+.landing h1 {
+  font-size: 48px;
+  line-height: 1.08;
+  font-weight: 700;
+  margin: 14px 0 16px;
+  letter-spacing: -0.01em;
+}
+.landing h1 em { font-weight: 400; font-style: italic; color: var(--forest); }
+.landing .lead { margin-bottom: 14px; font-size: 20px; }
+.landing p:not(.eyebrow):not(.lead) { font-size: 18px; }
+.landing p:not(.eyebrow) + p { margin-top: 12px; }
+.place-nav { margin: 8px 0 34px; }
+.place-nav h2 {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.place-links { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; }
+.place-links a {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 148px;
+  background: #fbf6ea;
+  border: 1px dashed rgba(59, 47, 36, 0.4);
+  padding: 10px 14px 12px;
+}
+.place-links a span { font-size: 18px; font-weight: 600; }
+.place-links a small {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+  letter-spacing: 0.04em;
+}
+.places { padding: 0 0 64px; }
+.places-head { max-width: 68ch; margin-bottom: 22px; }
+.places-head h2 { font-size: 40px; line-height: 1.1; margin-bottom: 8px; }
+.places-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.place-card {
+  background: #fbf6ea;
+  border: 1px solid rgba(59, 47, 36, 0.2);
+  box-shadow: 6px 6px 0 rgba(201, 154, 148, 0.45);
+  padding: 22px 22px 16px;
+}
+.place-card h3 { font-size: 28px; margin-bottom: 12px; }
+.place-card ul { list-style: none; display: grid; gap: 8px; }
+.place-card a {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+  border-bottom: 1px solid rgba(201, 161, 74, 0.7);
+  padding-bottom: 4px;
+  font-size: 18px;
+}
+.place-card small {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+  letter-spacing: 0.04em;
+}
+
 @media (max-width: 760px) {
   .seller-hero { grid-template-columns: 1fr; }
   .seller-hero h1 { font-size: 40px; }
   .card-seller { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .landing h1, .places-head h2 { font-size: 34px; }
+  .places-grid { grid-template-columns: 1fr; }
+  .place-links a { min-width: 0; flex: 1 1 140px; }
 }

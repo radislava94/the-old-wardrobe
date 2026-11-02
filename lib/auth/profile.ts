@@ -70,13 +70,20 @@ export async function deleteMarketplaceData(userId: string) {
   const db = getDb();
   const profile = await profileForAuthUser(userId);
   if (!profile) return;
-  const { listings, reviews } = await import("../db/schema");
+  const { favourites, listings, reviews } = await import("../db/schema");
   const { or, inArray } = await import("drizzle-orm");
   const owned = await db
     .select({ id: listings.id })
     .from(listings)
     .where(eq(listings.sellerId, profile.id));
   const listingIds = owned.map((row) => row.id);
+  await db
+    .delete(favourites)
+    .where(
+      listingIds.length
+        ? or(eq(favourites.userId, profile.id), inArray(favourites.listingId, listingIds))
+        : eq(favourites.userId, profile.id),
+    );
   await db
     .delete(reviews)
     .where(

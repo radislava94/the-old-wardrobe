@@ -1,4 +1,6 @@
 node_modules/
+.next/
+out/
 __pycache__/
 *.py[cod]
 .venv/
@@ -8,3 +10,4 @@ Thumbs.db
 *.log
 .env
 .env.*
+*.tsbuildinfo

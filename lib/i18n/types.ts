@@ -1,0 +1,129 @@
+import type { CategoryKey } from "../types";
+
+export type StepCopy = {
+  num: string;
+  title: string;
+  body: string;
+  hint: string;
+};
+
+export type StatCopy = {
+  value: string;
+  label: string;
+};
+
+export type Dictionary = {
+  meta: {
+    homeTitle: string;
+    homeDescription: string;
+    categoryTitle: (category: string) => string;
+    categoryDescription: (category: string) => string;
+    listingDescription: (title: string, city: string, price: string) => string;
+    sellTitle: string;
+    sellDescription: string;
+    searchTitle: (query: string) => string;
+    searchDescription: string;
+  };
+  tagline: string;
+  topbar: string;
+  nav: { browse: string; sell: string; about: string; main: string };
+  searchPlaceholder: string;
+  searchLabel: string;
+  skip: string;
+  hero: {
+    eyebrow: string;
+    title: string;
+    titleEm: string;
+    lead: string;
+    browse: string;
+    sell: string;
+    imageAlt: string;
+    stats: StatCopy[];
+    tagTitle: string;
+    tagBody: string;
+  };
+  fresh: {
+    title: string;
+    titleEm: string;
+    kicker: string;
+    seeAll: string;
+  };
+  placeholderNote: string;
+  sold: string;
+  soldSmall: string;
+  sizeTag: (size: string) => string;
+  pieces: (count: number) => string;
+  categories: Record<CategoryKey, string>;
+  how: {
+    title: string;
+    sub: string;
+    steps: StepCopy[];
+  };
+  quote: { text: string; cite: string };
+  footer: {
+    blurb: string;
+    shop: string;
+    help: string;
+    newArrivals: string;
+    howToSell: string;
+    shipping: string;
+    returns: string;
+    about: string;
+    contact: string;
+    letterTitle: string;
+    letterBody: string;
+    emailLabel: string;
+    emailPlaceholder: string;
+    join: string;
+    letterSoon: string;
+    rights: string;
+    magic: string;
+  };
+  switcherLabel: string;
+  allCountries: string;
+  breadcrumbLabel: string;
+  home: string;
+  emptyCategory: string;
+  approxEur: (eur: string) => string;
+  listing: {
+    condition: string;
+    era: string;
+    city: string;
+    seller: string;
+    memberSince: string;
+    similar: string;
+    reserve: string;
+    reserveClicked: string;
+    reserveNote: string;
+    available: string;
+    sold: string;
+    ships: string;
+    story: string;
+  };
+  sell: {
+    title: string;
+    intro: string;
+    name: string;
+    namePlaceholder: string;
+    category: string;
+    size: string;
+    sizePlaceholder: string;
+    price: string;
+    city: string;
+    story: string;
+    storyPlaceholder: string;
+    photo: string;
+    photoHint: string;
+    submit: string;
+    successTitle: string;
+    successBody: (name: string) => string;
+    ratesNote: string;
+  };
+  search: {
+    allTitle: string;
+    empty: string;
+    count: (count: number) => string;
+  };
+  missing: { title: string; body: string; home: string };
+  pickerEnter: string;
+};

@@ -229,8 +229,45 @@ export function productJsonLd(options: {
           : "https://schema.org/InStock",
       itemCondition: "https://schema.org/UsedCondition",
       areaServed: countries[listing.country].name,
+      ...offerShipping(listing),
     },
   };
+}
+
+const SHIPPING_COUNTRY = {
+  mk: "MK",
+  bg: "BG",
+  "sr-rs": "RS",
+  "sq-al": "AL",
+} as const;
+
+/** Only the facts the seller set. A threshold is not described as free shipping of the piece. */
+function offerShipping(listing: Listing): { shippingDetails?: Record<string, unknown> } {
+  const free = Boolean(listing.freeShipping);
+  const over = listing.freeShippingOver ?? null;
+  if (!free && over == null) return {};
+  const details: Record<string, unknown> = {
+    "@type": "OfferShippingDetails",
+    shippingDestination: {
+      "@type": "DefinedRegion",
+      addressCountry: SHIPPING_COUNTRY[listing.country],
+    },
+  };
+  if (free) {
+    details.shippingRate = {
+      "@type": "MonetaryAmount",
+      value: "0",
+      currency: listing.currency,
+    };
+  }
+  if (over != null) {
+    details.freeShippingThreshold = {
+      "@type": "MonetaryAmount",
+      value: String(over),
+      currency: listing.currency,
+    };
+  }
+  return { shippingDetails: details };
 }
 
 /**

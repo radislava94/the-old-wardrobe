@@ -112,13 +112,15 @@ export function pageMetadata(options: {
       siteName: "The Old Wardrobe",
       locale: options.locale,
       type: "website",
-      images,
+      // Omit the key when empty. `{ images: undefined }` still counts as set
+      // and blocks a file-based opengraph-image from being attached.
+      ...(images ? { images } : {}),
     },
     twitter: {
       card: "summary_large_image",
       title: fullTitle,
       description: options.description,
-      images: images?.map((image) => image.url),
+      ...(images ? { images: images.map((image) => image.url) } : {}),
     },
     robots: options.noIndex
       ? { index: false, follow: true }

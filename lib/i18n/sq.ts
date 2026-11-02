@@ -138,6 +138,23 @@ const sq: Dictionary = {
     sold: "E shitur",
     ships: "Tërheqje ose dërgesë brenda Shqipërisë",
     story: "Historia",
+    share: {
+      heading: "Ndaj",
+      instagram: "Instagram Stories",
+      facebook: "Facebook",
+      viber: "Viber",
+      whatsapp: "WhatsApp",
+      copy: "Kopjo lidhjen",
+      copied: "U kopjua",
+      hint: "Facebook, Viber dhe WhatsApp e çojnë lidhjen. Instagram Stories s’ka adresë web — butoni jep foton, ashtu siç e pranon Stories.",
+      instagramSheet: "U hap ndarja. Zgjidh Instagram Stories — merr foton.",
+      instagramLinkCopied:
+        "Lidhja u kopjua. Zgjidh Instagram Stories për foton, pastaj ngjite lidhjen te story.",
+      instagramSaved:
+        "Fotoja u ruajt, lidhja u kopjua. Hap Instagramin dhe shtoji te Stories.",
+      instagramFailed: "Ndarja nuk u krye. Kopjo lidhjen dhe provo sërish.",
+      copyFailed: "Lidhja nuk u kopjua. Shëno adresën te shfletuesi.",
+    },
   },
   sell: {
     title: "Shit një copë",

@@ -762,6 +762,14 @@ footer .brand p { margin-top: 10px; font-style: italic; opacity: 0.85; max-width
   font-size: 17px;
 }
 .choice small { flex-basis: 100%; }
+.ship-note {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  letter-spacing: 0.01em;
+  margin-top: 6px;
+}
+.ship-note span { display: block; }
 .returns-note {
   margin-top: 12px;
   padding: 12px 14px;

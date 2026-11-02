@@ -17,6 +17,7 @@ import { getDictionary } from "@/lib/i18n";
 import { euroEquivalent, formatEuro, formatListingPrice, priceFor } from "@/lib/money";
 import { photos } from "@/lib/photos";
 import { categoryPath, homePath, listingPath, sellerPath } from "@/lib/paths";
+import { shippingLabels } from "@/lib/listings/shipping-label";
 import { emptySummary, formatRating } from "@/lib/ratings";
 import {
   absoluteUrl,
@@ -166,6 +167,11 @@ export default async function ListingPage({
               fileName={`the-old-wardrobe-${listing.slug}.png`}
               labels={dict.listing.share}
             />
+            <p className="ship-note">
+              {shippingLabels(listing, dict).map((line) => (
+                <span key={line}>{line}</span>
+              ))}
+            </p>
             <h2>{dict.listing.story}</h2>
             <p className="story">{listing.description}</p>
             <dl className="facts">

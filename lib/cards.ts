@@ -5,6 +5,7 @@ import { countries, type CountryCode } from "./countries";
 import { listingsRepo, reviewsRepo } from "./data";
 import type { Dictionary } from "./i18n";
 import { emptySummary, formatRating } from "./ratings";
+import { shippingLabels } from "./listings/shipping-label";
 import type { Listing, User } from "./types";
 
 const rotations = ["-1.5deg", "1deg", "-0.8deg", "1.4deg", "-1deg", "0.8deg", "-1.2deg", "1.2deg"];
@@ -21,6 +22,7 @@ export function cardProps(listing: Listing, index: number, country: CountryCode,
     soldSmall: dict.soldSmall,
     rotation: rotations[index % rotations.length] ?? "0deg",
     image: listing.photoUrl || photos[listing.photo],
+    shipping: shippingLabels(listing, dict),
   };
 }
 

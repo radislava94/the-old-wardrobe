@@ -158,6 +158,9 @@ const sr: Dictionary = {
     sellerBusiness: "Trgovac",
     returnsPrivate:
       "Ovo je privatni prodavac. Pravo na odustanak koje važi kad kupujete od trgovca ovde ne važi.",
+    shippingFree: "Dostava ovog komada je besplatna.",
+    shippingOver: (amount) => `Besplatna dostava za porudžbinu preko ${amount}.`,
+    shippingNone: "Dostava nije uračunata u cenu.",
   },
   sell: {
     title: "Prodaj jedan komad",

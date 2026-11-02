@@ -12,6 +12,8 @@ import { savedListings } from "@/lib/favourites/queries";
 import { offersForProfile } from "@/lib/offers/queries";
 import { bundlesForBuyer } from "@/lib/bundles/queries";
 import { removeFromBundle } from "@/lib/bundles/actions";
+import { placeOrder } from "@/lib/orders/actions";
+import { courierChoices } from "@/lib/couriers";
 import { formatMoney } from "@/lib/money";
 import { toggleFavourite } from "@/lib/favourites/actions";
 import { privacyPath, sellPath, signInPath } from "@/lib/paths";
@@ -200,6 +202,32 @@ export default async function AccountPage({
                     </li>
                   ))}
                 </ul>
+                {group.items.length > 0 ? (
+                  <form className="sell-form" action={placeOrder}>
+                    <input type="hidden" name="country" value={raw} />
+                    {group.items.map((item) => (
+                      <input key={item.id} type="hidden" name="listingId" value={item.id} />
+                    ))}
+                    <label>
+                      <span>{dict.order.courier}</span>
+                      <select name="courier" required defaultValue="">
+                        <option value="" disabled>
+                          —
+                        </option>
+                        {courierChoices[raw].map((name) => (
+                          <option key={name} value={name}>
+                            {name}
+                          </option>
+                        ))}
+                      </select>
+                      <small>{dict.order.courierHint}</small>
+                    </label>
+                    <p className="hint">{dict.order.noFee}</p>
+                    <button type="submit" className="btn btn-primary">
+                      {dict.order.bundlePlace}
+                    </button>
+                  </form>
+                ) : null}
               </div>
             );
           })}

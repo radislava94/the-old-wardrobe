@@ -22,6 +22,7 @@ import { profileForAuthUser } from "@/lib/auth/profile";
 import { isFavourite } from "@/lib/favourites/queries";
 import { makeOffer, sendPrivateOffer } from "@/lib/offers/actions";
 import { saversOf } from "@/lib/offers/queries";
+import { addToBundle } from "@/lib/bundles/actions";
 import { shippingLabels } from "@/lib/listings/shipping-label";
 import { emptySummary, formatRating } from "@/lib/ratings";
 import {
@@ -89,10 +90,12 @@ export default async function ListingPage({
   searchParams,
 }: {
   params: Promise<{ country: string; slug: string }>;
-  searchParams: Promise<{ offer?: string }>;
+  searchParams: Promise<{ offer?: string; bundle?: string }>;
 }) {
   const { country: raw, slug } = await params;
-  const offerState = (await searchParams).offer;
+  const query = await searchParams;
+  const offerState = query.offer;
+  const bundleState = query.bundle;
   if (!isCountry(raw)) notFound();
   const listing = await listingsRepo.getBySlug(raw, slug);
   if (!listing) notFound();
@@ -238,6 +241,18 @@ export default async function ListingPage({
               </Link>
             ) : null}
             {offerState === "sent" ? <p className="hint">{dict.listing.offerSent}</p> : null}
+            {bundleState === "added" ? <p className="hint">{dict.listing.bundleAdded}</p> : null}
+            {viewer && seller && viewer.id !== seller.id ? (
+              <form className="bundle-form" action={addToBundle}>
+                <input type="hidden" name="listingId" value={listing.id} />
+                <input type="hidden" name="slug" value={listing.slug} />
+                <input type="hidden" name="country" value={raw} />
+                <button type="submit" className="btn btn-ghost">
+                  {dict.listing.bundleAdd}
+                </button>
+                <p className="hint">{dict.listing.bundleHint}</p>
+              </form>
+            ) : null}
             {viewer && seller && viewer.id === seller.id ? (
               <form className="sell-form offer-form" action={sendPrivateOffer}>
                 <h2>{dict.listing.offerPrivate}</h2>

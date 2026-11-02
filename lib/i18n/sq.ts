@@ -152,6 +152,15 @@ const sq: Dictionary = {
     offerEmpty: "Ende askush nuk e ka ruajtur copën.",
     offerHint: "Ky është vetëm një mesazh. Nuk ka pagesë.",
     offersTitle: "Oferta",
+    bundleRemove: "Hiqe nga grupi",
+    bundleAdd: "Shtoje në një grup të këtij shitësi",
+    bundleAdded: "Copja është në grup. Asgjë nuk është ngarkuar.",
+    bundleTitle: "Grupe nga një shitës",
+    bundleHint: "Ky është një grup për një çmim të mëvonshëm. Këtu nuk ngarkohet asgjë.",
+    bundleMet: (title, total, threshold) =>
+      `„${title}“: shuma ${total} është mbi ${threshold}, shumën për dërgesë falas të paketës. Kjo është vetëm informacion.`,
+    bundleShort: (title, total, threshold) =>
+      `„${title}“: shuma ${total} është nën ${threshold}, shumën për dërgesë falas të paketës. Kjo është vetëm informacion.`,
     shippingFree: "Dërgesa e kësaj cope është falas.",
     shippingOver: (amount) => `Dërgesë falas për porosi mbi ${amount}.`,
     shippingNone: "Dërgesa nuk është në çmim.",

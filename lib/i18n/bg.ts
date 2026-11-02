@@ -150,6 +150,15 @@ const bg: Dictionary = {
     offerEmpty: "Още никой не е запазил дрехата.",
     offerHint: "Това е само съобщение. Няма плащане.",
     offersTitle: "Оферти",
+    bundleRemove: "Махни от групата",
+    bundleAdd: "Добави в група от този продавач",
+    bundleAdded: "Дрехата е в групата. Нищо не е платено.",
+    bundleTitle: "Групи от един продавач",
+    bundleHint: "Това е група за по-късна цена. Тук нищо не се плаща.",
+    bundleMet: (title, total, threshold) =>
+      `„${title}“: сборът ${total} е над ${threshold}, сумата за безплатна доставка на пакет. Това е само информация.`,
+    bundleShort: (title, total, threshold) =>
+      `„${title}“: сборът ${total} е под ${threshold}, сумата за безплатна доставка на пакет. Това е само информация.`,
     shippingFree: "Доставката на това парче е безплатна.",
     shippingOver: (amount) => `Безплатна доставка за поръчка над ${amount}.`,
     shippingNone: "Доставката не е включена в цената.",

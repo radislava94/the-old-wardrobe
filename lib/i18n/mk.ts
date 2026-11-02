@@ -151,6 +151,15 @@ const mk: Dictionary = {
     offerEmpty: "Никој уште не го зачувал парчето.",
     offerHint: "Ова е само порака. Нема плаќање.",
     offersTitle: "Понуди",
+    bundleRemove: "Тргни од групата",
+    bundleAdd: "Додај во група од овој продавач",
+    bundleAdded: "Парчето е во групата. Ништо не е наплатено.",
+    bundleTitle: "Групи од еден продавач",
+    bundleHint: "Ова е група за подоцнежна цена. Овде ништо не се наплаќа.",
+    bundleMet: (title, total, threshold) =>
+      `„${title}“: збирот ${total} е над ${threshold}, износот за бесплатна достава на пакет. Ова е само информација.`,
+    bundleShort: (title, total, threshold) =>
+      `„${title}“: збирот ${total} е под ${threshold}, износот за бесплатна достава на пакет. Ова е само информација.`,
     shippingFree: "Доставата за ова парче е бесплатна.",
     shippingOver: (amount) => `Бесплатна достава за нарачка над ${amount}.`,
     shippingNone: "Доставата не е вклучена во цената.",

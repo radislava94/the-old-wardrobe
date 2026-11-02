@@ -20,7 +20,7 @@ export function cardProps(listing: Listing, index: number, country: CountryCode,
     soldLabel: dict.sold,
     soldSmall: dict.soldSmall,
     rotation: rotations[index % rotations.length] ?? "0deg",
-    image: photos[listing.photo],
+    image: listing.photoUrl || photos[listing.photo],
   };
 }
 

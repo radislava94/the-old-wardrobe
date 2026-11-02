@@ -102,6 +102,9 @@ export type Dictionary = {
     sold: string;
     ships: string;
     story: string;
+    sellerPrivate: string;
+    sellerBusiness: string;
+    returnsPrivate: string;
   };
   sell: {
     title: string;
@@ -121,6 +124,21 @@ export type Dictionary = {
     successTitle: string;
     successBody: (name: string) => string;
     ratesNote: string;
+    brand: string;
+    condition: string;
+    conditions: { loved: string; kept: string; repair: string };
+    country: string;
+    currency: string;
+    freeShipping: string;
+    freeShippingHint: string;
+    freeShippingOver: string;
+    freeShippingOverHint: string;
+    photoMissing: string;
+    photoLocal: string;
+    signIn: string;
+    sellerKind: string;
+    sellerPrivate: string;
+    sellerBusiness: string;
   };
   search: {
     allTitle: string;
@@ -171,6 +189,11 @@ export type Dictionary = {
     deleteButton: string;
     needAuth: string;
     confirmError: string;
+    sellerKind: string;
+    sellerPrivate: string;
+    sellerBusiness: string;
+    phone: string;
+    phoneHint: string;
   };
   auth: {
     signInTitle: string;

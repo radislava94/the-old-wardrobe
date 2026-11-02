@@ -26,6 +26,8 @@ import {
 } from "@/lib/seo";
 import type { Listing } from "@/lib/types";
 
+export const dynamicParams = true;
+
 export function generateStaticParams() {
   return listings.map((listing) => ({
     country: listing.country,
@@ -44,7 +46,12 @@ export async function generateMetadata({
   if (!listing) return {};
   const dict = getDictionary(raw);
   const price = priceFor(listing, raw);
-  const image = photos[listing.photo];
+  const stock = photos[listing.photo];
+  const imageUrl = listing.photoUrl
+    ? listing.photoUrl.startsWith("http")
+      ? listing.photoUrl
+      : absoluteUrl(listing.photoUrl)
+    : absoluteUrl(stock.src);
   return pageMetadata({
     title: listing.title,
     description: dict.meta.listingDescription(listing.title, listing.city, price.formatted),
@@ -55,10 +62,10 @@ export async function generateMetadata({
     ),
     locale: countries[raw].ogLocale,
     image: {
-      url: absoluteUrl(image.src),
+      url: imageUrl,
       alt: listing.title,
-      width: image.width,
-      height: image.height,
+      width: stock.width,
+      height: stock.height,
     },
   });
 }
@@ -92,7 +99,12 @@ export default async function ListingPage({
     : "";
   const price = priceFor(listing, raw);
   const approx = euroEquivalent(listing.priceAmount, listing.currency);
-  const image = photos[listing.photo];
+  const image = listing.photoUrl || photos[listing.photo];
+  const imageUrl = listing.photoUrl
+    ? listing.photoUrl.startsWith("http")
+      ? listing.photoUrl
+      : absoluteUrl(listing.photoUrl)
+    : absoluteUrl(photos[listing.photo].src);
   const path = listingPath(raw, listing.slug);
   const categoryName = dict.categories[listing.category];
   const joined = seller
@@ -168,7 +180,21 @@ export default async function ListingPage({
                 <dt>{dict.sell.size}</dt>
                 <dd>{listing.size}</dd>
               </div>
+              {listing.brand ? (
+                <div>
+                  <dt>{dict.sell.brand}</dt>
+                  <dd>{listing.brand}</dd>
+                </div>
+              ) : null}
             </dl>
+            <p className="status-line">
+              {seller?.sellerKind === "business"
+                ? dict.listing.sellerBusiness
+                : dict.listing.sellerPrivate}
+            </p>
+            {seller?.sellerKind === "business" ? null : (
+              <p className="returns-note">{dict.listing.returnsPrivate}</p>
+            )}
             {seller ? (
               <Link href={sellerPath(raw, seller.handle)} className="seller-card">
                 <div className="seller-top">
@@ -220,7 +246,7 @@ export default async function ListingPage({
           description: listing.description,
           price: price.amount,
           currency: price.currency,
-          imageUrl: absoluteUrl(image.src),
+          imageUrl,
           path,
         })}
       />

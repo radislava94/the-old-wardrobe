@@ -1,6 +1,6 @@
 import { databaseEnabled } from "../db/runtime";
 import type { CountryCode } from "../countries";
-import type { CategoryKey, Listing, RatingSummary, Review, User } from "../types";
+import type { CategoryKey, Listing, ListingDraft, RatingSummary, Review, User } from "../types";
 import { MemoryListingRepository } from "./memory";
 import { PostgresListingRepository } from "./postgres";
 import type { ListingRepository } from "./repository";
@@ -50,6 +50,18 @@ export const listingsRepo: ListingRepository = {
   },
   search(country: CountryCode, query: string): Promise<Listing[]> {
     return listingStore().then((store) => store.search(country, query));
+  },
+  listBySeller(sellerId: string): Promise<Listing[]> {
+    return listingStore().then((store) => store.listBySeller(sellerId));
+  },
+  getById(id: string): Promise<Listing | null> {
+    return listingStore().then((store) => store.getById(id));
+  },
+  createListing(sellerId: string, draft: ListingDraft): Promise<Listing> {
+    return listingStore().then((store) => store.createListing(sellerId, draft));
+  },
+  updateListing(id: string, sellerId: string, draft: ListingDraft): Promise<Listing | null> {
+    return listingStore().then((store) => store.updateListing(id, sellerId, draft));
   },
 };
 

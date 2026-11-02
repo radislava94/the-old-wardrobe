@@ -21,6 +21,8 @@ export async function updateProfile(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const city = String(formData.get("city") ?? "").trim();
   const bio = String(formData.get("bio") ?? "").trim();
+  const sellerKind = formData.get("sellerKind") === "business" ? "business" : "private";
+  const phoneVerified = formData.get("phoneVerified") === "on";
   if (name.length < 1 || name.length > 80 || city.length > 80 || bio.length > 600) {
     redirect(`${accountPath(current)}?error=fields`);
   }
@@ -33,7 +35,7 @@ export async function updateProfile(formData: FormData) {
 
   await getDb()
     .update(profiles)
-    .set({ name, city, country: nextCountry, bio, handle })
+    .set({ name, city, country: nextCountry, bio, handle, sellerKind, phoneVerified })
     .where(eq(profiles.id, profile.id));
   await getAuth().api.updateUser({
     body: { name },

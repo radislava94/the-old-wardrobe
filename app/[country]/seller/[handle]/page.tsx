@@ -23,6 +23,8 @@ import {
   sellerJsonLd,
 } from "@/lib/seo";
 
+export const dynamicParams = true;
+
 export function generateStaticParams() {
   const sellerIds = new Set(listings.map((listing) => listing.sellerId));
   return users

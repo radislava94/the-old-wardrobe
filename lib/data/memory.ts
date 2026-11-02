@@ -1,5 +1,5 @@
 import type { CountryCode } from "../countries";
-import type { CategoryKey, Listing, User } from "../types";
+import type { CategoryKey, Listing, ListingDraft, User } from "../types";
 import { listings, users } from "./catalog";
 import { byNewest, searchListings } from "./listing-query";
 import type { ListingRepository } from "./repository";
@@ -50,5 +50,25 @@ export class MemoryListingRepository implements ListingRepository {
   async search(country: CountryCode, query: string): Promise<Listing[]> {
     const all = await this.listByCountry(country);
     return searchListings(all, query);
+  }
+
+  async listBySeller(sellerId: string): Promise<Listing[]> {
+    return listings.filter((listing) => listing.sellerId === sellerId).sort(byNewest);
+  }
+
+  async getById(id: string): Promise<Listing | null> {
+    return listings.find((listing) => listing.id === id) ?? null;
+  }
+
+  async createListing(_sellerId: string, _draft: ListingDraft): Promise<Listing> {
+    throw new Error("Saving a listing needs DATABASE_URL.");
+  }
+
+  async updateListing(
+    _id: string,
+    _sellerId: string,
+    _draft: ListingDraft,
+  ): Promise<Listing | null> {
+    throw new Error("Saving a listing needs DATABASE_URL.");
   }
 }

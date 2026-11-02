@@ -1,5 +1,5 @@
 import type { CountryCode } from "../countries";
-import type { CategoryKey, Listing, User } from "../types";
+import type { CategoryKey, Listing, ListingDraft, User } from "../types";
 
 /**
  * Storage seam. Pages talk only to this interface.
@@ -19,4 +19,8 @@ export interface ListingRepository {
   listSellers(country: CountryCode): Promise<User[]>;
   /** Case-insensitive substring match on the listing's own text. */
   search(country: CountryCode, query: string): Promise<Listing[]>;
+  listBySeller(sellerId: string): Promise<Listing[]>;
+  getById(id: string): Promise<Listing | null>;
+  createListing(sellerId: string, draft: ListingDraft): Promise<Listing>;
+  updateListing(id: string, sellerId: string, draft: ListingDraft): Promise<Listing | null>;
 }

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { categoryFromSlug } from "@/lib/categories";
 import { countries, countryCodes, type CountryCode } from "@/lib/countries";
-import { categoryPath, homePath, searchPath, sellPath } from "@/lib/paths";
+import { blogIndexPath, categoryPath, homePath, searchPath, sellPath } from "@/lib/paths";
 
 export function CountrySwitcher({
   country,
@@ -23,6 +23,7 @@ export function CountrySwitcher({
     if (rest[0] === "sell") return sellPath(target);
     if (rest[0] === "search") return searchPath(target);
     if (rest[0] === "listing") return homePath(target);
+    if (rest[0] === "blog") return blogIndexPath(target);
     const key = categoryFromSlug(country, rest[0] ?? "");
     if (key) return categoryPath(target, key);
     return homePath(target);

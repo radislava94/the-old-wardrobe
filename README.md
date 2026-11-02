@@ -34,8 +34,10 @@ Set `NEXT_PUBLIC_SITE_URL` to the public origin, with no trailing slash, before 
 | `/{country}/seller/{handle}` | Seller profile: rating, listings, reviews |
 | `/{country}/sell` | Sell form. Nothing is stored |
 | `/{country}/search?q=` | Search. `noindex` |
+| `/{country}/blog` | Journal index for that country |
+| `/{country}/blog/{slug}` | Journal article. Slug is the MDX filename |
 
-`listing`, `sell` and `search` are reserved segments, not category slugs. The header switcher keeps the same kind of page when the country changes. A listing has no twin in another country, so the switcher goes to that country's home.
+`listing`, `sell`, `search` and `blog` are reserved segments, not category slugs. The header switcher keeps the same kind of page when the country changes. A listing has no twin in another country, so the switcher goes to that country's home.
 
 ## Structure
 
@@ -81,7 +83,44 @@ JSON-LD:
 - `Product` + `Offer` on listings, with `priceCurrency` in the local currency and `availability` of `InStock` or `SoldOut`. Seller reviews are not added as `aggregateRating` on the product
 - `Person` on seller profiles. `aggregateRating` is included only when `reviewsRepo.areFirstParty()` is true, which matches Google's rule that review stars in structured data come from ratings the site collected itself. The sample copy leaves it out
 
-`/sitemap.xml` is a sitemap index. `/sitemap/mk.xml`, `/sitemap/bg.xml`, `/sitemap/sr-rs.xml` and `/sitemap/sq-al.xml` list that country's URLs, including each category-and-city landing. Sold listings are included. Search URLs are left out and disallowed in `robots.txt`.
+`/sitemap.xml` is a sitemap index. `/sitemap/mk.xml`, `/sitemap/bg.xml`, `/sitemap/sr-rs.xml` and `/sitemap/sq-al.xml` list that country's URLs, including each category-and-city landing. Sold listings are included. Search URLs are left out and disallowed in `robots.txt`. The journal has its own sitemaps, `/sitemap/blog/mk.xml`, `/sitemap/blog/bg.xml`, `/sitemap/blog/sr-rs.xml` and `/sitemap/blog/sq-al.xml`, linked from the same index.
+
+## Journal
+
+Posts are MDX files in the repo, not rows in the database. One file is one article in one country:
+
+```text
+content/blog/mk/perenje-volna.mdx
+content/blog/bg/prane-na-valna.mdx
+content/blog/sr-rs/pranje-vune.mdx
+content/blog/sq-al/larja-e-leshit.mdx
+```
+
+The filename, without `.mdx`, is the slug. It must be lowercase latin letters, digits and hyphens. The folder must be `mk`, `bg`, `sr-rs` or `sq-al`.
+
+Frontmatter, in YAML between the opening and closing `---`:
+
+| Field | Required | Meaning |
+| --- | --- | --- |
+| `title` | yes | Visible title and document title. Quote it if it contains a colon |
+| `description` | yes | Meta description |
+| `published` | yes | `YYYY-MM-DD` |
+| `topic` | yes | Latin id. Reuse it only when another country's post is the same subject. A new subject gets a new id. hreflang is built only from posts that share this id |
+| `categories` | yes | One or more of `dresses`, `coats`, `knitwear`, `denim`, `accessories`. These become the category links and the "shop this look" query |
+| `cities` | yes | One or more city names exactly as in `lib/countries.ts`: `Скопје`, `Битола`, `София`, `Пловдив`, `Beograd`, `Novi Sad`, `Tiranë`, `Durrës`. They must belong to that country |
+
+The body is Markdown after the second `---`. Write it in that country's language. Do not translate one file four ways and change the city name. Internal links use paths such as `/mk/pleteni` or `/mk/pleteni/skopje`.
+
+To add a post:
+
+1. Copy an existing file in the right country folder.
+2. Rename it to the new slug.
+3. Replace the frontmatter. If the subject already exists in another country, keep that `topic`. If it does not, invent a new `topic` and do not point it at a different article.
+4. Write the body.
+5. Run `npm run build`. A missing field, an unknown city, a short body, or a duplicate `topic` in the same country fails the build.
+6. The Open Graph image is drawn from the title. There is no separate image file to export.
+
+The shop block lists up to four live listings from `listingsRepo` in those categories and cities. If none match, the block is omitted.
 
 ## Deploy
 

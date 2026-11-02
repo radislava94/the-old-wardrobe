@@ -162,6 +162,7 @@ export type Dictionary = {
     saveDraft: string;
     photoLocal: string;
     signIn: string;
+    priceDropNote: string;
     sellerKind: string;
     sellerPrivate: string;
     sellerBusiness: string;

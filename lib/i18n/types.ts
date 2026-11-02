@@ -120,6 +120,15 @@ export type Dictionary = {
     sellerPrivate: string;
     sellerBusiness: string;
     returnsPrivate: string;
+    offerTitle: string;
+    offerAmount: string;
+    offerNote: string;
+    offerSend: string;
+    offerSent: string;
+    offerPrivate: string;
+    offerEmpty: string;
+    offerHint: string;
+    offersTitle: string;
     shippingFree: string;
     shippingOver: (amount: string) => string;
     shippingNone: string;

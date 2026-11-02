@@ -9,6 +9,7 @@ import { countries, countryCodes, isCountry } from "@/lib/countries";
 import { getDictionary } from "@/lib/i18n";
 import { listingsRepo } from "@/lib/data";
 import { savedListings } from "@/lib/favourites/queries";
+import { offersForProfile } from "@/lib/offers/queries";
 import { toggleFavourite } from "@/lib/favourites/actions";
 import { privacyPath, sellPath, signInPath } from "@/lib/paths";
 
@@ -44,6 +45,7 @@ export default async function AccountPage({
   if (!session) redirect(signInPath(raw));
   const profile = await ensureProfile(session.user, raw);
   const saved = await savedListings(profile.id);
+  const mine = await offersForProfile(profile.id);
 
   return (
     <section className="page-block">
@@ -148,6 +150,21 @@ export default async function AccountPage({
             ))}
           </ul>
           {saved.length === 0 ? <p>{dict.account.savedEmpty}</p> : null}
+        </section>
+
+        <section className="account-block">
+          <h2>{dict.listing.offersTitle}</h2>
+          <p className="hint">{dict.listing.offerHint}</p>
+          <ul className="own-listings">
+            {mine.map((offer) => (
+              <li key={offer.id}>
+                <Link href={`/${offer.country}/listing/${offer.slug}`}>
+                  {offer.title} · {offer.amount} {offer.currency}
+                </Link>
+                <span>{offer.kind === "seller" ? dict.listing.offerPrivate : dict.listing.offerTitle}</span>
+              </li>
+            ))}
+          </ul>
         </section>
 
         <section className="account-block">

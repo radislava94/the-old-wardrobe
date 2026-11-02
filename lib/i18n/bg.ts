@@ -136,6 +136,24 @@ const bg: Dictionary = {
     sold: "Продадено",
     ships: "Вземане или доставка в България",
     story: "Историята",
+    share: {
+      heading: "Сподели",
+      instagram: "Instagram Stories",
+      facebook: "Facebook",
+      viber: "Viber",
+      whatsapp: "WhatsApp",
+      copy: "Копирай връзката",
+      copied: "Копирано",
+      hint: "Facebook, Viber и WhatsApp носят връзката. Instagram Stories няма уеб адрес — бутонът дава снимката, както Stories я приема.",
+      instagramSheet:
+        "Отвори се споделянето. Избери Instagram Stories — получава снимката.",
+      instagramLinkCopied:
+        "Връзката е копирана. Избери Instagram Stories за снимката, после я залепи в сторито.",
+      instagramSaved:
+        "Снимката е запазена, връзката е копирана. Отвори Instagram и ги добави в Stories.",
+      instagramFailed: "Споделянето не успя. Копирай връзката и опитай пак.",
+      copyFailed: "Връзката не се копира. Маркирай адреса от браузъра.",
+    },
   },
   sell: {
     title: "Продай едно парче",

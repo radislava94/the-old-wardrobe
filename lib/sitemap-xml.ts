@@ -1,16 +1,25 @@
 import { categoryKeys } from "./categories";
 import { listingsRepo } from "./data";
+import { countries, countryCodes, type CountryCode } from "./countries";
 import {
+  absoluteUrl,
   categoryAlternatePaths,
+  categoryCityAlternatePaths,
   homeAlternatePaths,
   languageAlternates,
   listingAlternatePaths,
   sellAlternatePaths,
   sellerAlternatePaths,
-  absoluteUrl,
 } from "./seo";
-import { countryCodes, type CountryCode } from "./countries";
-import { categoryPath, homePath, listingPath, sellerPath, sellPath } from "./paths";
+import {
+  categoryCityPath,
+  categoryPath,
+  homePath,
+  listingPath,
+  sellerPath,
+  sellPath,
+} from "./paths";
+import { citySlug } from "./seo/places";
 
 function escapeXml(value: string): string {
   return value
@@ -79,6 +88,26 @@ export async function countrySitemapXml(country: CountryCode): Promise<string> {
         lastmod: newest,
       }),
     );
+
+    for (const city of countries[country].cities) {
+      const slug = citySlug(country, city);
+      if (!slug) continue;
+      const path = categoryCityPath(country, key, slug);
+      const newestHere = items.find(
+        (item) => item.category === key && item.city === city,
+      )?.createdAt;
+      entries.push(
+        urlEntry({
+          path,
+          languages: languageAlternates(
+            categoryCityAlternatePaths(country, key, slug),
+            path,
+          ),
+          priority: 0.7,
+          lastmod: newestHere,
+        }),
+      );
+    }
   }
 
   entries.push(

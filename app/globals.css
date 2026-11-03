@@ -767,12 +767,63 @@ footer .brand p { margin-top: 10px; font-style: italic; opacity: 0.85; max-width
   color: var(--ink-soft);
   letter-spacing: 0.04em;
 }
+.journal { max-width: 860px; }
+.journal h1 {
+  font-size: 52px;
+  line-height: 1.08;
+  margin: 12px 0 14px;
+}
+.journal .lead { margin-bottom: 28px; }
+.journal-date {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  margin: -6px 0 18px;
+}
+.journal-list { list-style: none; display: grid; gap: 18px; }
+.journal-card {
+  background: #fbf6ea;
+  border: 1px solid rgba(59, 47, 36, 0.2);
+  box-shadow: 6px 6px 0 rgba(201, 161, 74, 0.35);
+  padding: 22px 24px 18px;
+}
+.journal-card time {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--rose);
+  text-transform: uppercase;
+}
+.journal-card h2 { font-size: 30px; line-height: 1.15; margin: 8px 0; }
+.journal-card h2 a { border-bottom: 1px solid transparent; }
+.journal-card h2 a:hover { border-bottom-color: var(--mustard); }
+.journal-card p { color: var(--ink-soft); font-style: italic; }
+.journal-more {
+  display: inline-block;
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--forest);
+  border-bottom: 2px solid var(--mustard);
+}
+.journal-prose { max-width: 68ch; }
+.journal-prose h2 { font-size: 30px; margin: 28px 0 8px; line-height: 1.2; }
+.journal-prose p { font-size: 18px; margin: 12px 0; }
+.journal-prose ul, .journal-prose ol { margin: 8px 0 16px 1.2em; font-size: 18px; }
+.journal-prose li + li { margin-top: 6px; }
+.journal-prose a { border-bottom: 1px solid var(--mustard); }
+.journal-shop { margin-top: 18px; }
+.journal-shop h2 { font-size: 32px; margin-bottom: 22px; }
 
 @media (max-width: 760px) {
   .seller-hero { grid-template-columns: 1fr; }
   .seller-hero h1 { font-size: 40px; }
   .card-seller { align-items: flex-start; flex-direction: column; gap: 4px; }
-  .landing h1, .places-head h2 { font-size: 34px; }
+  .landing h1, .places-head h2, .journal h1 { font-size: 34px; }
+  .journal-card h2 { font-size: 24px; }
   .places-grid { grid-template-columns: 1fr; }
   .place-links a { min-width: 0; flex: 1 1 140px; }
 }

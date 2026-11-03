@@ -154,13 +154,18 @@ ${entries.join("\n")}
 }
 
 export function sitemapIndexXml(): string {
-  const body = countryCodes
-    .map(
+  const body = [
+    ...countryCodes.map(
       (code) => `  <sitemap>
     <loc>${escapeXml(absoluteUrl(`/sitemap/${code}.xml`))}</loc>
   </sitemap>`,
-    )
-    .join("\n");
+    ),
+    ...countryCodes.map(
+      (code) => `  <sitemap>
+    <loc>${escapeXml(absoluteUrl(`/sitemap/blog/${code}.xml`))}</loc>
+  </sitemap>`,
+    ),
+  ].join("\n");
   return `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${body}

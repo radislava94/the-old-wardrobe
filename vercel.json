@@ -1,4 +1,3 @@
 {
-  "buildCommand": "python3 src/build.py",
-  "outputDirectory": "mockup"
+  "framework": "nextjs"
 }

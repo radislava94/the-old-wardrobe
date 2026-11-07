@@ -12,6 +12,7 @@ import { listingPath, signInPath } from "../paths";
 import type { CountryCode } from "../countries";
 import { isCountry } from "../countries";
 import { absoluteUrl } from "../seo";
+import { savedListingMail } from "../mail-copy";
 
 export async function toggleFavourite(formData: FormData) {
   const countryRaw = String(formData.get("country") ?? "");
@@ -69,9 +70,6 @@ async function tellSeller(listingId: string, buyerName: string) {
   const email = emails[0]?.email;
   if (!email) return;
   const path = listingPath(listing.country as CountryCode, listing.slug);
-  await sendEmail({
-    to: email,
-    subject: `Saved: ${listing.title}`,
-    text: `${buyerName} saved “${listing.title}” on The Old Wardrobe.\n${absoluteUrl(path)}\n`,
-  });
+  const mail = savedListingMail(listing.country, buyerName, listing.title, absoluteUrl(path));
+  await sendEmail({ to: email, subject: mail.subject, text: mail.text });
 }

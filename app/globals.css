@@ -349,15 +349,20 @@ header::after {
 }
 .heart {
   position: absolute;
-  top: 24px;
-  left: 24px;
-  width: 34px;
-  height: 34px;
+  top: 16px;
+  left: 16px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 50%;
+  border: 0;
+  padding: 0;
   background: rgba(251, 246, 234, 0.9);
   display: grid;
   place-items: center;
   z-index: 2;
+  cursor: pointer;
 }
 .card.sold .ph img, .polaroid.sold .ph img { filter: var(--sepia) grayscale(0.5) brightness(0.92); }
 .stamp {
@@ -602,7 +607,7 @@ footer .brand p { margin-top: 10px; font-style: italic; opacity: 0.85; max-width
   .meta { flex-direction: column; gap: 6px; }
   .card h3 { font-size: 15px; }
   .size { top: 14px; font-size: 11px; }
-  .heart { top: 14px; left: 14px; width: 28px; height: 28px; }
+  .heart { top: 10px; left: 10px; width: 44px; height: 44px; }
   .stamp { font-size: 15px; letter-spacing: 0.06em; padding: 3px 8px 1px 10px; }
   .stamp small { font-size: 8px; }
   .price { font-size: 15px; }
@@ -815,6 +820,8 @@ body:has(.consent) { padding-bottom: 11rem; }
 .own-listings li { display: flex; justify-content: space-between; gap: 12px; }
 .own-listings a { border-bottom: 1px solid var(--mustard); }
 .favourite-form { margin-top: 14px; display: grid; gap: 8px; justify-items: start; }
+.save-signin { min-width: 44px; min-height: 44px; }
+.heart-form { margin: 0; }
 .sell-layout > h1 { font-size: 56px; }
 
 @media (prefers-reduced-motion: reduce) {

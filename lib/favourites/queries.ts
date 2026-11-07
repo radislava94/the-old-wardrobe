@@ -2,6 +2,14 @@ import { and, desc, eq } from "drizzle-orm";
 import { getDb } from "../db/client";
 import { favourites, listings } from "../db/schema";
 
+export async function favouriteListingIds(userId: string): Promise<Set<string>> {
+  const rows = await getDb()
+    .select({ listingId: favourites.listingId })
+    .from(favourites)
+    .where(eq(favourites.userId, userId));
+  return new Set(rows.map((row) => row.listingId));
+}
+
 export async function isFavourite(userId: string, listingId: string): Promise<boolean> {
   const rows = await getDb()
     .select({ id: favourites.id })

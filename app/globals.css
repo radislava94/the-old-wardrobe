@@ -579,16 +579,20 @@ footer .brand p { margin-top: 10px; font-style: italic; opacity: 0.85; max-width
 .fee-free { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
 .fee-receive { font-size: 22px; }
 .fee-line {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: minmax(8rem, 14rem) minmax(0, 1fr);
+  gap: 8px 16px;
+  align-items: start;
   padding-top: 8px;
   border-top: 1px solid rgba(59, 47, 36, 0.12);
   font-family: var(--font-mono);
   font-size: 13px;
   letter-spacing: 0.03em;
 }
-.fee-line span:last-child { text-align: right; }
+.fee-line span:last-child { letter-spacing: 0; text-transform: none; }
+@media (max-width: 640px) {
+  .fee-line { grid-template-columns: 1fr; }
+}
 .fee-lines .hint { margin-top: 4px; }
 
 .missing { padding: 72px 0 40px; max-width: 760px; }

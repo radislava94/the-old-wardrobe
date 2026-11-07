@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
+        source: "/sitemap/blog/:country.xml",
+        destination: "/sitemap/blog/:country",
+      },
+      {
         source: "/sitemap/:country.xml",
         destination: "/sitemap/:country",
       },

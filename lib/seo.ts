@@ -153,6 +153,29 @@ export function organizationJsonLd() {
   };
 }
 
+export function articleJsonLd(options: {
+  title: string;
+  description: string;
+  path: string;
+  published: string;
+  imageUrl: string;
+  inLanguage: string;
+}) {
+  const origin = siteUrl();
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: options.title,
+    description: options.description,
+    datePublished: options.published,
+    inLanguage: options.inLanguage,
+    image: [options.imageUrl],
+    mainEntityOfPage: absoluteUrl(options.path),
+    author: { "@id": `${origin}/#organization` },
+    publisher: { "@id": `${origin}/#organization` },
+  };
+}
+
 export function breadcrumbJsonLd(
   items: { name: string; path: string }[],
 ) {

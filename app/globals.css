@@ -704,4 +704,85 @@ footer .brand p { margin-top: 10px; font-style: italic; opacity: 0.85; max-width
   .seller-hero { grid-template-columns: 1fr; }
   .seller-hero h1 { font-size: 40px; }
   .card-seller { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .journal h1 { font-size: 34px; }
+  .journal-card h2 { font-size: 24px; }
+}
+.journal { max-width: 860px; }
+.journal h1 { font-size: 52px; line-height: 1.08; margin: 12px 0 14px; }
+.journal .lead { margin-bottom: 28px; }
+.journal-date {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  margin: -6px 0 18px;
+}
+.journal-note {
+  max-width: 68ch;
+  margin: 8px 0 22px;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+.journal-list { list-style: none; display: grid; gap: 18px; }
+.journal-card {
+  background: #fbf6ea;
+  border: 1px solid rgba(59, 47, 36, 0.2);
+  box-shadow: 6px 6px 0 rgba(201, 161, 74, 0.35);
+  padding: 22px 24px 18px;
+}
+.journal-card time {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: #8d4a44;
+  text-transform: uppercase;
+}
+.journal-card h2 { font-size: 30px; line-height: 1.15; margin: 8px 0; }
+.journal-card h2 a { border-bottom: 1px solid transparent; }
+.journal-card h2 a:hover, .journal-card h2 a:focus-visible { border-bottom-color: var(--mustard); }
+.journal-card p { color: var(--ink-soft); font-style: italic; }
+.journal-more {
+  display: inline-block;
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--forest);
+  border-bottom: 2px solid var(--mustard);
+}
+.journal-prose { max-width: 68ch; }
+.journal-prose h2 { font-size: 30px; margin: 28px 0 8px; line-height: 1.2; }
+.journal-prose p { font-size: 18px; margin: 12px 0; }
+.journal-prose ul, .journal-prose ol { margin: 8px 0 16px 1.2em; font-size: 18px; }
+.journal-prose li + li { margin-top: 6px; }
+.journal-prose a { border-bottom: 1px solid var(--mustard); }
+.journal-shop { margin-top: 18px; }
+.journal-shop h2 { font-size: 32px; margin-bottom: 22px; }
+.place-nav { margin: 8px 0 34px; }
+.place-nav h2 {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.place-links { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; }
+.place-links a {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 148px;
+  background: #fbf6ea;
+  border: 1px dashed rgba(59, 47, 36, 0.4);
+  padding: 10px 14px 12px;
+}
+.place-links a span { font-size: 18px; font-weight: 600; }
+.place-links a small {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+  letter-spacing: 0.04em;
 }

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { CountryCode } from "@/lib/countries";
 import type { Dictionary } from "@/lib/i18n";
+import { blogTwinMap } from "@/lib/journal/posts";
+import { journalChrome } from "@/lib/journal/chrome";
 import { homePath, searchPath } from "@/lib/paths";
 import { CountrySwitcher } from "./country-switcher";
 import { LogoMark } from "./logo";
@@ -29,6 +31,7 @@ export function MarketHeader({
           country={country}
           label={dict.nav.main}
           browse={dict.nav.browse}
+          journal={journalChrome[country].nav}
           sell={dict.nav.sell}
           about={dict.nav.about}
         />
@@ -50,7 +53,12 @@ export function MarketHeader({
             <path d="M9 8V6a3 3 0 0 1 6 0v2" />
           </svg>
         </div>
-        <CountrySwitcher country={country} label={dict.switcherLabel} allLabel={dict.allCountries} />
+        <CountrySwitcher
+          country={country}
+          label={dict.switcherLabel}
+          allLabel={dict.allCountries}
+          blogTwins={blogTwinMap()}
+        />
       </div>
     </header>
   );

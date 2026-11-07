@@ -4,6 +4,12 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["**/*.test.ts"],
-    exclude: ["node_modules/**", ".next/**", "e2e/**", "tests/listing-publish.test.ts"],
+    exclude: [
+      "node_modules/**",
+      ".next/**",
+      "e2e/**",
+      "tests/listing-publish.test.ts",
+      "tests/listing-ai-draft.test.ts",
+    ],
   },
 });

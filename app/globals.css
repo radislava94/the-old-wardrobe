@@ -739,6 +739,15 @@ footer .brand p { margin-top: 10px; font-style: italic; opacity: 0.85; max-width
 .review-by { font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-soft); }
 .review-by a { border-bottom: 1px solid var(--mustard); }
 .review-form { margin-top: 28px; max-width: 640px; }
+.review-form select, .review-form textarea {
+  width: 100%;
+  margin-top: 6px;
+  border: 1px solid rgba(59, 47, 36, 0.35);
+  background: rgba(255, 250, 238, 0.8);
+  padding: 10px 12px;
+  font-family: var(--font-serif);
+  font-size: 17px;
+}
 .review-rule { font-style: italic; color: var(--ink-soft); margin: -6px 0 14px; }
 .review-form fieldset {
   border: 1px dashed rgba(59, 47, 36, 0.35);

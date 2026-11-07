@@ -279,9 +279,12 @@ const sq: Dictionary = {
     noReviews: "Ende pa komente",
     listings: "Shpalljet e kësaj garderobe",
     leaveTitle: "Lër një koment",
-    // TODO: "porosi të përfunduar" for a completed order — confirm against "porosi e kryer".
     leaveRule:
-      "Një koment mund ta lërë vetëm blerësi me një porosi të përfunduar te ky shitës, një koment për çdo porosi. Pagesa ende s’është hapur, ndaj formulari është i mbyllur.",
+      "Një porosi e paguar hap një vlerësim për shitësin. Një porosi e refuzuar ose e anuluar nuk e hap. Një vlerësim për porosi.",
+    notUnlocked: "Kjo porosi nuk hap vlerësim.",
+    waitingPaid: "Vlerësimi hapet kur porosia është paguar.",
+    savedReview: "Vlerësimi për këtë porosi është ruajtur.",
+    piece: "Copë",
     stars: "Vlerësimi",
     comment: "Komenti",
     commentPlaceholder: "Si shkoi blerja?",

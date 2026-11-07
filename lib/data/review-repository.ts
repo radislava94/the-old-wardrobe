@@ -3,9 +3,9 @@ import type { RatingSummary, Review } from "../types";
 /**
  * Storage seam for seller reviews.
  *
- * Write rule for a future Postgres implementation — do not relax it:
- * a review can be stored only when the buyer has a completed order
- * from that seller, and only one review is allowed per order.
+ * Write rule — do not relax it: a review can be stored only when the
+ * buyer has a paid order from that seller, and only one review is
+ * allowed per order. Refused and cancelled orders do not count.
  * Buyers rate the seller, not the marketplace.
  *
  * `areFirstParty()` stays false while the rows are sample copy.

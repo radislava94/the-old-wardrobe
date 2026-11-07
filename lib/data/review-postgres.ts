@@ -9,8 +9,8 @@ import type { ReviewRepository } from "./review-repository";
 /**
  * Postgres reviews. Seeded rows are sample copy (`first_party` false),
  * so `areFirstParty()` stays false until every stored review was
- * collected from a buyer. There is still no write path: a review may
- * be stored only for a completed order, one per order.
+ * collected from a buyer. A paid order can store one review. Refused
+ * and cancelled orders cannot. Product pages still omit aggregateRating.
  */
 export class PostgresReviewRepository implements ReviewRepository {
   async areFirstParty(): Promise<boolean> {

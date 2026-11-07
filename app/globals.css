@@ -792,7 +792,7 @@ footer .brand p { margin-top: 10px; font-style: italic; opacity: 0.85; max-width
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.08em;
-  color: var(--rose);
+  color: #8d4a44;
   text-transform: uppercase;
 }
 .journal-card h2 { font-size: 30px; line-height: 1.15; margin: 8px 0; }

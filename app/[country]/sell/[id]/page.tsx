@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { SellForm } from "@/components/sell-form";
 import { commissionConfig } from "@/lib/commission/config";
+import { feePreviewCopy } from "@/lib/commission/preview-copy";
 import { freeSalesLeftFor } from "@/lib/commission/remaining";
 import { profileForAuthUser } from "@/lib/auth/profile";
 import { getSession } from "@/lib/auth/session";
@@ -66,7 +67,7 @@ export default async function EditListingPage({
             }}
             copy={sellCopy(dict)}
             freeSalesLeft={commissionConfig.welcomeSales}
-            fees={dict.fees}
+            fees={feePreviewCopy(dict, commissionConfig.welcomeSales)}
           />
         </div>
       </section>
@@ -185,7 +186,7 @@ export default async function EditListingPage({
             },
           }}
           freeSalesLeft={freeSalesLeft}
-          fees={dict.fees}
+          fees={feePreviewCopy(dict, freeSalesLeft)}
         />
         {listing.visibility === "draft" ? null : (
           <p className="hint">

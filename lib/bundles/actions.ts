@@ -24,7 +24,9 @@ export async function addToBundle(formData: FormData) {
   const db = getDb();
   const rows = await db.select().from(listings).where(eq(listings.id, listingId));
   const listing = rows[0];
-  if (!listing || listing.sellerId === profile.id) redirect(`${path}?bundle=fields`);
+  if (!listing || listing.status === "sold" || listing.sellerId === profile.id) {
+    redirect(`${path}?bundle=fields`);
+  }
 
   const existing = await db
     .select({ id: bundles.id })

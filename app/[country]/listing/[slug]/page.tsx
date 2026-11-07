@@ -260,7 +260,7 @@ export default async function ListingPage({
                 {dict.listing.bundleAdded}
               </p>
             ) : null}
-            {viewer && seller && viewer.id !== seller.id ? (
+            {listing.status === "available" && viewer && seller && viewer.id !== seller.id ? (
               <form className="bundle-form" action={addToBundle}>
                 <input type="hidden" name="listingId" value={listing.id} />
                 <input type="hidden" name="slug" value={listing.slug} />
@@ -324,35 +324,37 @@ export default async function ListingPage({
                 </button>
               </form>
             ) : null}
-            {viewer ? (
-              <FavouriteButton
-                listingId={listing.id}
-                slug={listing.slug}
-                country={raw}
-                saved={saved}
-                save={dict.account.favourite}
-                unsave={dict.account.unfavourite}
-                note={dict.account.savedNote}
-              />
-            ) : (
-              <p>
-                <Link
-                  className="btn btn-ghost save-signin"
-                  href={`${signInPath(raw)}?next=${encodeURIComponent(listingPath(raw, listing.slug))}`}
-                >
-                  {dict.account.favourite}
-                </Link>
-              </p>
-            )}
-            {listing.status === "available" ? (
-              <ReserveButton
-                label={dict.listing.reserve}
-                note={dict.listing.reserveNote}
-                clicked={dict.listing.reserveClicked}
-              />
-            ) : (
-              <p className="hint">{dict.listing.sold}</p>
-            )}
+            <div className="detail-actions">
+              {viewer ? (
+                <FavouriteButton
+                  listingId={listing.id}
+                  slug={listing.slug}
+                  country={raw}
+                  saved={saved}
+                  save={dict.account.favourite}
+                  unsave={dict.account.unfavourite}
+                  note={dict.account.savedNote}
+                />
+              ) : (
+                <p>
+                  <Link
+                    className="btn btn-ghost save-signin"
+                    href={`${signInPath(raw)}?next=${encodeURIComponent(listingPath(raw, listing.slug))}`}
+                  >
+                    {dict.account.favourite}
+                  </Link>
+                </p>
+              )}
+              {listing.status === "available" ? (
+                <ReserveButton
+                  label={dict.listing.reserve}
+                  note={dict.listing.reserveNote}
+                  clicked={dict.listing.reserveClicked}
+                />
+              ) : (
+                <p className="hint">{dict.listing.sold}</p>
+              )}
+            </div>
           </div>
         </div>
 

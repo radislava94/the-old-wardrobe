@@ -117,7 +117,7 @@ export function ShareRow({
         <a href={whatsAppShareUrl(text)} target="_blank" rel="noopener noreferrer">
           {labels.whatsapp}
         </a>
-        <button type="button" onClick={onCopy} aria-pressed={copied}>
+        <button type="button" onClick={onCopy}>
           {copied ? labels.copied : labels.copy}
         </button>
       </div>

@@ -9,6 +9,8 @@ import { getDb } from "@/lib/db/client";
 import { orderItems, orders } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { getDictionary } from "@/lib/i18n";
+import { FeeLines } from "@/components/fee-lines";
+import { formatStoredMoney } from "@/lib/commission/format";
 import { formatMoney } from "@/lib/money";
 import { signInPath } from "@/lib/paths";
 import type { CurrencyCode } from "@/lib/types";
@@ -64,6 +66,32 @@ export default async function OrderPage({
           <strong>{dict.order.buyerPays}:</strong> {cash} {currency}
         </p>
         <p className="hint">{dict.order.noFee}</p>
+        <FeeLines
+          youReceive={
+            order.sellerId === profile.id
+              ? dict.fees.youReceive(formatStoredMoney(Number(order.sellerPayoutAmount), currency))
+              : dict.fees.sellerReceives(formatStoredMoney(Number(order.sellerPayoutAmount), currency))
+          }
+          platformFee={formatStoredMoney(Number(order.commissionAmount), currency)}
+          cap={formatStoredMoney(Number(order.capAmount), currency)}
+          courier={
+            order.shippingAmount != null && Number(order.shippingAmount) > 0
+              ? formatStoredMoney(Number(order.shippingAmount), currency)
+              : order.shippingPaidBy === "seller"
+                ? dict.fees.courierSeller
+                : dict.fees.courierBuyer
+          }
+          reason={
+            order.rateReason in dict.fees.reasons
+              ? dict.fees.reasons[order.rateReason as keyof typeof dict.fees.reasons]
+              : undefined
+          }
+          labels={{
+            platformFee: dict.fees.platformFee,
+            cap: dict.fees.cap,
+            courierCharge: dict.fees.courierCharge,
+          }}
+        />
         <p className="hint">
           {order.shippingPaidBy === "seller" ? dict.order.shippingFree : dict.order.shippingExtra}
         </p>

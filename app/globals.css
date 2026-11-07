@@ -567,6 +567,29 @@ footer .brand p { margin-top: 10px; font-style: italic; opacity: 0.85; max-width
 }
 .sell-success h2 { font-size: 28px; margin-bottom: 6px; }
 .sell-success p { font-style: italic; color: var(--ink-soft); }
+.fee-lines {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 14px 16px;
+  background: rgba(255, 250, 238, 0.75);
+  border: 1px solid rgba(59, 47, 36, 0.2);
+}
+.fee-free, .fee-receive { margin: 0; }
+.fee-free { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+.fee-receive { font-size: 22px; }
+.fee-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(59, 47, 36, 0.12);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.03em;
+}
+.fee-line span:last-child { text-align: right; }
+.fee-lines .hint { margin-top: 4px; }
 
 .missing { padding: 72px 0 40px; max-width: 760px; }
 .missing h1 { font-size: 52px; }

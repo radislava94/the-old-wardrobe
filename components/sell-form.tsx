@@ -2,6 +2,10 @@
 
 import { upload } from "@vercel/blob/client";
 import { useState } from "react";
+import { FeeLines } from "@/components/fee-lines";
+import { commissionConfig } from "@/lib/commission/config";
+import { formatStoredMoney } from "@/lib/commission/format";
+import { saleQuote } from "@/lib/commission/quote";
 import type { CountryCode } from "@/lib/countries";
 import { photoProblem } from "@/lib/listings/photo-rules";
 import {
@@ -11,7 +15,7 @@ import {
 } from "@/lib/listings/actions";
 import type { PublishResult } from "@/lib/listings/publish-types";
 import { signInPath } from "@/lib/paths";
-import type { CategoryKey } from "@/lib/types";
+import type { CategoryKey, CurrencyCode } from "@/lib/types";
 
 type Option = { value: string; label: string };
 
@@ -21,6 +25,8 @@ export function SellForm({
   initial,
   blobConfigured,
   copy,
+  freeSalesLeft,
+  fees,
 }: {
   countries: {
     code: CountryCode;
@@ -79,15 +85,45 @@ export function SellForm({
     saveDraft: string;
     errors: Record<string, string>;
   };
+  freeSalesLeft: number;
+  fees: {
+    freeLeft: (count: number) => string;
+    youReceive: (amount: string) => string;
+    enterPrice: string;
+    platformFee: string;
+    cap: string;
+    courierCharge: string;
+    courierBuyer: string;
+    courierSeller: string;
+    reasons: {
+      launch_promo: string;
+      welcome_sale: string;
+      under_threshold: string;
+      standard: string;
+    };
+  };
 }) {
   const [country, setCountry] = useState(initial.country);
   const [listingId, setListingId] = useState(initial.id ?? "");
   const [photoIds, setPhotoIds] = useState<string[]>(initial.photoIds ?? []);
+  const [price, setPrice] = useState(initial.price);
+  const [freeShipping, setFreeShipping] = useState(initial.freeShipping);
   const [preview, setPreview] = useState<string | null>(initial.photoUrl || null);
   const [clientError, setClientError] = useState<string | null>(null);
   const [failure, setFailure] = useState<PublishResult | null>(null);
   const [pending, setPending] = useState(false);
   const selected = countries.find((item) => item.code === country) ?? countries[0];
+  const currency = (selected?.currency ?? "MKD") as CurrencyCode;
+  const amount = Number(price);
+  const quoted =
+    Number.isFinite(amount) && amount > 0
+      ? saleQuote({
+          merchandiseTotal: amount,
+          currency,
+          freeSalesLeft,
+          freeShipping,
+        })
+      : null;
 
   function readInput(form: HTMLFormElement, intent: "draft" | "publish", ids: string[]) {
     const data = new FormData(form);
@@ -297,7 +333,8 @@ export function SellForm({
             min={1}
             step={1}
             inputMode="numeric"
-            defaultValue={initial.price}
+            value={price}
+            onChange={(event) => setPrice(event.target.value)}
           />
         </label>
         <label>
@@ -326,7 +363,12 @@ export function SellForm({
         />
       </label>
       <label className="choice">
-        <input type="checkbox" name="freeShipping" defaultChecked={initial.freeShipping} />
+        <input
+          type="checkbox"
+          name="freeShipping"
+          checked={freeShipping}
+          onChange={(event) => setFreeShipping(event.target.checked)}
+        />
         <span>{copy.freeShipping}</span>
         <small>{copy.freeShippingHint}</small>
       </label>
@@ -342,6 +384,25 @@ export function SellForm({
         />
         <small>{copy.freeShippingOverHint}</small>
       </label>
+      <FeeLines
+        freeLeft={fees.freeLeft(freeSalesLeft)}
+        youReceive={
+          quoted
+            ? fees.youReceive(formatStoredMoney(quoted.sellerPayoutAmount, quoted.currency))
+            : fees.enterPrice
+        }
+        platformFee={
+          quoted ? formatStoredMoney(quoted.commissionAmount, quoted.currency) : undefined
+        }
+        cap={formatStoredMoney(quoted?.capAmount ?? commissionConfig.cap[currency], currency)}
+        courier={quoted ? (freeShipping ? fees.courierSeller : fees.courierBuyer) : undefined}
+        reason={quoted ? fees.reasons[quoted.rateReason] : undefined}
+        labels={{
+          platformFee: fees.platformFee,
+          cap: fees.cap,
+          courierCharge: fees.courierCharge,
+        }}
+      />
       <label>
         <span>{copy.photo}</span>
         <input

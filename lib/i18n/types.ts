@@ -313,4 +313,22 @@ export type Dictionary = {
     contactTitle: string;
     contactBody: string;
   };
+  fees: {
+    freeLeft: (count: number) => string;
+    youReceive: (amount: string) => string;
+    sellerReceives: (amount: string) => string;
+    enterPrice: string;
+    platformFee: string;
+    cap: string;
+    courierCharge: string;
+    courierBuyer: string;
+    courierSeller: string;
+    dashboardTitle: string;
+    reasons: {
+      launch_promo: string;
+      welcome_sale: string;
+      under_threshold: string;
+      standard: string;
+    };
+  };
 };

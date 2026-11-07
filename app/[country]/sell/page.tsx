@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { SellForm } from "@/components/sell-form";
+import { commissionConfig } from "@/lib/commission/config";
+import { freeSalesLeftFor } from "@/lib/commission/remaining";
 import { categoryKeys } from "@/lib/categories";
 import { countries, countryCodes, isCountry, type CountryCode } from "@/lib/countries";
 import { getDictionary } from "@/lib/i18n";
@@ -59,6 +61,7 @@ export default async function SellPage({
   const country = countries[raw];
   const session = await getSession();
   const profile = session ? await profileForAuthUser(session.user.id) : null;
+  const freeSalesLeft = profile ? await freeSalesLeftFor(profile.id) : commissionConfig.welcomeSales;
 
   return (
     <section className="page-block">
@@ -115,6 +118,8 @@ export default async function SellPage({
               freeShippingOver: "",
             }}
             copy={sellCopy(dict)}
+            freeSalesLeft={freeSalesLeft}
+            fees={dict.fees}
           />
       </div>
     </section>

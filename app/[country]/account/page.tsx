@@ -15,6 +15,10 @@ import { bundlesForBuyer } from "@/lib/bundles/queries";
 import { removeFromBundle } from "@/lib/bundles/actions";
 import { placeOrder } from "@/lib/orders/actions";
 import { courierChoices } from "@/lib/couriers";
+import { FeeLines } from "@/components/fee-lines";
+import { formatStoredMoney } from "@/lib/commission/format";
+import { freeSalesLeftFor } from "@/lib/commission/remaining";
+import { saleQuote } from "@/lib/commission/quote";
 import { formatMoney } from "@/lib/money";
 import { toggleFavourite } from "@/lib/favourites/actions";
 import { privacyPath, sellPath, signInPath } from "@/lib/paths";
@@ -53,6 +57,8 @@ export default async function AccountPage({
   const saved = await savedListings(profile.id);
   const mine = await offersForProfile(profile.id);
   const groups = await bundlesForBuyer(profile.id);
+  const ownListings = await listingsRepo.listBySeller(profile.id);
+  const freeSalesLeft = await freeSalesLeftFor(profile.id);
 
   return (
     <section className="page-block">
@@ -280,9 +286,42 @@ export default async function AccountPage({
         </section>
 
         <section className="account-block">
+          <h2>{dict.fees.dashboardTitle}</h2>
+          <p className="fee-free">{dict.fees.freeLeft(freeSalesLeft)}</p>
+          {ownListings.map((listing) => {
+            const quoted = saleQuote({
+              merchandiseTotal: listing.priceAmount,
+              currency: listing.currency,
+              freeSalesLeft,
+              freeShipping: Boolean(listing.freeShipping),
+            });
+            return (
+              <div key={listing.id}>
+                <h3>{listing.title}</h3>
+                <FeeLines
+                  youReceive={dict.fees.youReceive(
+                    formatStoredMoney(quoted.sellerPayoutAmount, quoted.currency),
+                  )}
+                  platformFee={formatStoredMoney(quoted.commissionAmount, quoted.currency)}
+                  cap={formatStoredMoney(quoted.capAmount, quoted.currency)}
+                  courier={listing.freeShipping ? dict.fees.courierSeller : dict.fees.courierBuyer}
+                  reason={dict.fees.reasons[quoted.rateReason]}
+                  labels={{
+                    platformFee: dict.fees.platformFee,
+                    cap: dict.fees.cap,
+                    courierCharge: dict.fees.courierCharge,
+                  }}
+                />
+              </div>
+            );
+          })}
+          {ownListings.length === 0 ? <p>{dict.fees.enterPrice}</p> : null}
+        </section>
+
+        <section className="account-block">
           <h2>{dict.rating.listings}</h2>
           <ul className="own-listings">
-            {(await listingsRepo.listBySeller(profile.id)).map((listing) => (
+            {ownListings.map((listing) => (
               <li key={listing.id}>
                 {listing.visibility === "draft" ? (
                   <span>{listing.title}</span>

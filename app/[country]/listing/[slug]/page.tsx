@@ -248,8 +248,11 @@ export default async function ListingPage({
                 note={dict.account.savedNote}
               />
             ) : (
-              <p className="hint">
-                <Link href={`${signInPath(raw)}?next=${encodeURIComponent(listingPath(raw, listing.slug))}`}>
+              <p>
+                <Link
+                  className="btn btn-ghost save-signin"
+                  href={`${signInPath(raw)}?next=${encodeURIComponent(listingPath(raw, listing.slug))}`}
+                >
                   {dict.account.favourite}
                 </Link>
               </p>

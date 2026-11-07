@@ -22,7 +22,7 @@ export function FavouriteButton({
       <input type="hidden" name="listingId" value={listingId} />
       <input type="hidden" name="slug" value={slug} />
       <input type="hidden" name="country" value={country} />
-      <button type="submit" className="btn btn-ghost" aria-pressed={saved}>
+      <button type="submit" className="btn btn-ghost">
         {saved ? unsave : save}
       </button>
       <p className="hint">{note}</p>

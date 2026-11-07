@@ -105,6 +105,10 @@ export type Listing = {
   freeShipping?: boolean;
   /** Bundle amount, in `currency`, above which shipping is free. */
   freeShippingOver?: number | null;
+  /** Drafts are not public. Missing means a legacy public or sold row. */
+  visibility?: "draft" | "public" | "sold";
+  /** False for a single legacy photo. Not set until 3 ready photos are stored. */
+  photosCompliant?: boolean;
 };
 
 /** Fields a signed-in person sends when they create or edit a listing. */

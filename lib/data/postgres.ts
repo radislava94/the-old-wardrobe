@@ -1,8 +1,8 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import type { CountryCode } from "../countries";
 import { getDb } from "../db/client";
 import { toListing, toUser } from "../db/map";
-import { listings, profiles } from "../db/schema";
+import { listingPhotos, listings, profiles } from "../db/schema";
 import type { CategoryKey, Listing, ListingDraft, User } from "../types";
 import { slugifyName } from "../auth/handle";
 import { byNewest, searchListings } from "./listing-query";
@@ -18,8 +18,8 @@ export class PostgresListingRepository implements ListingRepository {
     const rows = await getDb()
       .select()
       .from(listings)
-      .where(eq(listings.country, country));
-    return rows.map(toListing).sort(byNewest);
+      .where(and(eq(listings.country, country), inArray(listings.visibility, ["public", "sold"])));
+    return decoratePublic(rows.map(toListing)).then((items) => items.sort(byNewest));
   }
 
   async listByCategory(
@@ -36,7 +36,9 @@ export class PostgresListingRepository implements ListingRepository {
       .from(listings)
       .where(and(eq(listings.country, country), eq(listings.slug, slug)));
     const row = rows[0];
-    return row ? toListing(row) : null;
+    if (!row || row.visibility === "draft") return null;
+    const [decorated] = await decoratePublic([toListing(row)]);
+    return decorated ?? null;
   }
 
   async getUser(id: string): Promise<User | null> {
@@ -74,13 +76,19 @@ export class PostgresListingRepository implements ListingRepository {
 
   async listBySeller(sellerId: string): Promise<Listing[]> {
     const rows = await getDb().select().from(listings).where(eq(listings.sellerId, sellerId));
-    return rows.map(toListing).sort(byNewest);
+    return rows
+      .map(toListing)
+      .map((listing) => (listing.visibility === "draft" ? { ...listing, photoUrl: undefined } : listing))
+      .sort(byNewest);
   }
 
   async getById(id: string): Promise<Listing | null> {
     const rows = await getDb().select().from(listings).where(eq(listings.id, id));
     const row = rows[0];
-    return row ? toListing(row) : null;
+    if (!row) return null;
+    if (row.visibility === "draft") return { ...toListing(row), photoUrl: undefined };
+    const [decorated] = await decoratePublic([toListing(row)]);
+    return decorated ?? null;
   }
 
   async createListing(sellerId: string, draft: ListingDraft): Promise<Listing> {
@@ -140,6 +148,35 @@ function rowFromDraft(id: string, slug: string, sellerId: string, draft: Listing
     freeShipping: draft.freeShipping,
     freeShippingOver: draft.freeShippingOver,
   };
+}
+
+async function decoratePublic(items: Listing[]): Promise<Listing[]> {
+  const compliant = items.filter((item) => item.photosCompliant && item.visibility !== "draft");
+  if (compliant.length === 0) return items;
+  const rows = await getDb()
+    .select()
+    .from(listingPhotos)
+    .where(
+      and(
+        inArray(
+          listingPhotos.listingId,
+          compliant.map((item) => item.id),
+        ),
+        eq(listingPhotos.status, "ready"),
+      ),
+    );
+  const urls = new Map<string, string[]>();
+  for (const row of rows) {
+    if (!row.url) continue;
+    const list = urls.get(row.listingId) ?? [];
+    list.push(row.url);
+    urls.set(row.listingId, list);
+  }
+  return items.map((item) => {
+    if (!item.photosCompliant || item.visibility === "draft") return item;
+    const ready = urls.get(item.id) ?? [];
+    return ready[0] ? { ...item, photoUrl: ready[0] } : { ...item, photoUrl: undefined };
+  });
 }
 
 async function uniqueSlug(country: CountryCode, base: string): Promise<string> {

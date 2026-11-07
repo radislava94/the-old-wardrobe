@@ -23,6 +23,7 @@ import { profileForAuthUser } from "@/lib/auth/profile";
 import { isFavourite } from "@/lib/favourites/queries";
 import { makeOffer, sendPrivateOffer } from "@/lib/offers/actions";
 import { saversOf } from "@/lib/offers/queries";
+import { OfferRecipients } from "@/components/offer-recipients";
 import { shippingLabels } from "@/lib/listings/shipping-label";
 import { emptySummary, formatRating } from "@/lib/ratings";
 import {
@@ -99,6 +100,10 @@ export default async function ListingPage({
     listingsRepo.listByCountry(raw),
     reviewsRepo.summariesFor([listing.sellerId]),
   ]);
+  const savers =
+    viewer && seller && viewer.id === seller.id && listing.status === "available"
+      ? (await saversOf(listing.id)).filter((saver) => saver.userId !== seller.id)
+      : [];
   const summary = summaries[listing.sellerId] ?? emptySummary();
   const ratingFigure = summary.count
     ? formatRating(summary.average, countries[raw].intlLocale)
@@ -242,28 +247,29 @@ export default async function ListingPage({
                 </p>
               </Link>
             ) : null}
-            {offerState === "sent" ? <p className="hint">{dict.listing.offerSent}</p> : null}
-            {viewer && seller && viewer.id === seller.id ? (
+            {offerState === "sent" ? (
+              <p className="hint" role="status">
+                {dict.listing.offerSent}
+              </p>
+            ) : null}
+            {listing.status === "available" && viewer && seller && viewer.id === seller.id ? (
               <form className="sell-form offer-form" action={sendPrivateOffer}>
                 <h2>{dict.listing.offerPrivate}</h2>
                 <p className="hint">{dict.listing.offerHint}</p>
                 <input type="hidden" name="listingId" value={listing.id} />
                 <input type="hidden" name="slug" value={listing.slug} />
                 <input type="hidden" name="country" value={raw} />
-                {(await saversOf(listing.id))
-                  .filter((saver) => saver.userId !== seller.id)
-                  .map((saver) => (
-                  <label className="choice" key={saver.userId}>
-                    <input type="checkbox" name="to" value={saver.userId} />
-                    <span>{saver.name}</span>
-                  </label>
-                ))}
-                {(await saversOf(listing.id)).filter((saver) => saver.userId !== seller.id).length ===
-                0 ? (
-                  <p>{dict.listing.offerEmpty}</p>
-                ) : null}
+                {savers.length === 0 ? <p>{dict.listing.offerEmpty}</p> : (
+                <>
+                <OfferRecipients
+                  legend={dict.listing.offerRecipients}
+                  people={savers}
+                  requiredMessage={dict.listing.offerNeedRecipient}
+                />
                 <label>
-                  <span>{dict.listing.offerAmount}</span>
+                  <span>
+                    {dict.listing.offerAmount} ({listing.currency})
+                  </span>
                   <input name="amount" type="number" min={1} step={1} required />
                 </label>
                 <label>
@@ -273,9 +279,11 @@ export default async function ListingPage({
                 <button type="submit" className="btn btn-ghost">
                   {dict.listing.offerSend}
                 </button>
+                </>
+                )}
               </form>
             ) : null}
-            {viewer && seller && viewer.id !== seller.id ? (
+            {listing.status === "available" && viewer && seller && viewer.id !== seller.id ? (
               <form className="sell-form offer-form" action={makeOffer}>
                 <h2>{dict.listing.offerTitle}</h2>
                 <p className="hint">{dict.listing.offerHint}</p>

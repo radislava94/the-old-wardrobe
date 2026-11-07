@@ -21,6 +21,7 @@ export async function offersForProfile(profileId: string) {
       amount: offers.amount,
       currency: offers.currency,
       kind: offers.kind,
+      status: offers.status,
       note: offers.note,
       createdAt: offers.createdAt,
       title: listings.title,

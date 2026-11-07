@@ -10,6 +10,7 @@ import { getDictionary } from "@/lib/i18n";
 import { listingsRepo } from "@/lib/data";
 import { savedListings } from "@/lib/favourites/queries";
 import { offersForProfile } from "@/lib/offers/queries";
+import { respondToOffer } from "@/lib/offers/actions";
 import { toggleFavourite } from "@/lib/favourites/actions";
 import { privacyPath, sellPath, signInPath } from "@/lib/paths";
 
@@ -158,10 +159,40 @@ export default async function AccountPage({
           <ul className="own-listings">
             {mine.map((offer) => (
               <li key={offer.id}>
-                <Link href={`/${offer.country}/listing/${offer.slug}`}>
-                  {offer.title} · {offer.amount} {offer.currency}
-                </Link>
-                <span>{offer.kind === "seller" ? dict.listing.offerPrivate : dict.listing.offerTitle}</span>
+                <span>
+                  <Link href={`/${offer.country}/listing/${offer.slug}`}>
+                    {offer.title} · {offer.amount} {offer.currency}
+                  </Link>
+                  <p className="hint">
+                    {offer.status === "accepted"
+                      ? dict.listing.offerAccepted
+                      : offer.status === "declined"
+                        ? dict.listing.offerDeclined
+                        : offer.kind === "seller"
+                          ? dict.listing.offerPrivate
+                          : dict.listing.offerTitle}
+                  </p>
+                </span>
+                {offer.kind === "buyer" && offer.toUserId === profile.id && offer.status === "pending" ? (
+                  <span className="offer-actions">
+                    <form action={respondToOffer}>
+                      <input type="hidden" name="offerId" value={offer.id} />
+                      <input type="hidden" name="country" value={raw} />
+                      <input type="hidden" name="decision" value="accepted" />
+                      <button type="submit" className="btn btn-ghost">
+                        {dict.listing.offerAccept}
+                      </button>
+                    </form>
+                    <form action={respondToOffer}>
+                      <input type="hidden" name="offerId" value={offer.id} />
+                      <input type="hidden" name="country" value={raw} />
+                      <input type="hidden" name="decision" value="declined" />
+                      <button type="submit" className="btn btn-ghost">
+                        {dict.listing.offerDecline}
+                      </button>
+                    </form>
+                  </span>
+                ) : null}
               </li>
             ))}
           </ul>

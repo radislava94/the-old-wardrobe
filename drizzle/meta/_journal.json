@@ -43,6 +43,13 @@
       "when": 1794300259334,
       "tag": "0005_offers",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794300277543,
+      "tag": "0006_offer_response",
+      "breakpoints": true
     }
   ]
 }

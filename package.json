@@ -8,10 +8,11 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run && npm run test:publish && npm run test:ai",
+    "test": "vitest run && npm run test:publish && npm run test:ai && npm run test:moderation",
     "test:e2e": "playwright test",
     "test:publish": "node --import tsx --test tests/listing-publish.test.ts",
     "test:ai": "node --import tsx --test tests/listing-ai-draft.test.ts",
+    "test:moderation": "node --import tsx --test tests/moderation.test.ts",
     "db:migrate": "tsx scripts/db-migrate.ts",
     "db:seed": "tsx scripts/db-seed.ts",
     "db:setup": "tsx scripts/db-migrate.ts && tsx scripts/db-seed.ts"

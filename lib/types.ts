@@ -109,6 +109,8 @@ export type Listing = {
   visibility?: "draft" | "public" | "sold";
   /** False for a single legacy photo. Not set until 3 ready photos are stored. */
   photosCompliant?: boolean;
+  /** Separate from visibility. Missing means clear. */
+  moderation?: "clear" | "queued" | "kept" | "hidden";
 };
 
 /** Fields a signed-in person sends when they create or edit a listing. */

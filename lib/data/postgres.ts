@@ -1,4 +1,4 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, ne } from "drizzle-orm";
 import type { CountryCode } from "../countries";
 import { getDb } from "../db/client";
 import { toListing, toUser } from "../db/map";
@@ -18,7 +18,13 @@ export class PostgresListingRepository implements ListingRepository {
     const rows = await getDb()
       .select()
       .from(listings)
-      .where(and(eq(listings.country, country), inArray(listings.visibility, ["public", "sold"])));
+      .where(
+        and(
+          eq(listings.country, country),
+          inArray(listings.visibility, ["public", "sold"]),
+          ne(listings.moderation, "hidden"),
+        ),
+      );
     return decoratePublic(rows.map(toListing)).then((items) => items.sort(byNewest));
   }
 
@@ -36,7 +42,7 @@ export class PostgresListingRepository implements ListingRepository {
       .from(listings)
       .where(and(eq(listings.country, country), eq(listings.slug, slug)));
     const row = rows[0];
-    if (!row || row.visibility === "draft") return null;
+    if (!row || row.visibility === "draft" || row.moderation === "hidden") return null;
     const [decorated] = await decoratePublic([toListing(row)]);
     return decorated ?? null;
   }

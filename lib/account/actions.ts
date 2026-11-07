@@ -10,6 +10,7 @@ import { getSession } from "../auth/session";
 import { isCountry, type CountryCode } from "../countries";
 import { getDb } from "../db/client";
 import { profiles } from "../db/schema";
+import { profileFields } from "../moderation/moderation";
 import { accountPath } from "../paths";
 
 export async function updateProfile(formData: FormData) {
@@ -21,7 +22,11 @@ export async function updateProfile(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const city = String(formData.get("city") ?? "").trim();
   const bio = String(formData.get("bio") ?? "").trim();
-  const sellerKind = formData.get("sellerKind") === "business" ? "business" : "private";
+  const sellerKind = profileFields({
+    sellerKind: String(formData.get("sellerKind") ?? ""),
+    admin: formData.get("admin"),
+    role: formData.get("role"),
+  }).sellerKind;
   const phoneVerified = formData.get("phoneVerified") === "on";
   if (name.length < 1 || name.length > 80 || city.length > 80 || bio.length > 600) {
     redirect(`${accountPath(current)}?error=fields`);

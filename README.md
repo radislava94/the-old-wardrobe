@@ -20,6 +20,26 @@ npm run build
 npm start
 ```
 
+## Checks
+
+```bash
+npm run typecheck
+npm run lint
+npm test
+npm run build
+npm run test:e2e
+```
+
+`npm test` runs the Vitest tests for the placeholder exchange rates and for currency formatting. `npm run test:e2e` is a Playwright smoke of `/mk`, `/bg`, `/sr-rs`, and `/sq-al`. It starts the production server, so build first.
+
+Playwright launches the Chromium installed by `npx playwright install chromium`. GitHub Actions installs that browser (and its system libraries) and does not need Chrome to be present on the runner. To use a Chrome binary already on the machine instead, set `CHROME_PATH` to it:
+
+```bash
+CHROME_PATH=/usr/bin/google-chrome npm run test:e2e
+```
+
+`CHROME_PATH` is optional. When it is unset, Playwright uses its own Chromium.
+
 Set `NEXT_PUBLIC_SITE_URL` to the public origin, with no trailing slash, before deploy. Canonical URLs, hreflang, sitemaps, Open Graph and JSON-LD all use it. On Vercel, a production deployment without that variable falls back to `VERCEL_PROJECT_PRODUCTION_URL`, and any other deployment uses `VERCEL_URL`.
 
 ## Routes

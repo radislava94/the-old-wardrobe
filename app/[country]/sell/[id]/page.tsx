@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { SellForm } from "@/components/sell-form";
+import { commissionConfig } from "@/lib/commission/config";
+import { freeSalesLeftFor } from "@/lib/commission/remaining";
 import { profileForAuthUser } from "@/lib/auth/profile";
 import { getSession } from "@/lib/auth/session";
 import { categoryKeys } from "@/lib/categories";
@@ -63,6 +65,8 @@ export default async function EditListingPage({
               freeShippingOver: "",
             }}
             copy={sellCopy(dict)}
+            freeSalesLeft={commissionConfig.welcomeSales}
+            fees={dict.fees}
           />
         </div>
       </section>
@@ -74,6 +78,7 @@ export default async function EditListingPage({
   const listing = await listingsRepo.getById(id);
   if (!listing || !profile || listing.sellerId !== profile.id) notFound();
   const dict = getDictionary(raw);
+  const freeSalesLeft = await freeSalesLeftFor(profile.id);
 
   return (
     <section className="page-block">
@@ -179,6 +184,8 @@ export default async function EditListingPage({
               forbidden: dict.sell.signIn,
             },
           }}
+          freeSalesLeft={freeSalesLeft}
+          fees={dict.fees}
         />
         {listing.visibility === "draft" ? null : (
           <p className="hint">

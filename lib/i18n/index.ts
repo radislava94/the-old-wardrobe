@@ -6,9 +6,9 @@ import sr from "./sr";
 import type { Dictionary } from "./types";
 
 /**
- * Shipping thresholds in the top bar are illustrations of the mockup's
- * "free over €60" line, converted roughly with the placeholder rates.
- * They are not a live delivery policy.
+ * The top bar is the same three facts in every country: sellers have
+ * buyer ratings, the buyer pays the courier when the parcel arrives,
+ * and a listing can be reported.
  */
 const dictionaries: Record<CountryCode, Dictionary> = {
   mk,

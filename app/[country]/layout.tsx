@@ -51,6 +51,7 @@ export default async function CountryLayout({
         <a className="skip" href="#main">
           {dict.skip}
         </a>
+        <div className="topbar">{dict.topbar}</div>
         <MarketHeader
           country={raw}
           dict={dict}

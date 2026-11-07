@@ -41,6 +41,8 @@ const sq: Dictionary = {
     remit: "Korrieri ia çon paratë shitësit. Platforma e faturon komisionin një herë në muaj, vetëm për porositë e paguara.",
     bundlePlace: "Porosit këtë grup me pagesë te korrieri",
   },
+  topbar:
+    "✦ Shitësit kanë vlerësime nga blerësit · Blerësi i paguan korrierit kur paketa arrin · Shpallja mund të raportohet ✦",
   nav: {
     browse: "Shfleto",
     sell: "Shit",
@@ -372,6 +374,19 @@ const sq: Dictionary = {
       "Mund t’i shkarkoni të dhënat, t’i ndreqni te faqja e llogarisë dhe ta fshini llogarinë. Fshirja heq llogarinë, shpalljet, komentet që keni shkruar dhe komentet te profili juaj.",
     contactTitle: "Kontakt",
     contactBody: "Për të dhënat shkruani te",
+  },
+  report: {
+    title: "Raporto shpalljen",
+    reason: "Arsyeja",
+    notAsDescribed: "Nuk është si në foto",
+    prohibited: "Nuk lejohet",
+    other: "Tjetër",
+    note: "Shënim",
+    notePlaceholder: "Çfarë nuk shkon?",
+    submit: "Dërgo raportin",
+    stored: "Raporti u ruajt.",
+    already: "E ke raportuar këtë copë.",
+    signIn: "Hyr që ta dërgosh raportin.",
   },
   fees: {
     freeLeft: (count) =>

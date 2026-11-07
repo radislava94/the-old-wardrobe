@@ -3,7 +3,7 @@ import { getSession } from "@/lib/auth/session";
 import { profileForAuthUser } from "@/lib/auth/profile";
 import { getDb } from "@/lib/db/client";
 import { selectListingRows } from "@/lib/data/postgres";
-import { account, favourites, listings, reviews, session } from "@/lib/db/schema";
+import { account, favourites, listingReports, listings, reviews, session } from "@/lib/db/schema";
 
 export const runtime = "nodejs";
 
@@ -55,6 +55,17 @@ export async function GET() {
     sessions,
     listings: ownedListings,
     reviews: relatedReviews,
+    reports: profile
+      ? await db
+          .select({
+            listingId: listingReports.listingId,
+            reason: listingReports.reason,
+            note: listingReports.note,
+            createdAt: listingReports.createdAt,
+          })
+          .from(listingReports)
+          .where(eq(listingReports.reporterId, profile.id))
+      : [],
     saved: profile
       ? await db
           .select({

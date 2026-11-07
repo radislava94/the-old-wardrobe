@@ -41,6 +41,8 @@ const sr: Dictionary = {
     remit: "Kurir nosi novac prodavcu. Prodavnica fakturiše proviziju jednom mesečno, samo za plaćene porudžbine.",
     bundlePlace: "Naruči ovu grupu uz plaćanje kuriru",
   },
+  topbar:
+    "✦ Prodavci imaju ocene kupaca · Kupac plaća kuriru kad paket stigne · Oglas može da se prijavi ✦",
   nav: {
     browse: "Pregledaj",
     sell: "Prodaj",
@@ -378,6 +380,19 @@ const sr: Dictionary = {
       "Možete da preuzmete podatke, da ih ispravite na stranici naloga i da obrišete nalog. Brisanje sklanja nalog, oglase, utiske koje ste napisali i utiske na vašem profilu.",
     contactTitle: "Kontakt",
     contactBody: "Za podatke pišite na",
+  },
+  report: {
+    title: "Prijavi oglas",
+    reason: "Razlog",
+    notAsDescribed: "Nije kao na slici",
+    prohibited: "Nije dozvoljeno",
+    other: "Drugo",
+    note: "Beleška",
+    notePlaceholder: "Šta nije u redu?",
+    submit: "Pošalji prijavu",
+    stored: "Prijava je sačuvana.",
+    already: "Već si prijavio ovaj komad.",
+    signIn: "Prijavi se da pošalješ prijavu.",
   },
   fees: {
     freeLeft: (count) =>

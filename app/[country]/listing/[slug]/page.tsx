@@ -6,6 +6,7 @@ import { Avatar } from "@/components/avatar";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { JsonLd } from "@/components/json-ld";
 import { ListingCard } from "@/components/listing-card";
+import { ListingReport } from "@/components/listing-report";
 import { ReserveButton } from "@/components/reserve-button";
 import { ShareRow } from "@/components/share-row";
 import { Stars } from "@/components/stars";
@@ -86,7 +87,7 @@ export default async function ListingPage({
   searchParams,
 }: {
   params: Promise<{ country: string; slug: string }>;
-  searchParams: Promise<{ offer?: string; bundle?: string; order?: string }>;
+  searchParams: Promise<{ offer?: string; bundle?: string; order?: string; report?: string }>;
 }) {
   const { country: raw, slug } = await params;
   const query = await searchParams;
@@ -388,6 +389,18 @@ export default async function ListingPage({
               ) : (
                 <p className="hint">{dict.listing.sold}</p>
               )}
+              <ListingReport
+                listingId={listing.id}
+                slug={listing.slug}
+                country={raw}
+                signedIn={Boolean(viewer)}
+                status={
+                  query.report === "stored" || query.report === "already" || query.report === "fields"
+                    ? query.report
+                    : null
+                }
+                copy={dict.report}
+              />
             </div>
           </div>
         </div>

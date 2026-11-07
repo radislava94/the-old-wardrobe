@@ -33,8 +33,14 @@ Set `NEXT_PUBLIC_SITE_URL` to the public origin, with no trailing slash, before 
 | `/{country}/seller/{handle}` | Seller profile: rating, listings, reviews |
 | `/{country}/sell` | Sell form. Nothing is stored |
 | `/{country}/search?q=` | Search. `noindex` |
+| `/{country}/blog` | Journal index |
+| `/{country}/blog/{slug}` | Journal article. The slug is the MDX filename |
 
-`listing`, `sell` and `search` are reserved segments, not category slugs. The header switcher keeps the same kind of page when the country changes. A listing has no twin in another country, so the switcher goes to that country's home.
+`listing`, `sell`, `search` and `blog` are reserved segments, not category slugs. The header switcher keeps the same kind of page when the country changes. A listing has no twin in another country, so the switcher goes to that country's home. A journal article switches to the same topic in the other country. If that topic does not exist there, the switch opens that country's journal index and the control says so.
+
+## Journal
+
+Posts are MDX files under `content/blog/{mk|bg|sr-rs|sq-al}/{slug}.mdx`. Frontmatter: `title`, `description`, `published` (`YYYY-MM-DD`; quote a title that contains a colon), `topic`, `categories`, and `cities`. Reuse `topic` only for the same subject in another language. hreflang links only those twins. The body is written in that country's language. `npm run build` checks the frontmatter. Open Graph images are drawn from the title. Titles, care steps, and wording still need a native reader. City landing URLs are not on this branch, so article links point at the category page.
 
 ## Structure
 
@@ -78,7 +84,7 @@ JSON-LD:
 - `Product` + `Offer` on listings, with `priceCurrency` in the local currency and `availability` of `InStock` or `SoldOut`. Seller reviews are not added as `aggregateRating` on the product
 - `Person` on seller profiles. `aggregateRating` is included only when `reviewsRepo.areFirstParty()` is true, which matches Google's rule that review stars in structured data come from ratings the site collected itself. The sample copy leaves it out
 
-`/sitemap.xml` is a sitemap index. `/sitemap/mk.xml`, `/sitemap/bg.xml`, `/sitemap/sr-rs.xml` and `/sitemap/sq-al.xml` list that country's URLs. Sold listings are included. Search URLs are left out and disallowed in `robots.txt`.
+`/sitemap.xml` is a sitemap index. `/sitemap/mk.xml`, `/sitemap/bg.xml`, `/sitemap/sr-rs.xml` and `/sitemap/sq-al.xml` list that country's URLs. Sold listings are included. Search URLs are left out and disallowed in `robots.txt`. The journal is listed separately in `/sitemap/blog/mk.xml`, `/sitemap/blog/bg.xml`, `/sitemap/blog/sr-rs.xml` and `/sitemap/blog/sq-al.xml`.
 
 ## Deploy
 

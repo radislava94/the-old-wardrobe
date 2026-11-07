@@ -2,7 +2,8 @@ import Link from "next/link";
 import { categoryKeys } from "@/lib/categories";
 import type { CountryCode } from "@/lib/countries";
 import type { Dictionary } from "@/lib/i18n";
-import { categoryPath, homePath, searchPath, sellPath } from "@/lib/paths";
+import { journalChrome } from "@/lib/journal/chrome";
+import { blogIndexPath, categoryPath, homePath, searchPath, sellPath } from "@/lib/paths";
 import { CONTACT_EMAIL } from "@/lib/site";
 import { LetterForm } from "./letter-form";
 
@@ -26,6 +27,9 @@ export function MarketFooter({
             <ul>
               <li>
                 <Link href={searchPath(country)}>{dict.footer.newArrivals}</Link>
+              </li>
+              <li>
+                <Link href={blogIndexPath(country)}>{journalChrome[country].nav}</Link>
               </li>
               {categoryKeys.map((key) => (
                 <li key={key}>

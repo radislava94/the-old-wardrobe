@@ -24,6 +24,7 @@ import {
 } from "./ai-draft";
 import { callDescriptionModel } from "./ai-gateway";
 import type { PublishResult, SaveListingInput } from "./publish-types";
+import { noteListingForReview } from "../moderation/store";
 
 function store() {
   return createDbPublishStore();
@@ -91,6 +92,13 @@ export async function saveListing(input: SaveListingInput): Promise<PublishResul
         } catch (error) {
           console.error(error);
         }
+      }
+    }
+    if (result.ok) {
+      try {
+        await noteListingForReview(result.listing.id);
+      } catch (error) {
+        console.error(error);
       }
     }
     return result;

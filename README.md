@@ -72,6 +72,7 @@ Every variable the product knows about, and the milestone that needs it. Copy [`
 | `BLOB_READ_WRITE_TOKEN` | sell flow | Vercel Blob for listing photos. The browser uploads to a server-issued pathname, then the server reads the stored object. Without it, publish returns an error and keeps the form. There is no filesystem fallback. |
 | `RESEND_API_KEY` | auth | Sends the email-verification message. Without this and `EMAIL_FROM`, email sign-up stays unavailable and no account is created. |
 | `EMAIL_FROM` | auth | From address for that message, for example `The Old Wardrobe <hello@theoldwardrobe.example>`. |
+| `ADMIN_USER_IDS` | admin queue | Comma-separated profile ids allowed to decide the moderation queue. Empty means there are no admins. A seller cannot grant this. |
 | `AI_DRAFT` | AI draft | Set to `on` only to allow a description draft. Unset or `off` keeps the form manual. |
 | `AI_GATEWAY_API_KEY` | AI draft | Gateway key. The draft stays off without this and without `AI_DRAFT=on`. |
 

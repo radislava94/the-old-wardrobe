@@ -1,4 +1,4 @@
-import { and, eq, inArray, type SQL } from "drizzle-orm";
+import { and, eq, inArray, ne, type SQL } from "drizzle-orm";
 import type { CountryCode } from "../countries";
 import { getDb } from "../db/client";
 import { toListing, toUser } from "../db/map";
@@ -33,6 +33,7 @@ export class PostgresListingRepository implements ListingRepository {
       and(
         eq(listings.country, country),
         schema.visibility ? inArray(listings.visibility, ["public", "sold"]) : undefined,
+        schema.visibility ? ne(listings.moderation, "hidden") : undefined,
       ),
     );
     return decoratePublic(rows.map(toListing)).then((items) => items.sort(byNewest));
@@ -51,7 +52,7 @@ export class PostgresListingRepository implements ListingRepository {
       and(eq(listings.country, country), eq(listings.slug, slug)),
     );
     const row = rows[0];
-    if (!row || row.visibility === "draft") return null;
+    if (!row || row.visibility === "draft" || row.moderation === "hidden") return null;
     const [decorated] = await decoratePublic([toListing(row)]);
     return decorated ?? null;
   }
@@ -167,15 +168,19 @@ const legacyListingColumns = {
 
 type ListingRow = typeof listings.$inferSelect;
 
-type SelectedListing = Omit<ListingRow, "visibility" | "photosCompliant"> & {
+type SelectedListing = Omit<
+  ListingRow,
+  "visibility" | "photosCompliant" | "moderation" | "moderationDecidedBy" | "moderationDecidedAt"
+> & {
   visibility?: ListingRow["visibility"] | null;
   photosCompliant?: ListingRow["photosCompliant"] | null;
+  moderation?: ListingRow["moderation"] | null;
 };
 
 function selectionFor(schema: PublishSchema) {
   return {
     ...legacyListingColumns,
-    ...(schema.visibility ? { visibility: listings.visibility } : {}),
+    ...(schema.visibility ? { visibility: listings.visibility, moderation: listings.moderation } : {}),
     ...(schema.photosCompliant ? { photosCompliant: listings.photosCompliant } : {}),
   };
 }
@@ -191,6 +196,12 @@ function completeRow(row: SelectedListing, schema: PublishSchema): ListingRow {
     ...row,
     visibility,
     photosCompliant: schema.photosCompliant && schema.listingPhotos ? Boolean(row.photosCompliant) : false,
+    moderation:
+      row.moderation === "queued" || row.moderation === "kept" || row.moderation === "hidden"
+        ? row.moderation
+        : "clear",
+    moderationDecidedBy: null,
+    moderationDecidedAt: null,
   };
 }
 

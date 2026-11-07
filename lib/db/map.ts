@@ -106,6 +106,10 @@ export function toListing(row: typeof listings.$inferSelect): Listing {
     createdAt: row.createdAt,
     visibility: row.visibility === "draft" || row.visibility === "sold" ? row.visibility : "public",
     photosCompliant: row.photosCompliant,
+    moderation:
+      row.moderation === "queued" || row.moderation === "kept" || row.moderation === "hidden"
+        ? row.moderation
+        : "clear",
     ...(row.brand ? { brand: row.brand } : {}),
     ...(row.photosCompliant ? {} : row.photoUrl ? { photoUrl: row.photoUrl } : {}),
     freeShipping: row.freeShipping,

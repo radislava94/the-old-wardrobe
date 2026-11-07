@@ -84,6 +84,7 @@ export default async function SellPage({
           <SellForm
             action={saveListing}
             blobConfigured={Boolean(process.env.BLOB_READ_WRITE_TOKEN)}
+            production={process.env.VERCEL_ENV === "production"}
             error={error}
             countries={countryCodes.map((code) => ({
               code,
@@ -139,6 +140,7 @@ function sellCopy(dict: ReturnType<typeof getDictionary>) {
     photo: dict.sell.photo,
     photoHint: dict.sell.photoHint,
     photoLocal: dict.sell.photoLocal,
+    photoBlob: dict.sell.photoBlob,
     submit: dict.sell.submit,
     brand: dict.sell.brand,
     condition: dict.sell.condition,
@@ -159,8 +161,9 @@ function sellCopy(dict: ReturnType<typeof getDictionary>) {
     errors: {
       fields: dict.sell.photoMissing,
       photo: dict.sell.photoMissing,
-      "photo-type": dict.sell.photoMissing,
-      "photo-size": dict.sell.photoMissing,
+      "photo-type": dict.sell.photoType,
+      "photo-size": dict.sell.photoSize,
+      "photo-blob": dict.sell.photoBlob,
       forbidden: dict.sell.signIn,
     },
   };

@@ -197,7 +197,10 @@ const sr: Dictionary = {
     freeShippingOverHint:
       "Opciono, za paket. Ostavite prazno ako to ne nudite. Iznos je u valuti oglasa.",
     photoMissing: "Treba fotografija.",
-    photoLocal: "Fotografija se čuva na ovom serveru. Vercel Blob se koristi kad postoji ključ.",
+    photoType: "Fotografija mora biti JPG, PNG, WEBP, GIF ili AVIF.",
+    photoSize: "Fotografija mora biti manja od 5 MB.",
+    photoBlob: "U produkciji fotografija ide na Vercel Blob. Ključ nije postavljen.",
+    photoLocal: "Bez ključa za Blob fotografija se smanjuje i čuva na ovom računaru. U produkciji to ne važi.",
     signIn: "Prijavite se da sačuvate oglas.",
     sellerKind: "Kakav ste prodavac",
     sellerPrivate: "Privatan",

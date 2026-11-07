@@ -12,7 +12,7 @@ import { profiles } from "../db/schema";
 import { categoryKeys } from "../categories";
 import { listingPath, sellPath, signInPath } from "../paths";
 import type { CategoryKey, ListingDraft } from "../types";
-import { storeListingPhoto } from "./photos";
+import { isStoredPhotoUrl, storeLocalListingPhoto } from "./photos";
 
 function fail(country: CountryCode, id: string | null, code: string): never {
   const path = id ? `${sellPath(country)}/${id}` : sellPath(country);
@@ -65,17 +65,23 @@ export async function saveListing(formData: FormData) {
     .set({ country, city: profile.city || city, sellerKind, handle })
     .where(eq(profiles.id, profile.id));
 
-  let photoUrl = String(formData.get("existingPhoto") ?? "").trim() || null;
+  const uploaded = String(formData.get("uploadedPhoto") ?? "").trim();
+  let photoUrl = uploaded || String(formData.get("existingPhoto") ?? "").trim() || null;
   const file = formData.get("photo");
-  if (file instanceof File && file.size > 0) {
+  if (!uploaded && file instanceof File && file.size > 0) {
     try {
-      photoUrl = await storeListingPhoto(file);
+      photoUrl = await storeLocalListingPhoto(file);
     } catch (error) {
       const code = error instanceof Error ? error.message : "photo";
-      fail(country, id, code === "photo-type" || code === "photo-size" ? code : "photo");
+      fail(
+        country,
+        id,
+        code === "photo-type" || code === "photo-size" || code === "photo-blob" ? code : "photo",
+      );
     }
   }
   if (!photoUrl) fail(country, id, "photo");
+  if (!isStoredPhotoUrl(photoUrl)) fail(country, id, "photo-blob");
 
   const draft: ListingDraft = {
     country,

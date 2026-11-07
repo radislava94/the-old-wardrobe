@@ -1,7 +1,9 @@
 "use client";
 
+import { upload } from "@vercel/blob/client";
 import { useState } from "react";
 import type { CountryCode } from "@/lib/countries";
+import { LOCAL_PHOTO_BYTES, photoProblem } from "@/lib/listings/photo-rules";
 import type { CategoryKey } from "@/lib/types";
 
 type Option = { value: string; label: string };
@@ -12,6 +14,7 @@ export function SellForm({
   categories,
   initial,
   blobConfigured,
+  production,
   error,
   copy,
 }: {
@@ -40,6 +43,7 @@ export function SellForm({
     freeShippingOver: string;
   };
   blobConfigured: boolean;
+  production: boolean;
   error: string | null;
   copy: {
     name: string;
@@ -54,6 +58,7 @@ export function SellForm({
     photo: string;
     photoHint: string;
     photoLocal: string;
+    photoBlob: string;
     submit: string;
     brand: string;
     condition: string;
@@ -72,10 +77,57 @@ export function SellForm({
 }) {
   const [country, setCountry] = useState(initial.country);
   const [preview, setPreview] = useState<string | null>(initial.photoUrl || null);
+  const [clientError, setClientError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
   const selected = countries.find((item) => item.code === country) ?? countries[0];
+  const shownError = clientError ?? error;
+
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setClientError(null);
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const file = data.get("photo");
+    data.delete("photo");
+    if (file instanceof File && file.size > 0) {
+      const problem = photoProblem(file);
+      if (problem) {
+        setClientError(problem);
+        return;
+      }
+      if (blobConfigured) {
+        setPending(true);
+        try {
+          const blob = await upload(file.name, file, {
+            access: "public",
+            handleUploadUrl: "/api/listing-photo",
+          });
+          data.set("uploadedPhoto", blob.url);
+        } catch {
+          setClientError("photo");
+          setPending(false);
+          return;
+        }
+      } else if (production) {
+        setClientError("photo-blob");
+        return;
+      } else {
+        setPending(true);
+        try {
+          data.set("photo", await compressForLocal(file));
+        } catch {
+          setClientError("photo-size");
+          setPending(false);
+          return;
+        }
+      }
+    }
+    setPending(true);
+    await action(data);
+  }
 
   return (
-    <form className="sell-form" action={action}>
+    <form className="sell-form" onSubmit={onSubmit}>
       {initial.id ? <input type="hidden" name="id" value={initial.id} /> : null}
       {initial.photoUrl ? <input type="hidden" name="existingPhoto" value={initial.photoUrl} /> : null}
       <fieldset className="choice-set">
@@ -233,30 +285,68 @@ export function SellForm({
         <input
           name="photo"
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
           required={!initial.photoUrl}
           onChange={(event) => {
             const file = event.target.files?.[0];
+            setClientError(file ? photoProblem(file) : null);
             setPreview((current) => {
               if (current?.startsWith("blob:")) URL.revokeObjectURL(current);
               return file ? URL.createObjectURL(file) : initial.photoUrl || null;
             });
           }}
         />
-        <small>{blobConfigured ? copy.photoHint : copy.photoLocal}</small>
+        <small>
+          {production && !blobConfigured
+            ? copy.photoBlob
+            : blobConfigured
+              ? copy.photoHint
+              : copy.photoLocal}
+        </small>
       </label>
       {preview ? (
         // eslint-disable-next-line @next/next/no-img-element -- local preview, not a stored image
         <img className="sell-preview" src={preview} alt="" />
       ) : null}
-      {error ? (
+      {shownError ? (
         <p className="form-error" role="alert">
-          {copy.errors[error] ?? copy.errors.fields}
+          {copy.errors[shownError] ?? copy.errors.photo}
         </p>
       ) : null}
-      <button type="submit" className="btn btn-primary">
+      <button type="submit" className="btn btn-primary" disabled={pending}>
         {copy.submit}
       </button>
     </form>
   );
+}
+
+async function compressForLocal(file: File): Promise<File> {
+  const bitmap = await createImageBitmap(file);
+  const maxEdge = 1600;
+  const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("photo-size");
+  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  let quality = 0.82;
+  let blob = await canvasToJpeg(canvas, quality);
+  while (blob.size > LOCAL_PHOTO_BYTES && quality > 0.4) {
+    quality -= 0.12;
+    blob = await canvasToJpeg(canvas, quality);
+  }
+  if (blob.size > LOCAL_PHOTO_BYTES) throw new Error("photo-size");
+  return new File([blob], "photo.jpg", { type: "image/jpeg" });
+}
+
+function canvasToJpeg(canvas: HTMLCanvasElement, quality: number): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => (blob ? resolve(blob) : reject(new Error("photo-type"))),
+      "image/jpeg",
+      quality,
+    );
+  });
 }

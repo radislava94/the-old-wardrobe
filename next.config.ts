@@ -14,6 +14,9 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     globalNotFound: true,
+    serverActions: {
+      bodySizeLimit: "2mb",
+    },
   },
   async rewrites() {
     return [

@@ -149,6 +149,9 @@ export type Dictionary = {
     freeShippingOver: string;
     freeShippingOverHint: string;
     photoMissing: string;
+    photoType: string;
+    photoSize: string;
+    photoBlob: string;
     photoLocal: string;
     signIn: string;
     sellerKind: string;

@@ -1,35 +1,44 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { LOCAL_PHOTO_BYTES, photoProblem } from "./photo-rules";
 
-const MAX_BYTES = 5 * 1024 * 1024;
+export function blobConfigured(): boolean {
+  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+}
+
+export function productionPhotoStore(): boolean {
+  return process.env.VERCEL_ENV === "production";
+}
 
 /**
- * Vercel Blob when BLOB_READ_WRITE_TOKEN is set.
- * Otherwise the file is written under public/uploads, which is fine locally
- * and is not durable on Vercel.
+ * Local development only, for a file the browser already compressed.
+ * Production uploads go straight to Vercel Blob and never reach this function.
  */
-export async function storeListingPhoto(file: File): Promise<string> {
-  if (!file.type.startsWith("image/")) {
-    throw new Error("photo-type");
+export async function storeLocalListingPhoto(file: File): Promise<string> {
+  if (productionPhotoStore()) {
+    throw new Error("photo-blob");
   }
-  if (file.size <= 0 || file.size > MAX_BYTES) {
-    throw new Error("photo-size");
-  }
+  const problem = photoProblem(file);
+  if (problem) throw new Error(problem);
+  if (file.size > LOCAL_PHOTO_BYTES) throw new Error("photo-size");
+
   const bytes = Buffer.from(await file.arrayBuffer());
-  const safe = file.name.replace(/[^a-zA-Z0-9.]+/g, "-").replace(/^-|-$/g, "").slice(-48);
-  const name = `${crypto.randomUUID()}-${safe || "photo.jpg"}`;
-
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
-    const { put } = await import("@vercel/blob");
-    const blob = await put(`listings/${name}`, bytes, {
-      access: "public",
-      contentType: file.type,
-    });
-    return blob.url;
-  }
-
+  const name = `${crypto.randomUUID()}.jpg`;
   const dir = path.join(process.cwd(), "public", "uploads");
   await mkdir(dir, { recursive: true });
   await writeFile(path.join(dir, name), bytes);
   return `/uploads/${name}`;
+}
+
+export function isStoredPhotoUrl(url: string): boolean {
+  if (url.startsWith("/uploads/") && !productionPhotoStore()) return true;
+  try {
+    const parsed = new URL(url);
+    return (
+      parsed.protocol === "https:" &&
+      parsed.hostname.endsWith(".public.blob.vercel-storage.com")
+    );
+  } catch {
+    return false;
+  }
 }

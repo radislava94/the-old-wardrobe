@@ -197,7 +197,10 @@ const sq: Dictionary = {
     freeShippingOverHint:
       "Me dëshirë, për një paketë. Lëreni bosh nëse nuk e ofroni. Shuma është në monedhën e shpalljes.",
     photoMissing: "Duhet një fotografi.",
-    photoLocal: "Fotografia ruhet në këtë server. Vercel Blob përdoret kur ka çelës.",
+    photoType: "Fotografia duhet të jetë JPG, PNG, WEBP, GIF ose AVIF.",
+    photoSize: "Fotografia duhet të jetë më e vogël se 5 MB.",
+    photoBlob: "Në prodhim fotografia ngarkohet te Vercel Blob. Çelësi nuk është vendosur.",
+    photoLocal: "Pa çelës Blob, fotografia zvogëlohet dhe ruhet në këtë kompjuter. Në prodhim kjo nuk vlen.",
     signIn: "Hyni që ta ruani shpalljen.",
     sellerKind: "Çfarë shitësi jeni",
     sellerPrivate: "Privat",

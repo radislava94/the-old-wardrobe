@@ -1,18 +1,26 @@
 "use client";
 
 import { upload } from "@vercel/blob/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FeeLines } from "@/components/fee-lines";
 import { commissionConfig } from "@/lib/commission/config";
 import { formatStoredMoney } from "@/lib/commission/format";
 import { saleQuote } from "@/lib/commission/quote";
 import type { CountryCode } from "@/lib/countries";
-import { photoProblem } from "@/lib/listings/photo-rules";
 import {
+  listingAiAvailability,
+  listingAiDraft,
   prepareListingPhoto,
   saveListing,
   verifyListingPhoto,
 } from "@/lib/listings/actions";
+import {
+  applyDescription,
+  draftRequestAllowed,
+  type AiAvailability,
+  type DescriptionSuggestion,
+} from "@/lib/listings/ai-draft";
+import { photoProblem } from "@/lib/listings/photo-rules";
 import type { PublishResult } from "@/lib/listings/publish-types";
 import { signInPath } from "@/lib/paths";
 import type { CategoryKey, CurrencyCode } from "@/lib/types";
@@ -106,6 +114,10 @@ export function SellForm({
     sellerBusiness: string;
     signIn: string;
     saveDraft: string;
+    aiAsk: string;
+    aiApplyDescription: string;
+    aiApplyWarning: string;
+    aiWarningLabel: string;
     errors: Record<string, string>;
   };
   freeSalesLeft: number;
@@ -120,6 +132,10 @@ export function SellForm({
   const [clientError, setClientError] = useState<string | null>(null);
   const [failure, setFailure] = useState<PublishResult | null>(null);
   const [pending, setPending] = useState(false);
+  const [story, setStory] = useState(initial.story);
+  const [ai, setAi] = useState<AiAvailability | null>(null);
+  const [suggestion, setSuggestion] = useState<DescriptionSuggestion | null>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
   const selected = countries.find((item) => item.code === country) ?? countries[0];
   const currency = (selected?.currency ?? "MKD") as CurrencyCode;
   const amount = Number(price);
@@ -133,6 +149,10 @@ export function SellForm({
         })
       : null;
 
+  useEffect(() => {
+    void listingAiAvailability().then(setAi);
+  }, []);
+
   function readInput(form: HTMLFormElement, intent: "draft" | "publish", ids: string[]) {
     const data = new FormData(form);
     const over = String(data.get("freeShippingOver") ?? "").trim();
@@ -141,7 +161,7 @@ export function SellForm({
       intent,
       country,
       title: String(data.get("title") ?? ""),
-      story: String(data.get("story") ?? ""),
+      story,
       category: String(data.get("category") ?? ""),
       size: String(data.get("size") ?? ""),
       city: String(data.get("city") ?? ""),
@@ -230,6 +250,23 @@ export function SellForm({
       });
     } finally {
       setPending(false);
+    }
+  }
+
+  async function askForDescription() {
+    if (!ai || !draftRequestAllowed(ai) || !listingId) return;
+    setAiError(null);
+    try {
+      const result = await listingAiDraft(listingId);
+      if (!result.ok) {
+        setAiError(result.error.code);
+        setSuggestion(null);
+        return;
+      }
+      setSuggestion(result.suggestion);
+    } catch {
+      setAiError("ai-unavailable");
+      setSuggestion(null);
     }
   }
 
@@ -367,9 +404,51 @@ export function SellForm({
           rows={5}
           maxLength={600}
           placeholder={copy.storyPlaceholder}
-          defaultValue={initial.story}
+          value={story}
+          onChange={(event) => setStory(event.target.value)}
         />
       </label>
+      {ai && draftRequestAllowed(ai) && listingId ? (
+        <div>
+          <button type="button" className="btn btn-ghost" onClick={() => void askForDescription()} disabled={pending}>
+            {copy.aiAsk}
+          </button>
+          {suggestion?.description ? (
+            <div>
+              <p>{suggestion.description}</p>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => setStory(applyDescription(story, suggestion))}
+              >
+                {copy.aiApplyDescription}
+              </button>
+            </div>
+          ) : null}
+          {suggestion?.priceWarning ? (
+            <div>
+              <p>{copy.aiWarningLabel}</p>
+              <p>{suggestion.priceWarning.text}</p>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() =>
+                  setStory(
+                    `${story.trim()} ${suggestion.priceWarning?.text ?? ""}`.trim(),
+                  )
+                }
+              >
+                {copy.aiApplyWarning}
+              </button>
+            </div>
+          ) : null}
+          {aiError ? (
+            <p className="form-error" role="alert">
+              {copy.errors[aiError] ?? aiError}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
       <label className="choice">
         <input
           type="checkbox"

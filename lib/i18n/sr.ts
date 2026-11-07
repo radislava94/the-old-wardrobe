@@ -256,8 +256,11 @@ const sr: Dictionary = {
     privacy: "Privatnost",
     error: "Nije uspelo. Proverite imejl i lozinku.",
     configured: "Nalozi traže bazu i BETTER_AUTH_SECRET. Imejl radi i bez ključeva za Google ili Facebook.",
+    verifySent: "Poslali smo link za potvrdu. Otvorite imejl pre prijave.",
+    unverified: "Imejl još nije potvrđen. Otvorite link koji smo poslali.",
   },
   consent: {
+    label: "Izbor kolačića",
     text: "Kolačić za sesiju se čuva tek kad se prijavite. Ovaj izbor pamtimo da ne bismo pitali ponovo. Nema kolačića za reklame ili statistiku. „Prihvati opcione“ danas ne uključuje ništa dodatno.",
     essential: "Samo neophodni",
     optional: "Prihvati opcione",

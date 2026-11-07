@@ -251,8 +251,11 @@ const sq: Dictionary = {
     privacy: "Privatësia",
     error: "Nuk shkoi. Kontrolloni emailin dhe fjalëkalimin.",
     configured: "Llogaritë duan bazë dhe BETTER_AUTH_SECRET. Emaili punon edhe pa çelësa për Google ose Facebook.",
+    verifySent: "Dërguam një lidhje konfirmimi. Hapni emailin para se të hyni.",
+    unverified: "Emaili ende nuk është konfirmuar. Hapni lidhjen që dërguam.",
   },
   consent: {
+    label: "Zgjedhja e kukive",
     text: "Një kuki sesioni ruhet vetëm pasi të hyni. Këtë zgjedhje e mbajmë mend që të mos pyesim prapë. Nuk ka kuki reklamash ose statistikash. «Prano opsionalet» sot nuk ndez asgjë shtesë.",
     essential: "Vetëm të nevojshmet",
     optional: "Prano opsionalet",

@@ -4,6 +4,7 @@ import { nextCookies } from "better-auth/next-js";
 import { cookies } from "next/headers";
 import { getDb } from "./db/client";
 import * as schema from "./db/schema";
+import { sendVerificationEmail } from "./auth/mail";
 import { countryFromCookie, ensureProfile } from "./auth/profile";
 
 export { authReady, enabledProviders } from "./auth/config";
@@ -30,7 +31,15 @@ function buildAuth() {
     emailAndPassword: {
       enabled: true,
       minPasswordLength: 8,
-      requireEmailVerification: false,
+      requireEmailVerification: true,
+    },
+    emailVerification: {
+      sendOnSignUp: true,
+      sendOnSignIn: true,
+      autoSignInAfterVerification: true,
+      sendVerificationEmail: async ({ user, url }, request) => {
+        await sendVerificationEmail(user.email, url, request);
+      },
     },
     socialProviders: {
       ...(googleId && googleSecret

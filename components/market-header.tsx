@@ -4,6 +4,7 @@ import type { Dictionary } from "@/lib/i18n";
 import { blogTwinMap } from "@/lib/journal/posts";
 import { journalChrome } from "@/lib/journal/chrome";
 import { homePath, searchPath } from "@/lib/paths";
+import { AccountLink } from "./account-link";
 import { CountrySwitcher } from "./country-switcher";
 import { LogoMark } from "./logo";
 import { MainNav } from "./main-nav";
@@ -11,12 +12,12 @@ import { MainNav } from "./main-nav";
 export function MarketHeader({
   country,
   dict,
-  accountHref,
+  signInLabel,
   accountLabel,
 }: {
   country: CountryCode;
   dict: Dictionary;
-  accountHref: string;
+  signInLabel: string;
   accountLabel: string;
 }) {
   return (
@@ -39,9 +40,7 @@ export function MarketHeader({
           sell={dict.nav.sell}
           about={dict.nav.about}
         />
-        <Link className="account-link" href={accountHref}>
-          {accountLabel}
-        </Link>
+        <AccountLink country={country} signInLabel={signInLabel} accountLabel={accountLabel} />
         <form className="search" action={searchPath(country)} method="get" role="search">
           <button type="submit" aria-label={dict.searchLabel}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b5a48" strokeWidth="2" aria-hidden="true">

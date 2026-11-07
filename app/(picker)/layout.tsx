@@ -9,7 +9,6 @@ import { pickerCopy } from "@/lib/picker-copy";
 import { organizationJsonLd } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import Link from "next/link";
-import { cookies } from "next/headers";
 import "../globals.css";
 
 export const viewport: Viewport = {
@@ -29,8 +28,7 @@ export const metadata: Metadata = {
   formatDetection: { telephone: false, email: false, address: false },
 };
 
-export default async function PickerLayout({ children }: { children: React.ReactNode }) {
-  const consent = (await cookies()).get("ow_consent")?.value;
+export default function PickerLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={fontClassName}>
       <body>
@@ -74,15 +72,14 @@ export default async function PickerLayout({ children }: { children: React.React
             </div>
           </div>
         </footer>
-        {consent ? null : (
-          <CookieConsent
-            text="A session cookie is stored only after you sign in. We remember this choice so we do not ask again. There are no advertising or analytics cookies. Accept optional does not turn anything else on today."
-            essential="Essential only"
-            optional="Accept optional"
-            privacy="Privacy"
-            privacyHref="/privacy"
-          />
-        )}
+        <CookieConsent
+          label="Cookie choice"
+          text="A session cookie is stored only after you sign in. We remember this choice so we do not ask again. There are no advertising or analytics cookies. Accept optional does not turn anything else on today."
+          essential="Essential only"
+          optional="Accept optional"
+          privacy="Privacy"
+          privacyHref="/privacy"
+        />
         <JsonLd data={organizationJsonLd()} />
       </body>
     </html>

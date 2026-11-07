@@ -70,8 +70,8 @@ Every variable the product knows about, and the milestone that needs it. Copy [`
 | `FACEBOOK_CLIENT_ID` | auth | Facebook sign-in. The button is shown only when this and the secret are both set. |
 | `FACEBOOK_CLIENT_SECRET` | auth | Facebook sign-in secret. |
 | `BLOB_READ_WRITE_TOKEN` | sell flow | Vercel Blob for listing photos. Without it, photos are saved under `public/uploads`. |
-| `RESEND_API_KEY` | later email | Transactional mail. Documented only — nothing sends mail yet. |
-| `EMAIL_FROM` | later email | From address for that mail. Documented only. |
+| `RESEND_API_KEY` | auth | Sends the email-verification message. Required for email sign-up. |
+| `EMAIL_FROM` | auth | From address for that message, for example `The Old Wardrobe <hello@theoldwardrobe.example>`. |
 | `AI_GATEWAY_API_KEY` | later AI | Key the Vercel AI SDK expects for AI Gateway. Documented only — no AI features yet. On Vercel the SDK can use the injected `VERCEL_OIDC_TOKEN` instead. |
 
 `VERCEL_URL`, `VERCEL_ENV`, and `VERCEL_PROJECT_PRODUCTION_URL` are set by Vercel. They are not part of `.env.example`.

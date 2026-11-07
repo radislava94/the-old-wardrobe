@@ -28,10 +28,13 @@ export function AuthForm({
     or: string;
     both: string;
     error: string;
+    verifySent: string;
+    unverified: string;
   };
 }) {
   const [mode, setMode] = useState<"sign-in" | "sign-up">("sign-in");
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
   function rememberCountry() {
@@ -41,6 +44,7 @@ export function AuthForm({
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    setNotice(null);
     setPending(true);
     rememberCountry();
     const data = new FormData(event.currentTarget);
@@ -53,7 +57,12 @@ export function AuthForm({
         : await authClient.signIn.email({ email, password, callbackURL: nextPath });
     setPending(false);
     if (result.error) {
-      setError(result.error.message || copy.error);
+      const code = "code" in result.error ? String(result.error.code) : "";
+      setError(code === "EMAIL_NOT_VERIFIED" ? copy.unverified : result.error.message || copy.error);
+      return;
+    }
+    if (mode === "sign-up" && result.data?.user && !result.data.user.emailVerified) {
+      setNotice(copy.verifySent);
       return;
     }
     window.location.assign(nextPath);
@@ -71,22 +80,32 @@ export function AuthForm({
       <div className="auth-switch" role="tablist">
         <button
           type="button"
+          role="tab"
+          id="auth-tab-sign-in"
           className={mode === "sign-in" ? "btn btn-ghost is-on" : "btn btn-ghost"}
-          aria-pressed={mode === "sign-in"}
+          aria-selected={mode === "sign-in"}
+          aria-controls="auth-panel"
+          tabIndex={mode === "sign-in" ? 0 : -1}
           onClick={() => {
             setMode("sign-in");
             setError(null);
+            setNotice(null);
           }}
         >
           {copy.signInTitle}
         </button>
         <button
           type="button"
+          role="tab"
+          id="auth-tab-sign-up"
           className={mode === "sign-up" ? "btn btn-ghost is-on" : "btn btn-ghost"}
-          aria-pressed={mode === "sign-up"}
+          aria-selected={mode === "sign-up"}
+          aria-controls="auth-panel"
+          tabIndex={mode === "sign-up" ? 0 : -1}
           onClick={() => {
             setMode("sign-up");
             setError(null);
+            setNotice(null);
           }}
         >
           {copy.signUpTitle}
@@ -108,7 +127,13 @@ export function AuthForm({
           <p className="hint">{copy.or}</p>
         </div>
       ) : null}
-      <form className="sell-form" onSubmit={onSubmit}>
+      <form
+        className="sell-form"
+        id="auth-panel"
+        role="tabpanel"
+        aria-labelledby={mode === "sign-in" ? "auth-tab-sign-in" : "auth-tab-sign-up"}
+        onSubmit={onSubmit}
+      >
         {mode === "sign-up" ? (
           <label>
             <span>{copy.name}</span>
@@ -133,6 +158,11 @@ export function AuthForm({
         <button type="submit" className="btn btn-primary" disabled={pending}>
           {mode === "sign-up" ? copy.signUp : copy.signIn}
         </button>
+        {notice ? (
+          <p className="hint" role="status">
+            {notice}
+          </p>
+        ) : null}
         {error ? (
           <p className="form-error" role="alert">
             {error}

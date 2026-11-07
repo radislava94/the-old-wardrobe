@@ -205,8 +205,11 @@ export type Dictionary = {
     privacy: string;
     error: string;
     configured: string;
+    verifySent: string;
+    unverified: string;
   };
   consent: {
+    label: string;
     text: string;
     essential: string;
     optional: string;

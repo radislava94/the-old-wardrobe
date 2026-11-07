@@ -51,6 +51,8 @@ export default async function SignInPage({
               or: dict.auth.or,
               both: dict.auth.both,
               error: dict.auth.error,
+              verifySent: dict.auth.verifySent,
+              unverified: dict.auth.unverified,
             }}
           />
         ) : (

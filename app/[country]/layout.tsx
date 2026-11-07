@@ -4,12 +4,10 @@ import { CookieConsent } from "@/components/cookie-consent";
 import { MarketFooter } from "@/components/market-footer";
 import { MarketHeader } from "@/components/market-header";
 import { JsonLd } from "@/components/json-ld";
-import { getSession } from "@/lib/auth/session";
-import { cookies } from "next/headers";
 import { countries, countryCodes, isCountry } from "@/lib/countries";
 import { fontClassName } from "@/lib/fonts";
 import { getDictionary } from "@/lib/i18n";
-import { accountPath, privacyPath, signInPath } from "@/lib/paths";
+import { privacyPath } from "@/lib/paths";
 import { organizationJsonLd } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import "../globals.css";
@@ -48,8 +46,6 @@ export default async function CountryLayout({
   const { country: raw } = await params;
   if (!isCountry(raw)) notFound();
   const dict = getDictionary(raw);
-  const session = await getSession();
-  const consent = (await cookies()).get("ow_consent")?.value;
 
   return (
     <html lang={countries[raw].htmlLang} className={fontClassName}>
@@ -61,20 +57,19 @@ export default async function CountryLayout({
         <MarketHeader
           country={raw}
           dict={dict}
-          accountHref={session ? accountPath(raw) : signInPath(raw)}
-          accountLabel={session ? dict.account.nav : dict.account.signIn}
+          signInLabel={dict.account.signIn}
+          accountLabel={dict.account.nav}
         />
         <main id="main">{children}</main>
         <MarketFooter country={raw} dict={dict} />
-        {consent ? null : (
-          <CookieConsent
-            text={dict.consent.text}
-            essential={dict.consent.essential}
-            optional={dict.consent.optional}
-            privacy={dict.consent.privacy}
-            privacyHref={privacyPath(raw)}
-          />
-        )}
+        <CookieConsent
+          label={dict.consent.label}
+          text={dict.consent.text}
+          essential={dict.consent.essential}
+          optional={dict.consent.optional}
+          privacy={dict.consent.privacy}
+          privacyHref={privacyPath(raw)}
+        />
         <JsonLd data={organizationJsonLd()} />
       </body>
     </html>

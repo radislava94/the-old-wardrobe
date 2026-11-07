@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { FeeLines } from "@/components/fee-lines";
+import { receiveAmount, type FeePreviewCopy } from "@/components/sell-form";
 import { commissionConfig } from "@/lib/commission/config";
 import { formatStoredMoney } from "@/lib/commission/format";
 import { saleQuote } from "@/lib/commission/quote";
@@ -19,22 +20,7 @@ export function FeeQuote({
   freeSalesLeft: number;
   priceLabel: string;
   shippingLabel: string;
-  fees: {
-    freeLeft: (count: number) => string;
-    youReceive: (amount: string) => string;
-    enterPrice: string;
-    platformFee: string;
-    cap: string;
-    courierCharge: string;
-    courierBuyer: string;
-    courierSeller: string;
-    reasons: {
-      launch_promo: string;
-      welcome_sale: string;
-      under_threshold: string;
-      standard: string;
-    };
-  };
+  fees: FeePreviewCopy;
 }) {
   const [price, setPrice] = useState("");
   const [freeShipping, setFreeShipping] = useState(false);
@@ -66,10 +52,13 @@ export function FeeQuote({
         <span>{shippingLabel}</span>
       </label>
       <FeeLines
-        freeLeft={fees.freeLeft(freeSalesLeft)}
+        freeLeft={fees.freeLeft}
         youReceive={
           quoted
-            ? fees.youReceive(formatStoredMoney(quoted.sellerPayoutAmount, quoted.currency))
+            ? receiveAmount(
+                fees.youReceivePattern,
+                formatStoredMoney(quoted.sellerPayoutAmount, quoted.currency),
+              )
             : fees.enterPrice
         }
         platformFee={quoted ? formatStoredMoney(quoted.commissionAmount, quoted.currency) : undefined}

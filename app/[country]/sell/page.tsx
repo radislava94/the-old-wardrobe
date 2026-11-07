@@ -5,6 +5,7 @@ import { connection } from "next/server";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { SellForm } from "@/components/sell-form";
 import { commissionConfig } from "@/lib/commission/config";
+import { feePreviewCopy } from "@/lib/commission/preview-copy";
 import { freeSalesLeftFor } from "@/lib/commission/remaining";
 import { categoryKeys } from "@/lib/categories";
 import { countries, countryCodes, isCountry, type CountryCode } from "@/lib/countries";
@@ -119,7 +120,7 @@ export default async function SellPage({
             }}
             copy={sellCopy(dict)}
             freeSalesLeft={freeSalesLeft}
-            fees={dict.fees}
+            fees={feePreviewCopy(dict, freeSalesLeft)}
           />
       </div>
     </section>

@@ -19,6 +19,29 @@ import type { CategoryKey, CurrencyCode } from "@/lib/types";
 
 type Option = { value: string; label: string };
 
+export type FeePreviewCopy = {
+  /** Already includes the remaining count. */
+  freeLeft: string;
+  /** Sentence with the literal placeholder `{amount}`. */
+  youReceivePattern: string;
+  enterPrice: string;
+  platformFee: string;
+  cap: string;
+  courierCharge: string;
+  courierBuyer: string;
+  courierSeller: string;
+  reasons: {
+    launch_promo: string;
+    welcome_sale: string;
+    under_threshold: string;
+    standard: string;
+  };
+};
+
+export function receiveAmount(pattern: string, amount: string): string {
+  return pattern.replaceAll("{amount}", amount);
+}
+
 export function SellForm({
   countries,
   categories,
@@ -86,22 +109,7 @@ export function SellForm({
     errors: Record<string, string>;
   };
   freeSalesLeft: number;
-  fees: {
-    freeLeft: (count: number) => string;
-    youReceive: (amount: string) => string;
-    enterPrice: string;
-    platformFee: string;
-    cap: string;
-    courierCharge: string;
-    courierBuyer: string;
-    courierSeller: string;
-    reasons: {
-      launch_promo: string;
-      welcome_sale: string;
-      under_threshold: string;
-      standard: string;
-    };
-  };
+  fees: FeePreviewCopy;
 }) {
   const [country, setCountry] = useState(initial.country);
   const [listingId, setListingId] = useState(initial.id ?? "");
@@ -385,10 +393,13 @@ export function SellForm({
         <small>{copy.freeShippingOverHint}</small>
       </label>
       <FeeLines
-        freeLeft={fees.freeLeft(freeSalesLeft)}
+        freeLeft={fees.freeLeft}
         youReceive={
           quoted
-            ? fees.youReceive(formatStoredMoney(quoted.sellerPayoutAmount, quoted.currency))
+            ? receiveAmount(
+                fees.youReceivePattern,
+                formatStoredMoney(quoted.sellerPayoutAmount, quoted.currency),
+              )
             : fees.enterPrice
         }
         platformFee={

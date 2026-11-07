@@ -131,7 +131,11 @@ export default async function AccountPage({
           <ul className="own-listings">
             {(await listingsRepo.listBySeller(profile.id)).map((listing) => (
               <li key={listing.id}>
-                <Link href={`/${listing.country}/listing/${listing.slug}`}>{listing.title}</Link>
+                {listing.visibility === "draft" ? (
+                  <span>{listing.title}</span>
+                ) : (
+                  <Link href={`/${listing.country}/listing/${listing.slug}`}>{listing.title}</Link>
+                )}
                 <Link href={`${sellPath(listing.country)}/${listing.id}`}>{dict.sell.submit}</Link>
               </li>
             ))}

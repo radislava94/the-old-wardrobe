@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { SellForm } from "@/components/sell-form";
-import { saveListing } from "@/lib/listings/actions";
 import { categoryKeys } from "@/lib/categories";
 import { countries, countryCodes, isCountry, type CountryCode } from "@/lib/countries";
 import { getDictionary } from "@/lib/i18n";
@@ -48,10 +47,8 @@ export async function generateMetadata({
 
 export default async function SellPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ country: string }>;
-  searchParams: Promise<{ error?: string }>;
 }) {
   const { country: raw } = await params;
   if (!isCountry(raw)) notFound();
@@ -59,7 +56,6 @@ export default async function SellPage({
   const country = countries[raw];
   const session = await getSession();
   const profile = session ? await profileForAuthUser(session.user.id) : null;
-  const error = (await searchParams).error ?? null;
 
   return (
     <section className="page-block">
@@ -82,10 +78,8 @@ export default async function SellPage({
         </div>
         {session ? (
           <SellForm
-            action={saveListing}
             blobConfigured={Boolean(process.env.BLOB_READ_WRITE_TOKEN)}
             production={process.env.VERCEL_ENV === "production"}
-            error={error}
             countries={countryCodes.map((code) => ({
               code,
               label: countries[code].nativeName,
@@ -141,6 +135,9 @@ function sellCopy(dict: ReturnType<typeof getDictionary>) {
     photoHint: dict.sell.photoHint,
     photoLocal: dict.sell.photoLocal,
     photoBlob: dict.sell.photoBlob,
+    photoCount: dict.sell.photoCount,
+    signIn: dict.sell.signIn,
+    saveDraft: dict.sell.saveDraft,
     submit: dict.sell.submit,
     brand: dict.sell.brand,
     condition: dict.sell.condition,
@@ -164,6 +161,11 @@ function sellCopy(dict: ReturnType<typeof getDictionary>) {
       "photo-type": dict.sell.photoType,
       "photo-size": dict.sell.photoSize,
       "photo-blob": dict.sell.photoBlob,
+      "photo-count": dict.sell.photoCount,
+      "photo-spoofed": dict.sell.photoSpoofed,
+      "photo-incomplete": dict.sell.photoIncomplete,
+      "photo-foreign": dict.sell.photoForeign,
+      "photo-missing": dict.sell.photoMissing,
       forbidden: dict.sell.signIn,
     },
   };

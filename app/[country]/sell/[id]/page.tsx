@@ -9,7 +9,7 @@ import { categoryKeys } from "@/lib/categories";
 import { countries, countryCodes, isCountry } from "@/lib/countries";
 import { listingsRepo } from "@/lib/data";
 import { getDictionary } from "@/lib/i18n";
-import { saveListing } from "@/lib/listings/actions";
+import { listOwnedPhotos } from "@/lib/listings/actions";
 import { homePath, sellPath, signInPath } from "@/lib/paths";
 
 export const metadata: Metadata = {
@@ -19,10 +19,8 @@ export const metadata: Metadata = {
 
 export default async function EditListingPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ country: string; id: string }>;
-  searchParams: Promise<{ error?: string }>;
 }) {
   const { country: raw, id } = await params;
   if (!isCountry(raw)) notFound();
@@ -32,7 +30,6 @@ export default async function EditListingPage({
   const listing = await listingsRepo.getById(id);
   if (!listing || !profile || listing.sellerId !== profile.id) notFound();
   const dict = getDictionary(raw);
-  const error = (await searchParams).error ?? null;
 
   return (
     <section className="page-block">
@@ -49,11 +46,9 @@ export default async function EditListingPage({
           <p className="eyebrow">{dict.nav.sell}</p>
           <h1>{listing.title}</h1>
         </div>
-        <SellForm
-          action={saveListing}
+          <SellForm
           blobConfigured={Boolean(process.env.BLOB_READ_WRITE_TOKEN)}
           production={process.env.VERCEL_ENV === "production"}
-          error={error}
           countries={countryCodes.map((code) => ({
             code,
             label: countries[code].nativeName,
@@ -75,7 +70,10 @@ export default async function EditListingPage({
             brand: listing.brand ?? "",
             condition: listing.condition,
             story: listing.description,
-            photoUrl: listing.photoUrl ?? "",
+            photoUrl: listing.visibility === "draft" ? "" : (listing.photoUrl ?? ""),
+            photoIds: (await listOwnedPhotos(listing.id))
+              .filter((photo) => photo.status === "ready")
+              .map((photo) => photo.id),
             sellerKind: profile.sellerKind === "business" ? "business" : "private",
             freeShipping: Boolean(listing.freeShipping),
             freeShippingOver: listing.freeShippingOver ? String(listing.freeShippingOver) : "",
@@ -94,6 +92,9 @@ export default async function EditListingPage({
             photoHint: dict.sell.photoHint,
             photoLocal: dict.sell.photoLocal,
             photoBlob: dict.sell.photoBlob,
+            photoCount: dict.sell.photoCount,
+            signIn: dict.sell.signIn,
+            saveDraft: dict.sell.saveDraft,
             submit: dict.sell.submit,
             brand: dict.sell.brand,
             condition: dict.sell.condition,
@@ -125,13 +126,20 @@ export default async function EditListingPage({
               "photo-type": dict.sell.photoType,
               "photo-size": dict.sell.photoSize,
               "photo-blob": dict.sell.photoBlob,
+              "photo-count": dict.sell.photoCount,
+              "photo-spoofed": dict.sell.photoSpoofed,
+              "photo-incomplete": dict.sell.photoIncomplete,
+              "photo-foreign": dict.sell.photoForeign,
+              "photo-missing": dict.sell.photoMissing,
               forbidden: dict.sell.signIn,
             },
           }}
         />
-        <p className="hint">
-          <Link href={`/${listing.country}/listing/${listing.slug}`}>{listing.title}</Link>
-        </p>
+        {listing.visibility === "draft" ? null : (
+          <p className="hint">
+            <Link href={`/${listing.country}/listing/${listing.slug}`}>{listing.title}</Link>
+          </p>
+        )}
       </div>
     </section>
   );

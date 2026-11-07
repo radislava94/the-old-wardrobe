@@ -176,6 +176,8 @@ export const offers = pgTable(
     currency: text("currency").notNull(),
     kind: text("kind").notNull(),
     note: text("note"),
+    /** Seller's answer to a buyer offer. Nothing is paid either way. */
+    status: text("status").notNull().default("pending"),
     createdAt: date("created_at", { mode: "string" }).notNull(),
   },
   (table) => [
@@ -184,6 +186,7 @@ export const offers = pgTable(
     check("offers_kind", sql`${table.kind} in ('buyer', 'seller')`),
     check("offers_amount_positive", sql`${table.amount} > 0`),
     check("offers_currency", sql`${table.currency} in ('MKD', 'EUR', 'RSD', 'ALL')`),
+    check("offers_status", sql`${table.status} in ('pending', 'accepted', 'declined')`),
   ],
 );
 

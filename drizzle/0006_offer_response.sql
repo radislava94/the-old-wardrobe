@@ -1,0 +1,2 @@
+ALTER TABLE "offers" ADD COLUMN "status" text DEFAULT 'pending' NOT NULL;--> statement-breakpoint
+ALTER TABLE "offers" ADD CONSTRAINT "offers_status" CHECK ("offers"."status" in ('pending', 'accepted', 'declined'));

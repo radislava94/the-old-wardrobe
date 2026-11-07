@@ -6,6 +6,7 @@ import { formatMoney } from "../money";
 import { sendEmail } from "../mail";
 import { listingPath } from "../paths";
 import { absoluteUrl } from "../seo";
+import { priceDropMail } from "../offers/mail";
 import type { Listing } from "../types";
 
 /**
@@ -29,10 +30,13 @@ export async function notifyPriceDrop(listing: Listing, previousAmount: number, 
     const email = row.email?.trim();
     if (!email || email === sellerEmail || seen.has(email)) continue;
     seen.add(email);
-    await sendEmail({
-      to: email,
-      subject: `Price: ${listing.title}`,
-      text: `The price of “${listing.title}” is now ${next}. It was ${previous}.\n${url}\n`,
+    const mail = priceDropMail({
+      country: listing.country,
+      title: listing.title,
+      next,
+      previous,
+      url,
     });
+    await sendEmail({ to: email, subject: mail.subject, text: mail.text });
   }
 }

@@ -824,6 +824,7 @@ body:has(.consent) { padding-bottom: 11rem; }
 .heart-form { margin: 0; }
 .offer-form { margin-top: 18px; }
 .offer-form h2 { font-size: 28px; }
+.offer-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .sell-layout > h1 { font-size: 56px; }
 
 @media (prefers-reduced-motion: reduce) {

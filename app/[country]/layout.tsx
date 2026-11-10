@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
+import { CookieConsent } from "@/components/cookie-consent";
 import { MarketFooter } from "@/components/market-footer";
 import { MarketHeader } from "@/components/market-header";
 import { JsonLd } from "@/components/json-ld";
 import { countries, countryCodes, isCountry } from "@/lib/countries";
 import { fontClassName } from "@/lib/fonts";
 import { getDictionary } from "@/lib/i18n";
+import { privacyPath } from "@/lib/paths";
 import { organizationJsonLd } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import "../globals.css";
@@ -52,9 +54,22 @@ export default async function CountryLayout({
           {dict.skip}
         </a>
         <div className="topbar">{dict.topbar}</div>
-        <MarketHeader country={raw} dict={dict} />
+        <MarketHeader
+          country={raw}
+          dict={dict}
+          signInLabel={dict.account.signIn}
+          accountLabel={dict.account.nav}
+        />
         <main id="main">{children}</main>
         <MarketFooter country={raw} dict={dict} />
+        <CookieConsent
+          label={dict.consent.label}
+          text={dict.consent.text}
+          essential={dict.consent.essential}
+          optional={dict.consent.optional}
+          privacy={dict.consent.privacy}
+          privacyHref={privacyPath(raw)}
+        />
         <JsonLd data={organizationJsonLd()} />
       </body>
     </html>

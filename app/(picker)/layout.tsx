@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { CookieConsent } from "@/components/cookie-consent";
 import { JsonLd } from "@/components/json-ld";
 import { LogoMark } from "@/components/logo";
 import { SuggestBanner } from "@/components/suggest-banner";
@@ -66,10 +67,19 @@ export default function PickerLayout({ children }: { children: React.ReactNode }
           <div className="wrap">
             <div className="fine">
               <span>© 2026 The Old Wardrobe</span>
+              <Link href="/privacy">Privacy</Link>
               <span>Made with care & a little magic ✦</span>
             </div>
           </div>
         </footer>
+        <CookieConsent
+          label="Cookie choice"
+          text="A session cookie is stored only after you sign in. We remember this choice so we do not ask again. There are no advertising or analytics cookies. Accept optional does not turn anything else on today."
+          essential="Essential only"
+          optional="Accept optional"
+          privacy="Privacy"
+          privacyHref="/privacy"
+        />
         <JsonLd data={organizationJsonLd()} />
       </body>
     </html>

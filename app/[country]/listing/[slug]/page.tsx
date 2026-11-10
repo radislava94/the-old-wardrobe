@@ -7,13 +7,14 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { JsonLd } from "@/components/json-ld";
 import { ListingCard } from "@/components/listing-card";
 import { ReserveButton } from "@/components/reserve-button";
+import { ShareRow } from "@/components/share-row";
 import { Stars } from "@/components/stars";
 import { cardsFor } from "@/lib/cards";
 import { countries, isCountry } from "@/lib/countries";
 import { listings } from "@/lib/data/catalog";
 import { listingsRepo, reviewsRepo } from "@/lib/data";
 import { getDictionary } from "@/lib/i18n";
-import { euroEquivalent, formatEuro, priceFor } from "@/lib/money";
+import { euroEquivalent, formatEuro, formatListingPrice, priceFor } from "@/lib/money";
 import { photos } from "@/lib/photos";
 import { categoryPath, homePath, listingPath, sellerPath } from "@/lib/paths";
 import { emptySummary, formatRating } from "@/lib/ratings";
@@ -44,21 +45,18 @@ export async function generateMetadata({
   if (!listing) return {};
   const dict = getDictionary(raw);
   const price = priceFor(listing, raw);
-  const image = photos[listing.photo];
+  const path = listingPath(raw, listing.slug);
   return pageMetadata({
     title: listing.title,
     description: dict.meta.listingDescription(listing.title, listing.city, price.formatted),
-    canonicalPath: listingPath(raw, listing.slug),
-    languages: languageAlternates(
-      listingAlternatePaths(listing),
-      listingPath(raw, listing.slug),
-    ),
+    canonicalPath: path,
+    languages: languageAlternates(listingAlternatePaths(listing), path),
     locale: countries[raw].ogLocale,
     image: {
-      url: absoluteUrl(image.src),
+      url: absoluteUrl(`${path}/opengraph-image`),
       alt: listing.title,
-      width: image.width,
-      height: image.height,
+      width: 1200,
+      height: 630,
     },
   });
 }
@@ -149,6 +147,18 @@ export default async function ListingPage({
               {" · "}
               {dict.listing.ships}
             </p>
+            <ShareRow
+              title={listing.title}
+              price={
+                listing.status === "sold"
+                  ? `${formatListingPrice(listing.priceAmount, listing.currency)} · ${dict.listing.sold}`
+                  : formatListingPrice(listing.priceAmount, listing.currency)
+              }
+              pageUrl={absoluteUrl(path)}
+              imagePath={`${path}/opengraph-image`}
+              fileName={`the-old-wardrobe-${listing.slug}.png`}
+              labels={dict.listing.share}
+            />
             <h2>{dict.listing.story}</h2>
             <p className="story">{listing.description}</p>
             <dl className="facts">

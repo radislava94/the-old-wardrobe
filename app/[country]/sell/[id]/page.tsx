@@ -10,6 +10,7 @@ import { countries, countryCodes, isCountry } from "@/lib/countries";
 import { listingsRepo } from "@/lib/data";
 import { getDictionary } from "@/lib/i18n";
 import { listOwnedPhotos } from "@/lib/listings/actions";
+import { sellCopy } from "@/lib/listings/sell-copy";
 import { homePath, sellPath, signInPath } from "@/lib/paths";
 
 export const metadata: Metadata = {
@@ -24,6 +25,49 @@ export default async function EditListingPage({
 }) {
   const { country: raw, id } = await params;
   if (!isCountry(raw)) notFound();
+  if (!process.env.DATABASE_URL?.trim()) {
+    const dict = getDictionary(raw);
+    return (
+      <section className="page-block">
+        <div className="wrap sell-layout">
+          <div className="sell-intro">
+            <p className="eyebrow">{dict.nav.sell}</p>
+            <h1>{dict.sell.title}</h1>
+          </div>
+          <SellForm
+            blobConfigured={Boolean(process.env.BLOB_READ_WRITE_TOKEN)}
+            countries={countryCodes.map((code) => ({
+              code,
+              label: countries[code].nativeName,
+              currency: countries[code].currency,
+              cities: [...countries[code].cities],
+            }))}
+            categories={categoryKeys.map((key) => ({
+              value: key,
+              label: dict.categories[key],
+            }))}
+            initial={{
+              id,
+              country: raw,
+              title: "",
+              category: "",
+              size: "",
+              price: "",
+              city: "",
+              brand: "",
+              condition: dict.sell.conditions.loved,
+              story: "",
+              photoUrl: "",
+              sellerKind: "private",
+              freeShipping: false,
+              freeShippingOver: "",
+            }}
+            copy={sellCopy(dict)}
+          />
+        </div>
+      </section>
+    );
+  }
   const session = await getSession();
   if (!session) redirect(`${signInPath(raw)}?next=${encodeURIComponent(`${sellPath(raw)}/${id}`)}`);
   const profile = await profileForAuthUser(session.user.id);
@@ -48,7 +92,6 @@ export default async function EditListingPage({
         </div>
           <SellForm
           blobConfigured={Boolean(process.env.BLOB_READ_WRITE_TOKEN)}
-          production={process.env.VERCEL_ENV === "production"}
           countries={countryCodes.map((code) => ({
             code,
             label: countries[code].nativeName,
@@ -131,6 +174,7 @@ export default async function EditListingPage({
               "photo-incomplete": dict.sell.photoIncomplete,
               "photo-foreign": dict.sell.photoForeign,
               "photo-missing": dict.sell.photoMissing,
+              database: dict.sell.database,
               forbidden: dict.sell.signIn,
             },
           }}

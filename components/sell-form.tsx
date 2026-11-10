@@ -20,7 +20,6 @@ export function SellForm({
   categories,
   initial,
   blobConfigured,
-  production,
   copy,
 }: {
   countries: {
@@ -48,7 +47,6 @@ export function SellForm({
     freeShippingOver: string;
   };
   blobConfigured: boolean;
-  production: boolean;
   copy: {
     name: string;
     namePlaceholder: string;
@@ -130,59 +128,64 @@ export function SellForm({
         return;
       }
     }
-    if (files.length > 0 && !blobConfigured) {
+    if ((files.length > 0 || intent === "publish") && !blobConfigured) {
       setClientError("photo-blob");
       return;
     }
     setPending(true);
-    let id = listingId;
-    if (!id) {
-      const created = await saveListing(readInput(form, "draft", photoIds));
-      if (!created.ok) {
-        setFailure(created);
-        setPending(false);
+    try {
+      let id = listingId;
+      if (!id) {
+        const created = await saveListing(readInput(form, "draft", photoIds));
+        if (!created.ok) {
+          setFailure(created);
+          return;
+        }
+        id = created.listing.id;
+        setListingId(id);
+      }
+      const ids = [...photoIds];
+      for (const file of files) {
+        const prepared = await prepareListingPhoto(id);
+        if (!prepared.ok || !("pathname" in prepared)) {
+          setFailure(prepared.ok ? null : prepared);
+          return;
+        }
+        try {
+          await upload(prepared.pathname, file, {
+            access: "public",
+            handleUploadUrl: "/api/listing-photo",
+            clientPayload: JSON.stringify({ photoId: prepared.photoId }),
+          });
+        } catch {
+          const verified = await verifyListingPhoto(id, prepared.photoId);
+          if (!verified.ok) setFailure(verified);
+          else setClientError("photo");
+          return;
+        }
+        const verified = await verifyListingPhoto(id, prepared.photoId);
+        if (!verified.ok || !("photoId" in verified)) {
+          if (!verified.ok) setFailure(verified);
+          return;
+        }
+        if (!ids.includes(verified.photoId)) ids.push(verified.photoId);
+      }
+      setPhotoIds(ids);
+      const saved = await saveListing({ ...readInput(form, intent, ids), id });
+      if (!saved.ok) {
+        setFailure(saved);
         return;
       }
-      id = created.listing.id;
-      setListingId(id);
-    }
-    const ids = [...photoIds];
-    for (const file of files) {
-      const prepared = await prepareListingPhoto(id);
-      if (!prepared.ok || !("pathname" in prepared)) {
-        setFailure(prepared.ok ? null : prepared);
-        setPending(false);
-        return;
+      if (intent === "publish") {
+        window.location.assign(`/${saved.listing.country}/listing/${saved.listing.slug}`);
       }
-      try {
-        await upload(prepared.pathname, file, {
-          access: "public",
-          handleUploadUrl: "/api/listing-photo",
-          clientPayload: JSON.stringify({ photoId: prepared.photoId }),
-        });
-      } catch {
-        await verifyListingPhoto(id, prepared.photoId);
-        setClientError("photo");
-        setPending(false);
-        return;
-      }
-      const verified = await verifyListingPhoto(id, prepared.photoId);
-      if (!verified.ok || !("photoId" in verified)) {
-        if (!verified.ok) setFailure(verified);
-        setPending(false);
-        return;
-      }
-      if (!ids.includes(verified.photoId)) ids.push(verified.photoId);
-    }
-    setPhotoIds(ids);
-    const saved = await saveListing({ ...readInput(form, intent, ids), id });
-    setPending(false);
-    if (!saved.ok) {
-      setFailure(saved);
-      return;
-    }
-    if (intent === "publish") {
-      window.location.assign(`/${saved.listing.country}/listing/${saved.listing.slug}`);
+    } catch {
+      setFailure({
+        ok: false,
+        error: { code: "invalid", fields: [{ field: "database", code: "database" }] },
+      });
+    } finally {
+      setPending(false);
     }
   }
 
@@ -356,12 +359,7 @@ export function SellForm({
           }}
         />
         <small>
-          {copy.photoCount}{" "}
-          {production && !blobConfigured
-            ? copy.photoBlob
-            : blobConfigured
-              ? copy.photoHint
-              : copy.photoLocal}
+          {copy.photoCount} {blobConfigured ? copy.photoHint : copy.photoBlob}
         </small>
       </label>
       {preview ? (
@@ -386,7 +384,7 @@ export function SellForm({
           ) : null}
           {failure.error.code === "forbidden" ? <p>{copy.errors.forbidden}</p> : null}
           {failure.error.fields?.map((field) => (
-            <p key={field.field}>{field.field}</p>
+            <p key={`${field.field}-${field.code}`}>{copy.errors[field.code] ?? field.code}</p>
           ))}
           {failure.error.photos?.map((photo) => (
             <p key={`${photo.id ?? "photo"}-${photo.code}`}>{copy.errors[photo.code] ?? photo.code}</p>

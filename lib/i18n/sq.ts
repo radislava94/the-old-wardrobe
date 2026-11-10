@@ -273,6 +273,11 @@ const sq: Dictionary = {
     sellerBusiness: "Tregtar",
     phone: "Telefoni është shënuar si i verifikuar",
     phoneHint: "Nuk dërgojmë mesazh. Ky është vetëm një fushë që ruhet.",
+    favourite: "Ruaj copën",
+    unfavourite: "Hiqe nga të ruajturat",
+    savedTitle: "Copë të ruajtura",
+    savedEmpty: "Ende nuk ka copë të ruajtura.",
+    savedNote: "Kur ruan një copë, shitësi merr email nëse posta është e ndezur. Nuk ka Viber.",
   },
   auth: {
     signInTitle: "Hyrje",

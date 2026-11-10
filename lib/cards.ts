@@ -1,11 +1,14 @@
 import { photos } from "./photos";
 import { priceFor } from "./money";
-import { listingPath, sellerPath } from "./paths";
+import { listingPath, sellerPath, signInPath } from "./paths";
 import { countries, type CountryCode } from "./countries";
 import { listingsRepo, reviewsRepo } from "./data";
 import type { Dictionary } from "./i18n";
 import { emptySummary, formatRating } from "./ratings";
 import { shippingLabels } from "./listings/shipping-label";
+import { getSession } from "./auth/session";
+import { profileForAuthUser } from "./auth/profile";
+import { favouriteListingIds } from "./favourites/queries";
 import type { Listing, User } from "./types";
 
 const rotations = ["-1.5deg", "1deg", "-0.8deg", "1.4deg", "-1deg", "0.8deg", "-1.2deg", "1.2deg"];
@@ -23,6 +26,9 @@ export function cardProps(listing: Listing, index: number, country: CountryCode,
     rotation: rotations[index % rotations.length] ?? "0deg",
     image: listing.photoUrl || photos[listing.photo],
     shipping: shippingLabels(listing, dict),
+    listingId: listing.id,
+    slug: listing.slug,
+    country: listing.country,
   };
 }
 
@@ -36,6 +42,9 @@ export async function cardsFor(items: Listing[], country: CountryCode, dict: Dic
     sellers.filter((user): user is User => user !== null).map((user) => [user.id, user]),
   );
   const locale = countries[country].intlLocale;
+  const session = await getSession();
+  const viewer = session ? await profileForAuthUser(session.user.id) : null;
+  const savedIds = viewer ? await favouriteListingIds(viewer.id) : new Set<string>();
 
   return items.map((listing, index) => {
     const seller = byId.get(listing.sellerId);
@@ -50,6 +59,11 @@ export async function cardsFor(items: Listing[], country: CountryCode, dict: Dic
         ? dict.rating.aria(figure, dict.rating.count(summary.count))
         : dict.rating.noReviews,
       ratingFigure: figure,
+      saved: savedIds.has(listing.id),
+      signedIn: Boolean(viewer),
+      saveLabel: dict.account.favourite,
+      unsaveLabel: dict.account.unfavourite,
+      signInHref: `${signInPath(country)}?next=${encodeURIComponent(listingPath(listing.country, listing.slug))}`,
     };
   });
 }

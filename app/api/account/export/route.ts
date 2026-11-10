@@ -2,7 +2,7 @@ import { eq, or } from "drizzle-orm";
 import { getSession } from "@/lib/auth/session";
 import { profileForAuthUser } from "@/lib/auth/profile";
 import { getDb } from "@/lib/db/client";
-import { account, listings, reviews, session } from "@/lib/db/schema";
+import { account, favourites, listings, reviews, session } from "@/lib/db/schema";
 
 export const runtime = "nodejs";
 
@@ -54,6 +54,19 @@ export async function GET() {
     sessions,
     listings: ownedListings,
     reviews: relatedReviews,
+    saved: profile
+      ? await db
+          .select({
+            listingId: favourites.listingId,
+            savedOn: favourites.createdAt,
+            title: listings.title,
+            slug: listings.slug,
+            country: listings.country,
+          })
+          .from(favourites)
+          .innerJoin(listings, eq(listings.id, favourites.listingId))
+          .where(eq(favourites.userId, profile.id))
+      : [],
   };
 
   return new Response(JSON.stringify(body, null, 2), {

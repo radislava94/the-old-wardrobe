@@ -286,7 +286,11 @@ const sr: Dictionary = {
     listings: "Komadi iz ovog ormara",
     leaveTitle: "Ostavi utisak",
     leaveRule:
-      "Utisak može da ostavi samo kupac sa završenom porudžbinom od ovog prodavca, jedan utisak po porudžbini. Plaćanje još nije uključeno, pa je formular zatvoren.",
+      "Plaćena porudžbina otvara jedan utisak o prodavcu. Odbijena ili otkazana porudžbina ne otvara. Jedan utisak po porudžbini.",
+    notUnlocked: "Ova porudžbina ne otvara utisak.",
+    waitingPaid: "Utisak se otvara kad je porudžbina plaćena.",
+    savedReview: "Utisak za ovu porudžbinu je sačuvan.",
+    piece: "Komad",
     stars: "Ocena",
     comment: "Komentar",
     commentPlaceholder: "Kako je prošla kupovina?",

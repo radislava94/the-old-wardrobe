@@ -6,6 +6,10 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { JsonLd } from "@/components/json-ld";
 import { ListingCard } from "@/components/listing-card";
 import { ReviewForm } from "@/components/review-form";
+import { getSession } from "@/lib/auth/session";
+import { profileForAuthUser } from "@/lib/auth/profile";
+import { databaseEnabled } from "@/lib/db/runtime";
+import { unreviewedPaidOrders } from "@/lib/reviews/eligible";
 import { Stars } from "@/components/stars";
 import { cardsFor } from "@/lib/cards";
 import { countries, isCountry } from "@/lib/countries";
@@ -59,10 +63,13 @@ export async function generateMetadata({
 
 export default async function SellerPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ country: string; handle: string }>;
+  searchParams: Promise<{ review?: string }>;
 }) {
   const { country: raw, handle } = await params;
+  const query = await searchParams;
   if (!isCountry(raw)) notFound();
   const user = await listingsRepo.getUserByHandle(raw, handle);
   if (!user) notFound();
@@ -76,6 +83,12 @@ export default async function SellerPage({
   if (items.length === 0) notFound();
 
   const dict = getDictionary(raw);
+  const session = await getSession();
+  const viewer = session ? await profileForAuthUser(session.user.id) : null;
+  const openOrders =
+    viewer && viewer.id !== user.id && (await databaseEnabled())
+      ? await unreviewedPaidOrders(viewer.id, user.id)
+      : [];
   const summary = summarize(reviewList);
   const locale = countries[raw].intlLocale;
   const figure = summary.count ? formatRating(summary.average, locale) : "";
@@ -197,14 +210,34 @@ export default async function SellerPage({
               }),
             )}
           </ol>
-          <ReviewForm
-            title={dict.rating.leaveTitle}
-            rule={dict.rating.leaveRule}
-            stars={dict.rating.stars}
-            comment={dict.rating.comment}
-            commentPlaceholder={dict.rating.commentPlaceholder}
-            submit={dict.rating.submit}
-          />
+          {query.review === "saved" ? <p className="hint">{dict.rating.savedReview}</p> : null}
+          {openOrders.length > 0 ? (
+            openOrders.map((order) => (
+              <ReviewForm
+                key={order.id}
+                title={dict.rating.leaveTitle}
+                rule={dict.rating.leaveRule}
+                stars={dict.rating.stars}
+                comment={dict.rating.comment}
+                commentPlaceholder={dict.rating.commentPlaceholder}
+                submit={dict.rating.submit}
+                pieceLabel={dict.rating.piece}
+                country={raw}
+                next={path}
+                order={order}
+              />
+            ))
+          ) : (
+            <ReviewForm
+              title={dict.rating.leaveTitle}
+              rule={dict.rating.leaveRule}
+              stars={dict.rating.stars}
+              comment={dict.rating.comment}
+              commentPlaceholder={dict.rating.commentPlaceholder}
+              submit={dict.rating.submit}
+              pieceLabel={dict.rating.piece}
+            />
+          )}
         </section>
       </div>
       <JsonLd

@@ -231,6 +231,10 @@ export type Dictionary = {
     commentPlaceholder: string;
     submit: string;
     bought: string;
+    notUnlocked: string;
+    waitingPaid: string;
+    savedReview: string;
+    piece: string;
   };
   /**
    * Account, consent, and privacy copy. Drafted with the rest of the

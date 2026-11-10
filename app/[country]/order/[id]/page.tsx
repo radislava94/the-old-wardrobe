@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { ReviewForm } from "@/components/review-form";
 import { updateOrderStatus } from "@/lib/orders/actions";
+import { reviewExists } from "@/lib/reviews/eligible";
 import { profileForAuthUser } from "@/lib/auth/profile";
 import { getSession } from "@/lib/auth/session";
 import { isCountry } from "@/lib/countries";
@@ -22,10 +24,13 @@ export const metadata: Metadata = {
 
 export default async function OrderPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ country: string; id: string }>;
+  searchParams: Promise<{ review?: string }>;
 }) {
   const { country: raw, id } = await params;
+  const query = await searchParams;
   if (!isCountry(raw)) notFound();
   const session = await getSession();
   if (!session) redirect(signInPath(raw));
@@ -35,6 +40,7 @@ export default async function OrderPage({
   const order = rows[0];
   if (!order || (order.buyerId !== profile.id && order.sellerId !== profile.id)) notFound();
   const items = await getDb().select().from(orderItems).where(eq(orderItems.orderId, id));
+  const reviewed = order.buyerId === profile.id && order.codStatus === "paid" ? await reviewExists(order.id) : false;
   const dict = getDictionary(raw);
   const currency = order.currency as CurrencyCode;
   const cash = formatMoney(Number(order.buyerCashDue), raw);
@@ -125,6 +131,32 @@ export default async function OrderPage({
               {dict.order.cancel}
             </button>
           </form>
+        ) : null}
+        {order.buyerId === profile.id && order.codStatus === "paid" && !reviewed ? (
+          <ReviewForm
+            title={dict.rating.leaveTitle}
+            rule={dict.rating.leaveRule}
+            stars={dict.rating.stars}
+            comment={dict.rating.comment}
+            commentPlaceholder={dict.rating.commentPlaceholder}
+            submit={dict.rating.submit}
+            pieceLabel={dict.rating.piece}
+            country={raw}
+            next={`/${raw}/order/${order.id}`}
+            order={{
+              id: order.id,
+              items: items.map((item) => ({ listingId: item.listingId, title: item.title })),
+            }}
+          />
+        ) : null}
+        {order.buyerId === profile.id && order.codStatus === "paid" && (reviewed || query.review === "saved") ? (
+          <p className="hint">{dict.rating.savedReview}</p>
+        ) : null}
+        {order.buyerId === profile.id && order.codStatus === "pending" ? (
+          <p className="hint">{dict.rating.waitingPaid}</p>
+        ) : null}
+        {order.buyerId === profile.id && (order.codStatus === "refused" || order.codStatus === "cancelled") ? (
+          <p className="hint">{dict.rating.notUnlocked}</p>
         ) : null}
         <p className="hint">
           <Link href={`/${raw}/account`}>{dict.account.nav}</Link>

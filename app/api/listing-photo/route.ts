@@ -13,8 +13,17 @@ export const runtime = "nodejs";
  * The client's MIME and the upload callback are not treated as proof.
  */
 export async function POST(request: Request): Promise<NextResponse> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return NextResponse.json({ error: "photo-blob" }, { status: 503 });
+  if (!process.env.DATABASE_URL?.trim()) {
+    return NextResponse.json(
+      { ok: false, error: { code: "invalid", fields: [{ field: "database", code: "database" }] } },
+      { status: 503 },
+    );
+  }
+  if (!process.env.BLOB_READ_WRITE_TOKEN?.trim()) {
+    return NextResponse.json(
+      { ok: false, error: { code: "invalid", fields: [{ field: "photo", code: "photo-blob" }] } },
+      { status: 503 },
+    );
   }
   const session = await getSession();
   if (!session) {

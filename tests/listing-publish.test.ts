@@ -198,13 +198,21 @@ test("oversize", async () => {
   assert.equal(prepared.ok, true);
   if (!prepared.ok || !("pathname" in prepared)) return;
   objects.set(prepared.pathname, {
-    bytes: jpeg(4_000_001),
+    bytes: jpeg(4_500_001),
     url: "https://big.public.blob.vercel-storage.com/x",
   });
   const verified = await verifyPhoto(store, blob, seller, listing.id, prepared.photoId);
   assert.equal(verified.ok, false);
   if (!verified.ok) assert.equal(verified.error.photos?.[0]?.code, "photo-size");
   assert.equal(store.read().photos.get(prepared.photoId)?.status, "failed");
+});
+
+test("4_500_000 bytes is still a photo", async () => {
+  const { store, objects, blob } = harness();
+  const listing = await draftListing(store, blob);
+  const id = await readyPhoto(store, objects, blob, listing.id, jpeg(4_500_000));
+  assert.equal(store.read().photos.get(id)?.status, "ready");
+  assert.equal(store.read().photos.get(id)?.byteSize, 4_500_000);
 });
 
 test("foreign or missing URL", async () => {

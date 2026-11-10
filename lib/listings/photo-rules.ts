@@ -1,4 +1,6 @@
-export const MAX_PHOTO_BYTES = 4_000_000;
+import { MAX_PHOTO_BYTES } from "./image-bytes";
+
+export { MAX_PHOTO_BYTES };
 
 export const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
 

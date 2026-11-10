@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { SellForm } from "@/components/sell-form";
 import { categoryKeys } from "@/lib/categories";
@@ -11,6 +12,7 @@ import { homePath, sellPath, signInPath } from "@/lib/paths";
 import { UNITS_PER_EUR } from "@/lib/rates";
 import { getSession } from "@/lib/auth/session";
 import { profileForAuthUser } from "@/lib/auth/profile";
+import { sellCopy } from "@/lib/listings/sell-copy";
 import {
   absoluteUrl,
   languageAlternates,
@@ -50,6 +52,7 @@ export default async function SellPage({
 }: {
   params: Promise<{ country: string }>;
 }) {
+  await connection();
   const { country: raw } = await params;
   if (!isCountry(raw)) notFound();
   const dict = getDictionary(raw);
@@ -76,10 +79,16 @@ export default async function SellPage({
             1 EUR = {UNITS_PER_EUR.MKD} MKD · {UNITS_PER_EUR.RSD} RSD · {UNITS_PER_EUR.ALL} ALL
           </p>
         </div>
-        {session ? (
-          <SellForm
+        {session ? null : (
+          <p className="lead">
+            {dict.sell.signIn}{" "}
+            <Link href={`${signInPath(raw)}?next=${encodeURIComponent(sellPath(raw))}`}>
+              {dict.account.signIn}
+            </Link>
+          </p>
+        )}
+        <SellForm
             blobConfigured={Boolean(process.env.BLOB_READ_WRITE_TOKEN)}
-            production={process.env.VERCEL_ENV === "production"}
             countries={countryCodes.map((code) => ({
               code,
               label: countries[code].nativeName,
@@ -107,66 +116,7 @@ export default async function SellPage({
             }}
             copy={sellCopy(dict)}
           />
-        ) : (
-          <p className="lead">
-            {dict.sell.signIn}{" "}
-            <Link href={`${signInPath(raw)}?next=${encodeURIComponent(sellPath(raw))}`}>
-              {dict.account.signIn}
-            </Link>
-          </p>
-        )}
       </div>
     </section>
   );
-}
-
-function sellCopy(dict: ReturnType<typeof getDictionary>) {
-  return {
-    name: dict.sell.name,
-    namePlaceholder: dict.sell.namePlaceholder,
-    category: dict.sell.category,
-    size: dict.sell.size,
-    sizePlaceholder: dict.sell.sizePlaceholder,
-    price: dict.sell.price,
-    city: dict.sell.city,
-    story: dict.sell.story,
-    storyPlaceholder: dict.sell.storyPlaceholder,
-    photo: dict.sell.photo,
-    photoHint: dict.sell.photoHint,
-    photoLocal: dict.sell.photoLocal,
-    photoBlob: dict.sell.photoBlob,
-    photoCount: dict.sell.photoCount,
-    signIn: dict.sell.signIn,
-    saveDraft: dict.sell.saveDraft,
-    submit: dict.sell.submit,
-    brand: dict.sell.brand,
-    condition: dict.sell.condition,
-    conditions: [
-      { value: dict.sell.conditions.loved, label: dict.sell.conditions.loved },
-      { value: dict.sell.conditions.kept, label: dict.sell.conditions.kept },
-      { value: dict.sell.conditions.repair, label: dict.sell.conditions.repair },
-    ],
-    country: dict.sell.country,
-    currency: dict.sell.currency,
-    freeShipping: dict.sell.freeShipping,
-    freeShippingHint: dict.sell.freeShippingHint,
-    freeShippingOver: dict.sell.freeShippingOver,
-    freeShippingOverHint: dict.sell.freeShippingOverHint,
-    sellerKind: dict.sell.sellerKind,
-    sellerPrivate: dict.sell.sellerPrivate,
-    sellerBusiness: dict.sell.sellerBusiness,
-    errors: {
-      fields: dict.sell.photoMissing,
-      photo: dict.sell.photoMissing,
-      "photo-type": dict.sell.photoType,
-      "photo-size": dict.sell.photoSize,
-      "photo-blob": dict.sell.photoBlob,
-      "photo-count": dict.sell.photoCount,
-      "photo-spoofed": dict.sell.photoSpoofed,
-      "photo-incomplete": dict.sell.photoIncomplete,
-      "photo-foreign": dict.sell.photoForeign,
-      "photo-missing": dict.sell.photoMissing,
-      forbidden: dict.sell.signIn,
-    },
-  };
 }

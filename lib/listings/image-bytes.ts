@@ -1,4 +1,4 @@
-export const MAX_PHOTO_BYTES = 4_000_000;
+export const MAX_PHOTO_BYTES = 4_500_000;
 
 export type ImageContentType = "image/jpeg" | "image/png" | "image/webp";
 

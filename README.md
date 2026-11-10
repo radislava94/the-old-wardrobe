@@ -62,7 +62,7 @@ Every variable the product knows about, and the milestone that needs it. Copy [`
 | Variable | Milestone | What it is |
 | --- | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | foundation | Public origin, no trailing slash. |
-| `DATABASE_URL` | now | Postgres. On Vercel, the Neon connection string from the Marketplace (use the pooled host, the one with `-pooler`). Locally, the docker-compose URL in `.env.example`. |
+| `DATABASE_URL` | now | Postgres. On Vercel, the Neon connection string from the Marketplace (use the pooled host, the one with `-pooler`). Locally, the docker-compose URL in `.env.example`. Without it, a sell submission returns an error and stays on the form. |
 | `BETTER_AUTH_SECRET` | auth | Session signing secret. `openssl rand -base64 32`. |
 | `BETTER_AUTH_URL` | auth | Origin used for auth callbacks, e.g. `http://localhost:3000`. Leave unset on Vercel Preview so each preview host is inferred. |
 | `GOOGLE_CLIENT_ID` | auth | Google sign-in. The button is shown only when this and the secret are both set. |

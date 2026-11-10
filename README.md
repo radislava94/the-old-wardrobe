@@ -126,8 +126,8 @@ Every seller is the same `User` type. Buyers rate that person after a purchase. 
 ## What is still placeholder
 
 - Exchange rates in `lib/rates.ts`. They are round reference figures, marked in that file, and are not for payment. Bulgaria is euros only (the lev was replaced on 1 January 2026).
-- Listings, sellers, the sample seller reviews, hero statistics (12,400 pieces and the rest), the door-tag count, and the homepage quote. The "leave a review" form stays closed: a review still needs a completed order, and checkout is not built.
-- Checkout, the cart icons, and the attic letter. The attic letter still keeps what you type in the browser and then discards it. A signed-in buyer can save a listing and remove it; saved pieces are on the account page and in the data export. A signed-in account can create and edit a listing, including a photo. An account can sign in with email once that address is verified, and with Google or Facebook when those keys are set. Email sign-up stays unavailable, and no account is created, until `RESEND_API_KEY` and `EMAIL_FROM` can send the verification message. The same account buys and sells. Deleting it removes the profile, that person's listings, their reviews, and their saved listings. A JSON export is on the account page.
+- Listings, sellers, the sample seller reviews, hero statistics (12,400 pieces and the rest), the door-tag count, and the homepage quote. A review still needs a completed (paid) order.
+- The cart icons and the attic letter. The attic letter still keeps what you type in the browser and then discards it. A signed-in buyer can save a listing and remove it; saved pieces are on the account page and in the data export. A signed-in account can create and edit a listing, including a photo, and can place a cash-on-delivery order. An account can sign in with email once that address is verified, and with Google or Facebook when those keys are set. Email sign-up stays unavailable, and no account is created, until `RESEND_API_KEY` and `EMAIL_FROM` can send the verification message. The same account buys and sells. Deleting it removes the profile, that person's listings, their reviews, and their saved listings. A JSON export is on the account page.
 - The contact address `hello@theoldwardrobe.example`.
 - Shipping lines in the top bar illustrate the mockup's "free over about €60" sentence. They are not a delivery policy.
 - Strings marked `TODO` in `lib/i18n` and `lib/rates.ts` need a native check or a live rate.
@@ -146,6 +146,16 @@ JSON-LD:
 - `Person` on seller profiles. `aggregateRating` is included only when `reviewsRepo.areFirstParty()` is true, which matches Google's rule that review stars in structured data come from ratings the site collected itself. The sample copy leaves it out
 
 `/sitemap.xml` is a sitemap index. `/sitemap/mk.xml`, `/sitemap/bg.xml`, `/sitemap/sr-rs.xml` and `/sitemap/sq-al.xml` list that country's URLs. Sold listings are included. Search URLs are left out and disallowed in `robots.txt`. The journal is listed separately in `/sitemap/blog/mk.xml`, `/sitemap/blog/bg.xml`, `/sitemap/blog/sr-rs.xml` and `/sitemap/blog/sq-al.xml`.
+
+## Commission and cash on delivery
+
+Buyers pay no platform fee. The seller pays the commission. Rates, the threshold, the cap, and the welcome-sale count live in config. The welcome-sale count defaults to 3. A launch promo sets the rate to 0% until its flag or end date. Every new seller’s first completed sales are also commission-free, regardless of price, and that allowance is separate from the promo. A welcome sale is used only when the promo is off and the sale is at or above the threshold. Only completed orders count. Refused and cancelled orders do not. The seller sees “X free sales left” in the dashboard and on the sell flow.
+
+The commission base is the merchandise total. Shipping is not commissioned. Check order: launch promo, then welcome sale, then under the threshold, then 5% with the cap. Each order stores `commissionAmount`, `sellerPayoutAmount`, and the waiver reason (`launch_promo`, `welcome_sale`, `under_threshold`, or `standard`), including when the fee is zero.
+
+Cash on delivery: the buyer pays the courier the merchandise total plus any shipping the buyer pays. The courier pays that cash to the sender on the waybill. At launch the sender is the seller (`remitTo: seller`). The platform invoices stored commission once a month, for orders the seller has marked paid. Refused deliveries are not invoiced. Paying the courier to the platform, and then paying the seller the net, waits on a written courier agreement per country. Checkout and listings do not wait on that choice.
+
+The seller sees the fee, the cap, the courier charge, and “you’ll receive X” on the listing form and on the order. The screen shows the cash the courier handles and the platform fee as separate lines. The fee is not added to the buyer’s cash, and it is not taken from a later sale without a line the seller already saw.
 
 ## Deploy
 

@@ -24,6 +24,7 @@ import { isFavourite } from "@/lib/favourites/queries";
 import { makeOffer, sendPrivateOffer } from "@/lib/offers/actions";
 import { saversOf } from "@/lib/offers/queries";
 import { OfferRecipients } from "@/components/offer-recipients";
+import { addToBundle } from "@/lib/bundles/actions";
 import { shippingLabels } from "@/lib/listings/shipping-label";
 import { emptySummary, formatRating } from "@/lib/ratings";
 import {
@@ -83,10 +84,12 @@ export default async function ListingPage({
   searchParams,
 }: {
   params: Promise<{ country: string; slug: string }>;
-  searchParams: Promise<{ offer?: string }>;
+  searchParams: Promise<{ offer?: string; bundle?: string }>;
 }) {
   const { country: raw, slug } = await params;
-  const offerState = (await searchParams).offer;
+  const query = await searchParams;
+  const offerState = query.offer;
+  const bundleState = query.bundle;
   if (!isCountry(raw)) notFound();
   const listing = await listingsRepo.getBySlug(raw, slug);
   if (!listing) notFound();
@@ -252,6 +255,22 @@ export default async function ListingPage({
                 {dict.listing.offerSent}
               </p>
             ) : null}
+            {bundleState === "added" ? (
+              <p className="hint" role="status">
+                {dict.listing.bundleAdded}
+              </p>
+            ) : null}
+            {listing.status === "available" && viewer && seller && viewer.id !== seller.id ? (
+              <form className="bundle-form" action={addToBundle}>
+                <input type="hidden" name="listingId" value={listing.id} />
+                <input type="hidden" name="slug" value={listing.slug} />
+                <input type="hidden" name="country" value={raw} />
+                <button type="submit" className="btn btn-ghost">
+                  {dict.listing.bundleAdd}
+                </button>
+                <p className="hint">{dict.listing.bundleHint}</p>
+              </form>
+            ) : null}
             {listing.status === "available" && viewer && seller && viewer.id === seller.id ? (
               <form className="sell-form offer-form" action={sendPrivateOffer}>
                 <h2>{dict.listing.offerPrivate}</h2>
@@ -305,35 +324,37 @@ export default async function ListingPage({
                 </button>
               </form>
             ) : null}
-            {viewer ? (
-              <FavouriteButton
-                listingId={listing.id}
-                slug={listing.slug}
-                country={raw}
-                saved={saved}
-                save={dict.account.favourite}
-                unsave={dict.account.unfavourite}
-                note={dict.account.savedNote}
-              />
-            ) : (
-              <p>
-                <Link
-                  className="btn btn-ghost save-signin"
-                  href={`${signInPath(raw)}?next=${encodeURIComponent(listingPath(raw, listing.slug))}`}
-                >
-                  {dict.account.favourite}
-                </Link>
-              </p>
-            )}
-            {listing.status === "available" ? (
-              <ReserveButton
-                label={dict.listing.reserve}
-                note={dict.listing.reserveNote}
-                clicked={dict.listing.reserveClicked}
-              />
-            ) : (
-              <p className="hint">{dict.listing.sold}</p>
-            )}
+            <div className="detail-actions">
+              {viewer ? (
+                <FavouriteButton
+                  listingId={listing.id}
+                  slug={listing.slug}
+                  country={raw}
+                  saved={saved}
+                  save={dict.account.favourite}
+                  unsave={dict.account.unfavourite}
+                  note={dict.account.savedNote}
+                />
+              ) : (
+                <p>
+                  <Link
+                    className="btn btn-ghost save-signin"
+                    href={`${signInPath(raw)}?next=${encodeURIComponent(listingPath(raw, listing.slug))}`}
+                  >
+                    {dict.account.favourite}
+                  </Link>
+                </p>
+              )}
+              {listing.status === "available" ? (
+                <ReserveButton
+                  label={dict.listing.reserve}
+                  note={dict.listing.reserveNote}
+                  clicked={dict.listing.reserveClicked}
+                />
+              ) : (
+                <p className="hint">{dict.listing.sold}</p>
+              )}
+            </div>
           </div>
         </div>
 

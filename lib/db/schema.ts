@@ -190,6 +190,35 @@ export const offers = pgTable(
   ],
 );
 
+/** Listings one buyer grouped from a single seller. Not a charge. */
+export const bundles = pgTable(
+  "bundles",
+  {
+    id: text("id").primaryKey(),
+    buyerId: text("buyer_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    sellerId: text("seller_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    createdAt: date("created_at", { mode: "string" }).notNull(),
+  },
+  (table) => [uniqueIndex("bundles_buyer_seller").on(table.buyerId, table.sellerId)],
+);
+
+export const bundleItems = pgTable(
+  "bundle_items",
+  {
+    bundleId: text("bundle_id")
+      .notNull()
+      .references(() => bundles.id, { onDelete: "cascade" }),
+    listingId: text("listing_id")
+      .notNull()
+      .references(() => listings.id, { onDelete: "cascade" }),
+  },
+  (table) => [uniqueIndex("bundle_items_unique").on(table.bundleId, table.listingId)],
+);
+
 export const reviews = pgTable(
   "reviews",
   {

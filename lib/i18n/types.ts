@@ -27,7 +27,6 @@ export type Dictionary = {
     sellerDescription: (name: string, city: string) => string;
   };
   tagline: string;
-  topbar: string;
   nav: { browse: string; sell: string; about: string; main: string };
   searchPlaceholder: string;
   searchLabel: string;

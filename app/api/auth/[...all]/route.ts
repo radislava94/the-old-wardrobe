@@ -1,5 +1,5 @@
 import { toNextJsHandler } from "better-auth/next-js";
-import { authReady } from "@/lib/auth/config";
+import { authReady, emailSignUpReady, isEmailSignUpPath } from "@/lib/auth/config";
 import { getAuth } from "@/lib/auth";
 
 export const runtime = "nodejs";
@@ -11,8 +11,28 @@ function unavailable() {
   );
 }
 
+function signUpUnavailable() {
+  return Response.json(
+    {
+      message:
+        "Email sign-up is unavailable until verification mail can be sent. No account was created.",
+      code: "SIGN_UP_UNAVAILABLE",
+    },
+    { status: 503 },
+  );
+}
+
 async function handle(request: Request) {
-  if (!authReady()) return unavailable();
+  const path = new URL(request.url).pathname;
+  if (!authReady()) {
+    if (request.method === "GET" && path.replace(/\/+$/, "").endsWith("/get-session")) {
+      return Response.json(null);
+    }
+    return unavailable();
+  }
+  if (request.method === "POST" && isEmailSignUpPath(path) && !emailSignUpReady()) {
+    return signUpUnavailable();
+  }
   const handler = toNextJsHandler(getAuth());
   if (request.method === "GET") return handler.GET(request);
   if (request.method === "POST") return handler.POST(request);

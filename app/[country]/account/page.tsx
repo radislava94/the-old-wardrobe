@@ -102,6 +102,8 @@ export default async function AccountPage({
         <section className="account-block">
           <h2>{dict.account.exportTitle}</h2>
           <p>{dict.account.exportBody}</p>
+          {/* Full navigation so the browser saves the JSON attachment. */}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
           <a className="btn btn-ghost" href="/api/account/export">
             {dict.account.export}
           </a>

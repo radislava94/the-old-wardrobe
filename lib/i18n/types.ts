@@ -207,6 +207,7 @@ export type Dictionary = {
     configured: string;
     verifySent: string;
     unverified: string;
+    signUpUnavailable: string;
   };
   consent: {
     label: string;

@@ -253,6 +253,8 @@ const sq: Dictionary = {
     configured: "Llogaritë duan bazë dhe BETTER_AUTH_SECRET. Emaili punon edhe pa çelësa për Google ose Facebook.",
     verifySent: "Dërguam një lidhje konfirmimi. Hapni emailin para se të hyni.",
     unverified: "Emaili ende nuk është konfirmuar. Hapni lidhjen që dërguam.",
+    signUpUnavailable:
+      "Llogaria e re me email nuk është e disponueshme derisa të dërgojmë lidhjen e konfirmimit. Nuk krijohet llogari.",
   },
   consent: {
     label: "Zgjedhja e kukive",

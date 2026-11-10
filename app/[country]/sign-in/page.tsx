@@ -37,6 +37,7 @@ export default async function SignInPage({
             nextPath={nextPath}
             google={providers.google}
             facebook={providers.facebook}
+            signUpEnabled={providers.signUp}
             copy={{
               signInTitle: dict.auth.signInTitle,
               signUpTitle: dict.auth.signUpTitle,
@@ -53,6 +54,7 @@ export default async function SignInPage({
               error: dict.auth.error,
               verifySent: dict.auth.verifySent,
               unverified: dict.auth.unverified,
+              signUpUnavailable: dict.auth.signUpUnavailable,
             }}
           />
         ) : (

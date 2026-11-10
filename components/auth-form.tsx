@@ -8,12 +8,14 @@ export function AuthForm({
   nextPath,
   google,
   facebook,
+  signUpEnabled,
   copy,
 }: {
   country: string;
   nextPath: string;
   google: boolean;
   facebook: boolean;
+  signUpEnabled: boolean;
   copy: {
     signInTitle: string;
     signUpTitle: string;
@@ -30,9 +32,11 @@ export function AuthForm({
     error: string;
     verifySent: string;
     unverified: string;
+    signUpUnavailable: string;
   };
 }) {
   const [mode, setMode] = useState<"sign-in" | "sign-up">("sign-in");
+  const activeMode = signUpEnabled ? mode : "sign-in";
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -51,17 +55,28 @@ export function AuthForm({
     const email = String(data.get("email") ?? "");
     const password = String(data.get("password") ?? "");
     const name = String(data.get("name") ?? "");
+    if (activeMode === "sign-up" && !signUpEnabled) {
+      setPending(false);
+      setError(copy.signUpUnavailable);
+      return;
+    }
     const result =
-      mode === "sign-up"
+      activeMode === "sign-up"
         ? await authClient.signUp.email({ email, password, name, callbackURL: nextPath })
         : await authClient.signIn.email({ email, password, callbackURL: nextPath });
     setPending(false);
     if (result.error) {
       const code = "code" in result.error ? String(result.error.code) : "";
-      setError(code === "EMAIL_NOT_VERIFIED" ? copy.unverified : result.error.message || copy.error);
+      setError(
+        code === "EMAIL_NOT_VERIFIED"
+          ? copy.unverified
+          : code === "SIGN_UP_UNAVAILABLE"
+            ? copy.signUpUnavailable
+            : result.error.message || copy.error,
+      );
       return;
     }
-    if (mode === "sign-up" && result.data?.user && !result.data.user.emailVerified) {
+    if (activeMode === "sign-up" && result.data?.user && !result.data.user.emailVerified) {
       setNotice(copy.verifySent);
       return;
     }
@@ -94,23 +109,30 @@ export function AuthForm({
         >
           {copy.signInTitle}
         </button>
-        <button
-          type="button"
-          role="tab"
-          id="auth-tab-sign-up"
-          className={mode === "sign-up" ? "btn btn-ghost is-on" : "btn btn-ghost"}
-          aria-selected={mode === "sign-up"}
-          aria-controls="auth-panel"
-          tabIndex={mode === "sign-up" ? 0 : -1}
-          onClick={() => {
-            setMode("sign-up");
-            setError(null);
-            setNotice(null);
-          }}
-        >
-          {copy.signUpTitle}
-        </button>
+        {signUpEnabled ? (
+          <button
+            type="button"
+            role="tab"
+            id="auth-tab-sign-up"
+            className={mode === "sign-up" ? "btn btn-ghost is-on" : "btn btn-ghost"}
+            aria-selected={mode === "sign-up"}
+            aria-controls="auth-panel"
+            tabIndex={mode === "sign-up" ? 0 : -1}
+            onClick={() => {
+              setMode("sign-up");
+              setError(null);
+              setNotice(null);
+            }}
+          >
+            {copy.signUpTitle}
+          </button>
+        ) : null}
       </div>
+      {signUpEnabled ? null : (
+        <p className="hint" role="status">
+          {copy.signUpUnavailable}
+        </p>
+      )}
       <p className="hint">{copy.both}</p>
       {google || facebook ? (
         <div className="auth-social">
@@ -131,10 +153,10 @@ export function AuthForm({
         className="sell-form"
         id="auth-panel"
         role="tabpanel"
-        aria-labelledby={mode === "sign-in" ? "auth-tab-sign-in" : "auth-tab-sign-up"}
+        aria-labelledby={activeMode === "sign-in" ? "auth-tab-sign-in" : "auth-tab-sign-up"}
         onSubmit={onSubmit}
       >
-        {mode === "sign-up" ? (
+        {activeMode === "sign-up" ? (
           <label>
             <span>{copy.name}</span>
             <input name="name" required maxLength={80} autoComplete="name" />
@@ -151,12 +173,12 @@ export function AuthForm({
             type="password"
             required
             minLength={8}
-            autoComplete={mode === "sign-up" ? "new-password" : "current-password"}
+            autoComplete={activeMode === "sign-up" ? "new-password" : "current-password"}
           />
           <small>{copy.passwordHint}</small>
         </label>
         <button type="submit" className="btn btn-primary" disabled={pending}>
-          {mode === "sign-up" ? copy.signUp : copy.signIn}
+          {activeMode === "sign-up" ? copy.signUp : copy.signIn}
         </button>
         {notice ? (
           <p className="hint" role="status">

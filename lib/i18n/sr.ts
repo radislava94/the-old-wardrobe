@@ -258,6 +258,8 @@ const sr: Dictionary = {
     configured: "Nalozi traže bazu i BETTER_AUTH_SECRET. Imejl radi i bez ključeva za Google ili Facebook.",
     verifySent: "Poslali smo link za potvrdu. Otvorite imejl pre prijave.",
     unverified: "Imejl još nije potvrđen. Otvorite link koji smo poslali.",
+    signUpUnavailable:
+      "Novi nalog imejlom je nedostupan dok ne možemo da pošaljemo link za potvrdu. Nalog se ne otvara.",
   },
   consent: {
     label: "Izbor kolačića",

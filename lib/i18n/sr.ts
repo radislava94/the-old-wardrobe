@@ -377,6 +377,30 @@ const sr: Dictionary = {
     contactTitle: "Kontakt",
     contactBody: "Za podatke pišite na",
   },
+  fees: {
+    freeLeft: (count) =>
+      count === 1 ? "1 besplatna prodaja preostala" : `${count} besplatnih prodaja preostalo`,
+    youReceive: (amount) => `Dobićeš ${amount}`,
+    sellerReceives: (amount) => `Prodavac dobija ${amount}`,
+    enterPrice: "Unesi cenu da vidiš koliko dobijaš.",
+    platformFee: "Naknada platforme",
+    cap: "Gornja granica naknade",
+    courierCharge: "Naknada kurira",
+    courierBuyer:
+      "Kupac plaća tarifu kurira kad paket stigne. Prodavnica ne određuje iznos.",
+    courierSeller:
+      "Ti plaćaš tarifu kurira. Ona nije deo naknade platforme i nije u iznosu koji dobijaš.",
+    dashboardTitle: "Naknada",
+    reasons: {
+      launch_promo:
+        "Promocija na početku je 0%. Red ostaje, da kasnija naknada ne bude iznenađenje. Fakturiše se na kraju meseca, samo za plaćene porudžbine.",
+      welcome_sale:
+        "Ova prodaja je jedna od besplatnih. Naknada je 0. Računa se tek kad je porudžbina plaćena.",
+      under_threshold: "Ispod praga. Naknada je 0. Ovo ne troši besplatnu prodaju.",
+      standard:
+        "5%, i naknada ne prelazi granicu. Fakturiše se na kraju meseca za plaćene porudžbine.",
+    },
+  },
 };
 
 export default sr;

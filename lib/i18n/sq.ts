@@ -372,6 +372,30 @@ const sq: Dictionary = {
     contactTitle: "Kontakt",
     contactBody: "Për të dhënat shkruani te",
   },
+  fees: {
+    freeLeft: (count) =>
+      count === 1 ? "1 shitje falas e mbetur" : `${count} shitje falas të mbetura`,
+    youReceive: (amount) => `Do të marrësh ${amount}`,
+    sellerReceives: (amount) => `Shitësi merr ${amount}`,
+    enterPrice: "Vendos një çmim që të shohësh sa merr.",
+    platformFee: "Tarifa e platformës",
+    cap: "Kufiri i tarifës",
+    courierCharge: "Tarifa e korrierit",
+    courierBuyer:
+      "Blerësi e paguan tarifën e korrierit kur paketa arrin. Dyqani nuk e cakton shumën.",
+    courierSeller:
+      "Ti e paguan tarifën e korrierit. Ajo nuk është pjesë e komisionit dhe nuk është në shumën që merr.",
+    dashboardTitle: "Komisioni",
+    reasons: {
+      launch_promo:
+        "Promovimi i nisjes është 0%. Rreshti mbetet, që një tarifë e mëvonshme të mos jetë surprizë. Faturat në fund të muajit, vetëm për porositë e paguara.",
+      welcome_sale:
+        "Kjo shitje është një nga të falat. Tarifa është 0. Numërohet vetëm kur porosia është paguar.",
+      under_threshold: "Nën prag. Tarifa është 0. Kjo nuk harxhon një shitje falas.",
+      standard:
+        "5%, dhe tarifa nuk e kalon kufirin. Faturat në fund të muajit për porositë e paguara.",
+    },
+  },
 };
 
 export default sq;

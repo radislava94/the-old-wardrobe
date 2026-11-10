@@ -15,6 +15,14 @@ import {
   saveForSeller,
   verifyPhoto,
 } from "./publish";
+import {
+  aiAvailability,
+  requestDescriptionDraft,
+  type AiEnv,
+  type DescriptionDraftResult,
+  type DraftPhoto,
+} from "./ai-draft";
+import { callDescriptionModel } from "./ai-gateway";
 import type { PublishResult, SaveListingInput } from "./publish-types";
 
 function store() {
@@ -134,4 +142,64 @@ export async function listOwnedPhotos(listingId: string): Promise<{ id: string; 
     console.error(error);
     return [];
   }
+}
+
+function aiEnv(): AiEnv {
+  return {
+    AI_DRAFT: process.env.AI_DRAFT,
+    AI_GATEWAY_API_KEY: process.env.AI_GATEWAY_API_KEY,
+  };
+}
+
+export async function listingAiAvailability() {
+  return aiAvailability(aiEnv());
+}
+
+export async function listingAiDraft(listingId: string): Promise<DescriptionDraftResult> {
+  const env = aiEnv();
+  if (!aiAvailability(env).available) return { ok: false, error: { code: "ai-off" } };
+  if (!databaseReady()) return { ok: false, error: { code: "ai-off" } };
+  const session = await getSession();
+  if (!session) return { ok: false, error: { code: "unauthenticated" } };
+  const listing = await listingsRepo.getById(listingId);
+  if (!listing || listing.sellerId !== session.user.id) {
+    return { ok: false, error: { code: "forbidden" } };
+  }
+  const key = env.AI_GATEWAY_API_KEY?.trim();
+  if (!key) return { ok: false, error: { code: "ai-off" } };
+  const rows = await getDb()
+    .select()
+    .from(listingPhotos)
+    .where(and(eq(listingPhotos.listingId, listingId), eq(listingPhotos.status, "ready")));
+  const photos: DraftPhoto[] = [];
+  for (const row of rows) {
+    if (row.ownerId !== session.user.id) continue;
+    if (row.contentType !== "image/jpeg" && row.contentType !== "image/png" && row.contentType !== "image/webp") {
+      continue;
+    }
+    const stored = await vercelBlobReader().read(row.pathname);
+    if (!stored) continue;
+    photos.push({
+      id: row.id,
+      status: "ready" as const,
+      contentType: row.contentType,
+      bytes: stored.bytes,
+    });
+  }
+  const descriptionBefore = listing.description;
+  const result = await requestDescriptionDraft({
+    env,
+    sellerId: session.user.id,
+    listing: {
+      description: listing.description,
+      sellerId: listing.sellerId,
+      country: listing.country,
+    },
+    photos,
+    run: (ready) => callDescriptionModel(ready, key),
+  });
+  if (listing.description !== descriptionBefore) {
+    return { ok: false, error: { code: "ai-invalid" } };
+  }
+  return result;
 }

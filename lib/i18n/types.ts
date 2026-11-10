@@ -203,6 +203,15 @@ export type Dictionary = {
     photoIncomplete: string;
     photoForeign: string;
     saveDraft: string;
+    aiAsk: string;
+    aiApplyDescription: string;
+    aiApplyWarning: string;
+    aiWarningLabel: string;
+    aiOff: string;
+    aiUnavailable: string;
+    aiTimeout: string;
+    aiRateLimited: string;
+    aiInvalid: string;
     photoLocal: string;
     signIn: string;
     priceDropNote: string;

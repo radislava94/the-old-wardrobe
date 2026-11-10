@@ -72,7 +72,8 @@ Every variable the product knows about, and the milestone that needs it. Copy [`
 | `BLOB_READ_WRITE_TOKEN` | sell flow | Vercel Blob for listing photos. The browser uploads to a server-issued pathname, then the server reads the stored object. Without it, publish returns an error and keeps the form. There is no filesystem fallback. |
 | `RESEND_API_KEY` | auth | Sends the email-verification message. Without this and `EMAIL_FROM`, email sign-up stays unavailable and no account is created. |
 | `EMAIL_FROM` | auth | From address for that message, for example `The Old Wardrobe <hello@theoldwardrobe.example>`. |
-| `AI_GATEWAY_API_KEY` | later AI | Key the Vercel AI SDK expects for AI Gateway. Documented only — no AI features yet. On Vercel the SDK can use the injected `VERCEL_OIDC_TOKEN` instead. |
+| `AI_DRAFT` | AI draft | Set to `on` only to allow a description draft. Unset or `off` keeps the form manual. |
+| `AI_GATEWAY_API_KEY` | AI draft | Gateway key. The draft stays off without this and without `AI_DRAFT=on`. |
 
 `VERCEL_URL`, `VERCEL_ENV`, and `VERCEL_PROJECT_PRODUCTION_URL` are set by Vercel. They are not part of `.env.example`.
 

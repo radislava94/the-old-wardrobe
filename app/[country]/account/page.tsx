@@ -323,7 +323,7 @@ export default async function AccountPage({
           <ul className="own-listings">
             {ownListings.map((listing) => (
               <li key={listing.id}>
-                {listing.visibility === "draft" ? (
+                {listing.visibility === "draft" || listing.moderation === "hidden" ? (
                   <span>{listing.title}</span>
                 ) : (
                   <Link href={`/${listing.country}/listing/${listing.slug}`}>{listing.title}</Link>

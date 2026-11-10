@@ -76,6 +76,11 @@ export const listings = pgTable(
     visibility: text("visibility").notNull().default("public"),
     /** False for a legacy single photo. Three verified photos set it. */
     photosCompliant: boolean("photos_compliant").notNull().default(false),
+    /** Separate from visibility. A person decides kept and hidden. */
+    moderation: text("moderation").notNull().default("clear"),
+    /** Profile id of the admin who decided. Not a name or email. */
+    moderationDecidedBy: text("moderation_decided_by"),
+    moderationDecidedAt: text("moderation_decided_at"),
   },
   (table) => [
     uniqueIndex("listings_country_slug").on(table.country, table.slug),
@@ -100,6 +105,10 @@ export const listings = pgTable(
       sql`${table.freeShippingOver} is null or ${table.freeShippingOver} > 0`,
     ),
     check("listings_visibility", sql`${table.visibility} in ('draft', 'public', 'sold')`),
+    check(
+      "listings_moderation",
+      sql`${table.moderation} in ('clear', 'queued', 'kept', 'hidden')`,
+    ),
   ],
 );
 
@@ -128,6 +137,55 @@ export const listingPhotos = pgTable(
     check(
       "listing_photos_type",
       sql`${table.contentType} is null or ${table.contentType} in ('image/jpeg', 'image/png', 'image/webp')`,
+    ),
+  ],
+);
+
+/**
+ * A person reviews these. Evidence has no contact details.
+ * Rows are deleted after `retain_until`.
+ */
+export const moderationFlags = pgTable(
+  "moderation_flags",
+  {
+    id: text("id").primaryKey(),
+    listingId: text("listing_id")
+      .notNull()
+      .references(() => listings.id),
+    evidence: text("evidence").notNull(),
+    confidence: integer("confidence").notNull(),
+    provenance: text("provenance").notNull(),
+    openedAt: text("opened_at").notNull(),
+    retainUntil: text("retain_until").notNull(),
+    decidedBy: text("decided_by"),
+    decidedAt: text("decided_at"),
+  },
+  (table) => [
+    index("moderation_flags_listing").on(table.listingId),
+    check("moderation_flags_confidence", sql`${table.confidence} between 0 and 100`),
+  ],
+);
+
+/** Decision trail. Actor is a profile id or the rule name, never an email. */
+export const moderationLogs = pgTable(
+  "moderation_logs",
+  {
+    id: text("id").primaryKey(),
+    listingId: text("listing_id")
+      .notNull()
+      .references(() => listings.id),
+    flagId: text("flag_id").notNull(),
+    fromState: text("from_state").notNull(),
+    toState: text("to_state").notNull(),
+    actorId: text("actor_id").notNull(),
+    at: text("at").notNull(),
+    retainUntil: text("retain_until").notNull(),
+  },
+  (table) => [
+    index("moderation_logs_listing").on(table.listingId),
+    check(
+      "moderation_logs_states",
+      sql`${table.fromState} in ('clear', 'queued', 'kept', 'hidden') and ${table.toState} in ('clear', 'queued', 'kept', 'hidden')`,
     ),
   ],
 );

@@ -10,6 +10,7 @@ export default defineConfig({
       "e2e/**",
       "tests/listing-publish.test.ts",
       "tests/listing-ai-draft.test.ts",
+      "tests/moderation.test.ts",
     ],
   },
 });

@@ -3,8 +3,10 @@
 import { and, eq, ne } from "drizzle-orm";
 import { getSession } from "../auth/session";
 import { ensureProfile } from "../auth/profile";
+import { listingsRepo } from "../data";
 import { getDb } from "../db/client";
 import { listingPhotos, profiles } from "../db/schema";
+import { notifyPriceDrop } from "../favourites/price-drop";
 import { createDbPublishStore, vercelBlobReader } from "./publish-db";
 import {
   deletePhoto,
@@ -55,6 +57,7 @@ export async function saveListing(input: SaveListingInput): Promise<PublishResul
     if (input.country === "mk" || input.country === "bg" || input.country === "sr-rs" || input.country === "sq-al") {
       await ensureProfile(session.user, input.country);
     }
+    const previous = input.id ? await listingsRepo.getById(input.id) : null;
     const result = await saveForSeller(store(), vercelBlobReader(), session.user.id, input);
     if (
       result.ok &&
@@ -67,6 +70,20 @@ export async function saveListing(input: SaveListingInput): Promise<PublishResul
           ...(input.city.trim() ? { city: input.city.trim() } : {}),
         })
         .where(eq(profiles.id, session.user.id));
+    }
+    if (result.ok && previous) {
+      const saved = await listingsRepo.getById(result.listing.id);
+      if (
+        saved &&
+        previous.currency === saved.currency &&
+        saved.priceAmount < previous.priceAmount
+      ) {
+        try {
+          await notifyPriceDrop(saved, previous.priceAmount, session.user.email);
+        } catch (error) {
+          console.error(error);
+        }
+      }
     }
     return result;
   });

@@ -21,8 +21,6 @@ const sr: Dictionary = {
       `${name} prodaje odeću iz druge ruke u gradu ${city}. Ocene kupaca na The Old Wardrobe.`,
   },
   tagline: "Iz druge ruke · Osn. 2026",
-  topbar:
-    "✦ Besplatna dostava u zemlji za porudžbine preko 7.000 RSD · Svaki komad proveren ručno ✦",
   nav: {
     browse: "Pregledaj",
     sell: "Prodaj",

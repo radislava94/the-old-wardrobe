@@ -10,8 +10,9 @@ import type { ListingRepository } from "./repository";
 
 /**
  * Postgres implementation of the listing seam.
- * Callers decide when a database is configured; this class expects
- * DATABASE_URL and does not fall back to memory.
+ * Callers decide when a database is configured. This class expects
+ * DATABASE_URL and lets connection and missing-table errors throw.
+ * Public catalogue reads catch those in `readPublicCatalogue`.
  */
 export class PostgresListingRepository implements ListingRepository {
   async listByCountry(country: CountryCode): Promise<Listing[]> {

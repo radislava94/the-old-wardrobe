@@ -13,7 +13,7 @@ npm install
 npm run dev
 ```
 
-Without `DATABASE_URL`, pages read the placeholder catalog from memory. `npm run build` does not open a database connection.
+Without `DATABASE_URL`, pages read the placeholder catalog from memory. `npm run build` does not open a database connection. If `DATABASE_URL` is set but Postgres cannot be reached, or the catalogue tables (`listings`, `profiles`, `reviews`) are missing, public shop pages serve that same placeholder catalog. Account, session, and publishing still fail instead of pretending the write or the sign-in worked.
 
 Local Postgres (the same schema Neon uses in production):
 
@@ -105,7 +105,7 @@ Posts are MDX files under `content/blog/{mk|bg|sr-rs|sq-al}/{slug}.mdx`. Frontma
 - `app/` — App Router pages, `robots.ts`, per-country sitemaps and the sitemap index
 - `components/` — header, footer, cards, forms
 - `lib/i18n/` — UI dictionaries (`mk`, `bg`, `sr`, `sq`)
-- `lib/data/` — `ListingRepository` and `ReviewRepository`. Postgres when `DATABASE_URL` is set, otherwise the in-memory catalog
+- `lib/data/` — `ListingRepository` and `ReviewRepository`. Postgres when `DATABASE_URL` is set and the catalogue tables are readable; otherwise the in-memory catalog, including when the database is unreachable or those tables are missing. Account and sell writes do not use that fallback
 - `lib/db/` — Drizzle schema and a lazy Postgres client
 - `drizzle/` — SQL migrations
 - `scripts/` — `db:migrate` and `db:seed`
@@ -129,7 +129,7 @@ Every seller is the same `User` type. Buyers rate that person after a purchase. 
 - Listings, sellers, the sample seller reviews, hero statistics (12,400 pieces and the rest), the door-tag count, and the homepage quote. The "leave a review" form stays closed: a review still needs a completed order, and checkout is not built.
 - Checkout, favourites, the cart icons, and the attic letter. The attic letter still keeps what you type in the browser and then discards it. A signed-in account can create and edit a listing, including a photo. An account can sign in with email once that address is verified, and with Google or Facebook when those keys are set. Email sign-up stays unavailable, and no account is created, until `RESEND_API_KEY` and `EMAIL_FROM` can send the verification message. The same account buys and sells. Deleting it removes the profile, that person's listings, and their reviews. A JSON export is on the account page.
 - The contact address `hello@theoldwardrobe.example`.
-- Shipping lines in the top bar illustrate the mockup's "free over about €60" sentence. They are not a delivery policy.
+- The country header used to claim free shipping and that every piece was checked by hand. That bar is gone. Those lines are not a policy the shop can stand behind. The static mockup still shows the old bar.
 - Strings marked `TODO` in `lib/i18n` and `lib/rates.ts` need a native check or a live rate.
 
 ## SEO

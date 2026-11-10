@@ -6,6 +6,7 @@ const sections = [
     lang: "mk",
     hreflang: "mk-MK",
     price: /ден$/,
+    handChecked: "Секое парче проверено рачно",
     blog: "/mk/blog",
     blogHeading: "Дневник од гардеробата",
     article: "/mk/blog/perenje-volna",
@@ -16,6 +17,7 @@ const sections = [
     lang: "bg",
     hreflang: "bg-BG",
     price: /^€/,
+    handChecked: "Всяко парче е проверено на ръка",
     blog: "/bg/blog",
     blogHeading: "Дневник от гардероба",
     article: "/bg/blog/prane-na-valna",
@@ -26,6 +28,7 @@ const sections = [
     lang: "sr-Latn",
     hreflang: "sr-RS",
     price: /RSD$/,
+    handChecked: "Svaki komad proveren ručno",
     blog: "/sr-rs/blog",
     blogHeading: "Dnevnik iz ormara",
     article: "/sr-rs/blog/pranje-vune",
@@ -36,6 +39,7 @@ const sections = [
     lang: "sq",
     hreflang: "sq-AL",
     price: / L$/,
+    handChecked: "Çdo copë e kontrolluar me dorë",
     blog: "/sq-al/blog",
     blogHeading: "Ditar nga garderoba",
     article: "/sq-al/blog/larja-e-leshit",
@@ -58,6 +62,9 @@ for (const section of sections) {
     const href = await alternate.first().getAttribute("href");
     expect(href).toBeTruthy();
     expect(new URL(href!).pathname).toBe(section.path);
+
+    await expect(page.locator(".topbar")).toHaveCount(0);
+    await expect(page.getByText(section.handChecked)).toHaveCount(0);
 
     const prices = page.locator(".price");
     await expect(prices.first()).toBeVisible();

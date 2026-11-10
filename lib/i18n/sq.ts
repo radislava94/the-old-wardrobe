@@ -21,8 +21,6 @@ const sq: Dictionary = {
       `${name} shet rroba të dorës së dytë në ${city}. Vlerësime nga blerësit te The Old Wardrobe.`,
   },
   tagline: "Dorë e dytë · Them. 2026",
-  topbar:
-    "✦ Transport falas brenda vendit për porosi mbi 6.000 L · Çdo copë e kontrolluar me dorë ✦",
   nav: {
     browse: "Shfleto",
     sell: "Shit",

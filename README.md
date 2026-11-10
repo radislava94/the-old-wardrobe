@@ -129,7 +129,7 @@ Every seller is the same `User` type. Buyers rate that person after a purchase. 
 - Listings, sellers, the sample seller reviews, hero statistics (12,400 pieces and the rest), the door-tag count, and the homepage quote. A review still needs a paid order. Refused and cancelled orders do not unlock one.
 - The cart icons and the attic letter. The attic letter still keeps what you type in the browser and then discards it. A signed-in buyer can save a listing and remove it; saved pieces are on the account page and in the data export. A signed-in account can create and edit a listing, including a photo, and can place a cash-on-delivery order. An account can sign in with email once that address is verified, and with Google or Facebook when those keys are set. Email sign-up stays unavailable, and no account is created, until `RESEND_API_KEY` and `EMAIL_FROM` can send the verification message. The same account buys and sells. Deleting it removes the profile, that person's listings, their reviews, and their saved listings. A JSON export is on the account page.
 - The contact address `hello@theoldwardrobe.example`.
-- Shipping lines in the top bar illustrate the mockup's "free over about €60" sentence. They are not a delivery policy.
+- The top bar says sellers have buyer ratings, the buyer pays the courier when the parcel arrives, and a listing can be reported. Sending that report stores a row. The bar does not say every piece is checked by hand.
 - Strings marked `TODO` in `lib/i18n` and `lib/rates.ts` need a native check or a live rate.
 
 ## SEO

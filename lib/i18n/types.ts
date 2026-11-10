@@ -317,6 +317,19 @@ export type Dictionary = {
     contactTitle: string;
     contactBody: string;
   };
+  report: {
+    title: string;
+    reason: string;
+    notAsDescribed: string;
+    prohibited: string;
+    other: string;
+    note: string;
+    notePlaceholder: string;
+    submit: string;
+    stored: string;
+    already: string;
+    signIn: string;
+  };
   fees: {
     freeLeft: (count: number) => string;
     youReceive: (amount: string) => string;

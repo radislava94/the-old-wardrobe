@@ -69,7 +69,7 @@ Every variable the product knows about, and the milestone that needs it. Copy [`
 | `GOOGLE_CLIENT_SECRET` | auth | Google sign-in secret. |
 | `FACEBOOK_CLIENT_ID` | auth | Facebook sign-in. The button is shown only when this and the secret are both set. |
 | `FACEBOOK_CLIENT_SECRET` | auth | Facebook sign-in secret. |
-| `BLOB_READ_WRITE_TOKEN` | sell flow | Vercel Blob for listing photos. Without it, photos are saved under `public/uploads`. |
+| `BLOB_READ_WRITE_TOKEN` | sell flow | Vercel Blob for listing photos. Required in production. Locally, without it, the browser compresses the photo and the dev server stores it under `public/uploads`. |
 | `RESEND_API_KEY` | auth | Sends the email-verification message. Without this and `EMAIL_FROM`, email sign-up stays unavailable and no account is created. |
 | `EMAIL_FROM` | auth | From address for that message, for example `The Old Wardrobe <hello@theoldwardrobe.example>`. |
 | `AI_GATEWAY_API_KEY` | later AI | Key the Vercel AI SDK expects for AI Gateway. Documented only — no AI features yet. On Vercel the SDK can use the injected `VERCEL_OIDC_TOKEN` instead. |
@@ -85,7 +85,8 @@ Every variable the product knows about, and the milestone that needs it. Copy [`
 | `/{country}/{category}` | Category. Slugs are localized (`/mk/fustani`, `/bg/rokli`, `/sr-rs/haljine`, `/sq-al/fustane`, and the same for coats, knitwear, denim, accessories) |
 | `/{country}/listing/{slug}` | Listing. Sold pieces stay indexable |
 | `/{country}/seller/{handle}` | Seller profile: rating, listings, reviews |
-| `/{country}/sell` | Sell form. Nothing is stored |
+| `/{country}/sell` | Create a listing. Signed-in accounts only |
+| `/{country}/sell/{id}` | Edit your own listing |
 | `/{country}/search?q=` | Search. `noindex` |
 | `/{country}/blog` | Journal index |
 | `/{country}/blog/{slug}` | Journal article. The slug is the MDX filename |
@@ -126,7 +127,7 @@ Every seller is the same `User` type. Buyers rate that person after a purchase. 
 
 - Exchange rates in `lib/rates.ts`. They are round reference figures, marked in that file, and are not for payment. Bulgaria is euros only (the lev was replaced on 1 January 2026).
 - Listings, sellers, the sample seller reviews, hero statistics (12,400 pieces and the rest), the door-tag count, and the homepage quote. The "leave a review" form stays closed: a review still needs a completed order, and checkout is not built.
-- Checkout, favourites, the cart icons, and the attic letter. The sell form and the letter form keep what you type in the browser and then discard it. An account can sign in with email once that address is verified, and with Google or Facebook when those keys are set. Email sign-up stays unavailable, and no account is created, until `RESEND_API_KEY` and `EMAIL_FROM` can send the verification message. The same account buys and sells. Deleting it removes the profile, that person's listings, and their reviews. A JSON export is on the account page.
+- Checkout, favourites, the cart icons, and the attic letter. The attic letter still keeps what you type in the browser and then discards it. A signed-in account can create and edit a listing, including a photo. An account can sign in with email once that address is verified, and with Google or Facebook when those keys are set. Email sign-up stays unavailable, and no account is created, until `RESEND_API_KEY` and `EMAIL_FROM` can send the verification message. The same account buys and sells. Deleting it removes the profile, that person's listings, and their reviews. A JSON export is on the account page.
 - The contact address `hello@theoldwardrobe.example`.
 - Shipping lines in the top bar illustrate the mockup's "free over about €60" sentence. They are not a delivery policy.
 - Strings marked `TODO` in `lib/i18n` and `lib/rates.ts` need a native check or a live rate.

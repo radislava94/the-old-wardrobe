@@ -29,7 +29,7 @@ export function ListingCard({
   soldLabel: string;
   soldSmall: string;
   rotation: string;
-  image: StaticImageData;
+  image: StaticImageData | string;
   sellerName: string;
   sellerHref: string;
   summary: RatingSummary;

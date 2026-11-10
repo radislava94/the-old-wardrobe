@@ -12,8 +12,6 @@ import { organizationJsonLd } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import "../globals.css";
 
-export const dynamicParams = false;
-
 export function generateStaticParams() {
   return countryCodes.map((country) => ({ country }));
 }

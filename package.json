@@ -15,6 +15,7 @@
     "db:setup": "tsx scripts/db-migrate.ts && tsx scripts/db-seed.ts"
   },
   "dependencies": {
+    "@vercel/blob": "^2.8.2",
     "better-auth": "^1.7.15",
     "drizzle-orm": "^0.45.4",
     "gray-matter": "^4.0.3",

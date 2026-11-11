@@ -134,18 +134,25 @@ export async function removeListingPhoto(listingId: string, photoId: string) {
   });
 }
 
-export async function listOwnedPhotos(listingId: string): Promise<{ id: string; status: string }[]> {
+export async function listOwnedPhotos(
+  listingId: string,
+): Promise<{ id: string; status: string; url: string | null }[]> {
   if (!databaseReady()) return [];
   const session = await getSession();
   if (!session) return [];
   try {
     const rows = await getDb()
-      .select({ id: listingPhotos.id, status: listingPhotos.status, ownerId: listingPhotos.ownerId })
+      .select({
+        id: listingPhotos.id,
+        status: listingPhotos.status,
+        ownerId: listingPhotos.ownerId,
+        url: listingPhotos.url,
+      })
       .from(listingPhotos)
       .where(and(eq(listingPhotos.listingId, listingId), ne(listingPhotos.status, "deleted")));
     return rows
       .filter((row) => row.ownerId === session.user.id)
-      .map((row) => ({ id: row.id, status: row.status }));
+      .map((row) => ({ id: row.id, status: row.status, url: row.url }));
   } catch (error) {
     console.error(error);
     return [];

@@ -39,6 +39,12 @@ export function sellCopy(dict: ReturnType<typeof getDictionary>) {
     sellerKind: dict.sell.sellerKind,
     sellerPrivate: dict.sell.sellerPrivate,
     sellerBusiness: dict.sell.sellerBusiness,
+    flow: dict.sell.flow,
+    signInLink: dict.account.signIn,
+    sizeTagPattern: dict.sizeTag("{size}"),
+    shippingFree: dict.listing.shippingFree,
+    shippingNone: dict.listing.shippingNone,
+    shippingOverPattern: dict.listing.shippingOver("{amount}"),
     errors: {
       fields: dict.sell.photoMissing,
       photo: dict.sell.photoMissing,

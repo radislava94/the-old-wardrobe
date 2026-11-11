@@ -71,6 +71,10 @@ export const listings = pgTable(
     freeShipping: boolean("free_shipping").notNull().default(false),
     /** Bundle total, in `currency`, at which shipping becomes free. */
     freeShippingOver: integer("free_shipping_over"),
+    /** Separate from moderation. Drafts are not on the public site. */
+    visibility: text("visibility").notNull().default("public"),
+    /** False for a legacy single photo. Three verified photos set it. */
+    photosCompliant: boolean("photos_compliant").notNull().default(false),
   },
   (table) => [
     uniqueIndex("listings_country_slug").on(table.country, table.slug),
@@ -93,6 +97,36 @@ export const listings = pgTable(
     check(
       "listings_free_shipping_over",
       sql`${table.freeShippingOver} is null or ${table.freeShippingOver} > 0`,
+    ),
+    check("listings_visibility", sql`${table.visibility} in ('draft', 'public', 'sold')`),
+  ],
+);
+
+export const listingPhotos = pgTable(
+  "listing_photos",
+  {
+    id: text("id").primaryKey(),
+    listingId: text("listing_id")
+      .notNull()
+      .references(() => listings.id),
+    ownerId: text("owner_id").notNull(),
+    status: text("status").notNull(),
+    contentType: text("content_type"),
+    byteSize: integer("byte_size"),
+    pathname: text("pathname").notNull(),
+    contentHash: text("content_hash"),
+    url: text("url"),
+  },
+  (table) => [
+    uniqueIndex("listing_photos_pathname").on(table.pathname),
+    index("listing_photos_listing").on(table.listingId),
+    check(
+      "listing_photos_status",
+      sql`${table.status} in ('pending', 'ready', 'failed', 'deleted')`,
+    ),
+    check(
+      "listing_photos_type",
+      sql`${table.contentType} is null or ${table.contentType} in ('image/jpeg', 'image/png', 'image/webp')`,
     ),
   ],
 );

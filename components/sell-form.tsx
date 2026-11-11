@@ -3,22 +3,25 @@
 import { upload } from "@vercel/blob/client";
 import { useState } from "react";
 import type { CountryCode } from "@/lib/countries";
-import { LOCAL_PHOTO_BYTES, photoProblem } from "@/lib/listings/photo-rules";
+import { photoProblem } from "@/lib/listings/photo-rules";
+import {
+  prepareListingPhoto,
+  saveListing,
+  verifyListingPhoto,
+} from "@/lib/listings/actions";
+import type { PublishResult } from "@/lib/listings/publish-types";
+import { signInPath } from "@/lib/paths";
 import type { CategoryKey } from "@/lib/types";
 
 type Option = { value: string; label: string };
 
 export function SellForm({
-  action,
   countries,
   categories,
   initial,
   blobConfigured,
-  production,
-  error,
   copy,
 }: {
-  action: (formData: FormData) => void;
   countries: {
     code: CountryCode;
     label: string;
@@ -38,13 +41,12 @@ export function SellForm({
     condition: string;
     story: string;
     photoUrl: string;
+    photoIds?: string[];
     sellerKind: "private" | "business";
     freeShipping: boolean;
     freeShippingOver: string;
   };
   blobConfigured: boolean;
-  production: boolean;
-  error: string | null;
   copy: {
     name: string;
     namePlaceholder: string;
@@ -59,6 +61,7 @@ export function SellForm({
     photoHint: string;
     photoLocal: string;
     photoBlob: string;
+    photoCount: string;
     submit: string;
     brand: string;
     condition: string;
@@ -72,64 +75,123 @@ export function SellForm({
     sellerKind: string;
     sellerPrivate: string;
     sellerBusiness: string;
+    signIn: string;
+    saveDraft: string;
     errors: Record<string, string>;
   };
 }) {
   const [country, setCountry] = useState(initial.country);
+  const [listingId, setListingId] = useState(initial.id ?? "");
+  const [photoIds, setPhotoIds] = useState<string[]>(initial.photoIds ?? []);
   const [preview, setPreview] = useState<string | null>(initial.photoUrl || null);
   const [clientError, setClientError] = useState<string | null>(null);
+  const [failure, setFailure] = useState<PublishResult | null>(null);
   const [pending, setPending] = useState(false);
   const selected = countries.find((item) => item.code === country) ?? countries[0];
-  const shownError = clientError ?? error;
+
+  function readInput(form: HTMLFormElement, intent: "draft" | "publish", ids: string[]) {
+    const data = new FormData(form);
+    const over = String(data.get("freeShippingOver") ?? "").trim();
+    return {
+      id: listingId || undefined,
+      intent,
+      country,
+      title: String(data.get("title") ?? ""),
+      story: String(data.get("story") ?? ""),
+      category: String(data.get("category") ?? ""),
+      size: String(data.get("size") ?? ""),
+      city: String(data.get("city") ?? ""),
+      brand: String(data.get("brand") ?? ""),
+      condition: String(data.get("condition") ?? ""),
+      price: Number(data.get("price")),
+      freeShipping: data.get("freeShipping") === "on",
+      freeShippingOver: over ? Number(over) : null,
+      sellerKind: data.get("sellerKind") === "business" ? "business" as const : "private" as const,
+      photoIds: ids,
+    };
+  }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setClientError(null);
+    setFailure(null);
     const form = event.currentTarget;
-    const data = new FormData(form);
-    const file = data.get("photo");
-    data.delete("photo");
-    if (file instanceof File && file.size > 0) {
+    const intent = (event.nativeEvent as SubmitEvent).submitter?.getAttribute("value") === "draft"
+      ? "draft"
+      : "publish";
+    const selected = form.querySelector<HTMLInputElement>("input[name=photo]")?.files;
+    const files = selected ? [...selected] : [];
+    for (const file of files) {
       const problem = photoProblem(file);
       if (problem) {
         setClientError(problem);
         return;
       }
-      if (blobConfigured) {
-        setPending(true);
-        try {
-          const blob = await upload(file.name, file, {
-            access: "public",
-            handleUploadUrl: "/api/listing-photo",
-          });
-          data.set("uploadedPhoto", blob.url);
-        } catch {
-          setClientError("photo");
-          setPending(false);
-          return;
-        }
-      } else if (production) {
-        setClientError("photo-blob");
-        return;
-      } else {
-        setPending(true);
-        try {
-          data.set("photo", await compressForLocal(file));
-        } catch {
-          setClientError("photo-size");
-          setPending(false);
-          return;
-        }
-      }
+    }
+    if ((files.length > 0 || intent === "publish") && !blobConfigured) {
+      setClientError("photo-blob");
+      return;
     }
     setPending(true);
-    await action(data);
+    try {
+      let id = listingId;
+      if (!id) {
+        const created = await saveListing(readInput(form, "draft", photoIds));
+        if (!created.ok) {
+          setFailure(created);
+          return;
+        }
+        id = created.listing.id;
+        setListingId(id);
+      }
+      const ids = [...photoIds];
+      for (const file of files) {
+        const prepared = await prepareListingPhoto(id);
+        if (!prepared.ok || !("pathname" in prepared)) {
+          setFailure(prepared.ok ? null : prepared);
+          return;
+        }
+        try {
+          await upload(prepared.pathname, file, {
+            access: "public",
+            handleUploadUrl: "/api/listing-photo",
+            clientPayload: JSON.stringify({ photoId: prepared.photoId }),
+          });
+        } catch {
+          const verified = await verifyListingPhoto(id, prepared.photoId);
+          if (!verified.ok) setFailure(verified);
+          else setClientError("photo");
+          return;
+        }
+        const verified = await verifyListingPhoto(id, prepared.photoId);
+        if (!verified.ok || !("photoId" in verified)) {
+          if (!verified.ok) setFailure(verified);
+          return;
+        }
+        if (!ids.includes(verified.photoId)) ids.push(verified.photoId);
+      }
+      setPhotoIds(ids);
+      const saved = await saveListing({ ...readInput(form, intent, ids), id });
+      if (!saved.ok) {
+        setFailure(saved);
+        return;
+      }
+      if (intent === "publish") {
+        window.location.assign(`/${saved.listing.country}/listing/${saved.listing.slug}`);
+      }
+    } catch {
+      setFailure({
+        ok: false,
+        error: { code: "invalid", fields: [{ field: "database", code: "database" }] },
+      });
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
     <form className="sell-form" onSubmit={onSubmit}>
-      {initial.id ? <input type="hidden" name="id" value={initial.id} /> : null}
-      {initial.photoUrl ? <input type="hidden" name="existingPhoto" value={initial.photoUrl} /> : null}
+      {listingId ? <input type="hidden" name="id" value={listingId} /> : null}
       <fieldset className="choice-set">
         <legend>{copy.sellerKind}</legend>
         <label className="choice">
@@ -285,8 +347,8 @@ export function SellForm({
         <input
           name="photo"
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
-          required={!initial.photoUrl}
+          accept="image/jpeg,image/png,image/webp"
+          multiple
           onChange={(event) => {
             const file = event.target.files?.[0];
             setClientError(file ? photoProblem(file) : null);
@@ -297,56 +359,44 @@ export function SellForm({
           }}
         />
         <small>
-          {production && !blobConfigured
-            ? copy.photoBlob
-            : blobConfigured
-              ? copy.photoHint
-              : copy.photoLocal}
+          {copy.photoCount} {blobConfigured ? copy.photoHint : copy.photoBlob}
         </small>
       </label>
       {preview ? (
         // eslint-disable-next-line @next/next/no-img-element -- local preview, not a stored image
         <img className="sell-preview" src={preview} alt="" />
       ) : null}
-      {shownError ? (
+      {clientError ? (
         <p className="form-error" role="alert">
-          {copy.errors[shownError] ?? copy.errors.photo}
+          {copy.errors[clientError] ?? copy.errors.photo}
         </p>
       ) : null}
-      <button type="submit" className="btn btn-primary" disabled={pending}>
+      {failure && !failure.ok ? (
+        <div className="form-error" role="alert">
+          {failure.error.code === "unauthenticated" ? (
+            <a
+              href={`${signInPath(country)}?next=${encodeURIComponent(
+                listingId ? `/${country}/sell/${listingId}` : `/${country}/sell`,
+              )}`}
+            >
+              {copy.signIn}
+            </a>
+          ) : null}
+          {failure.error.code === "forbidden" ? <p>{copy.errors.forbidden}</p> : null}
+          {failure.error.fields?.map((field) => (
+            <p key={`${field.field}-${field.code}`}>{copy.errors[field.code] ?? field.code}</p>
+          ))}
+          {failure.error.photos?.map((photo) => (
+            <p key={`${photo.id ?? "photo"}-${photo.code}`}>{copy.errors[photo.code] ?? photo.code}</p>
+          ))}
+        </div>
+      ) : null}
+      <button type="submit" className="btn btn-ghost" name="intent" value="draft" disabled={pending}>
+        {copy.saveDraft}
+      </button>
+      <button type="submit" className="btn btn-primary" name="intent" value="publish" disabled={pending}>
         {copy.submit}
       </button>
     </form>
   );
-}
-
-async function compressForLocal(file: File): Promise<File> {
-  const bitmap = await createImageBitmap(file);
-  const maxEdge = 1600;
-  const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height));
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-  const context = canvas.getContext("2d");
-  if (!context) throw new Error("photo-size");
-  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  bitmap.close();
-  let quality = 0.82;
-  let blob = await canvasToJpeg(canvas, quality);
-  while (blob.size > LOCAL_PHOTO_BYTES && quality > 0.4) {
-    quality -= 0.12;
-    blob = await canvasToJpeg(canvas, quality);
-  }
-  if (blob.size > LOCAL_PHOTO_BYTES) throw new Error("photo-size");
-  return new File([blob], "photo.jpg", { type: "image/jpeg" });
-}
-
-function canvasToJpeg(canvas: HTMLCanvasElement, quality: number): Promise<Blob> {
-  return new Promise((resolve, reject) => {
-    canvas.toBlob(
-      (blob) => (blob ? resolve(blob) : reject(new Error("photo-type"))),
-      "image/jpeg",
-      quality,
-    );
-  });
 }

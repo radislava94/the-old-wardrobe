@@ -99,7 +99,7 @@ export default async function OrderPage({
           }}
         />
         <p className="hint">
-          {order.shippingPaidBy === "seller" ? dict.order.shippingFree : dict.order.shippingExtra}
+          {dict.order.shippingExtra}
         </p>
         <p className="hint">{dict.order.remit}</p>
         {order.codStatus === "pending" && order.sellerId === profile.id ? (

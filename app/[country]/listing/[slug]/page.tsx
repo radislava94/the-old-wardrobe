@@ -373,7 +373,7 @@ export default async function ListingPage({
                   </p>
                   <p className="hint">{dict.order.noFee}</p>
                   <p className="hint">
-                    {listing.freeShipping ? dict.order.shippingFree : dict.order.shippingExtra}
+                    {dict.order.shippingExtra}
                   </p>
                   <button type="submit" className="btn btn-primary">
                     {dict.order.place}

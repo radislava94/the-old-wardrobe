@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Breadcrumbs } from "@/components/breadcrumbs";
@@ -11,7 +10,7 @@ import { categoryKeys } from "@/lib/categories";
 import { countries, countryCodes, isCountry, type CountryCode } from "@/lib/countries";
 import { getDictionary } from "@/lib/i18n";
 import { heroPhoto } from "@/lib/photos";
-import { homePath, sellPath, signInPath } from "@/lib/paths";
+import { homePath, sellPath } from "@/lib/paths";
 import { UNITS_PER_EUR } from "@/lib/rates";
 import { getSession } from "@/lib/auth/session";
 import { profileForAuthUser } from "@/lib/auth/profile";
@@ -66,7 +65,7 @@ export default async function SellPage({
 
   return (
     <section className="page-block">
-      <div className="wrap sell-layout">
+      <div className="wrap sell-layout sell-layout-wide">
         <Breadcrumbs
           label={dict.breadcrumbLabel}
           items={[
@@ -83,15 +82,9 @@ export default async function SellPage({
             1 EUR = {UNITS_PER_EUR.MKD} MKD · {UNITS_PER_EUR.RSD} RSD · {UNITS_PER_EUR.ALL} ALL
           </p>
         </div>
-        {session ? null : (
-          <p className="lead">
-            {dict.sell.signIn}{" "}
-            <Link href={`${signInPath(raw)}?next=${encodeURIComponent(sellPath(raw))}`}>
-              {dict.account.signIn}
-            </Link>
-          </p>
-        )}
         <SellForm
+            signedIn={Boolean(session)}
+            returnPath={sellPath(raw)}
             blobConfigured={Boolean(process.env.BLOB_READ_WRITE_TOKEN)}
             countries={countryCodes.map((code) => ({
               code,

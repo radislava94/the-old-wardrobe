@@ -64,8 +64,6 @@ export default async function EditListingPage({
               story: "",
               photoUrl: "",
               sellerKind: "private",
-              freeShipping: false,
-              freeShippingOver: "",
             }}
             copy={sellCopy(dict)}
             freeSalesLeft={commissionConfig.welcomeSales}
@@ -132,8 +130,6 @@ export default async function EditListingPage({
             photoIds: readyPhotos.map((photo) => photo.id),
             photoPreviews: readyPhotos.map((photo) => ({ id: photo.id, url: photo.url })),
             sellerKind: profile.sellerKind === "business" ? "business" : "private",
-            freeShipping: Boolean(listing.freeShipping),
-            freeShippingOver: listing.freeShippingOver ? String(listing.freeShippingOver) : "",
           }}
           copy={{
             ...formCopy,

@@ -167,8 +167,7 @@ export default async function AccountPage({
         <section className="account-block">
           <h2>{dict.listing.bundleTitle}</h2>
           <p className="hint">{dict.listing.bundleHint}</p>
-          {groups.map((group) => {
-            return (
+          {groups.map((group) => (
               <div key={group.id}>
                 <h3>{group.sellerName}</h3>
                 <ul className="own-listings">
@@ -215,8 +214,7 @@ export default async function AccountPage({
                   </form>
                 ) : null}
               </div>
-            );
-          })}
+          ))}
         </section>
 
         <section className="account-block">
@@ -272,7 +270,7 @@ export default async function AccountPage({
               merchandiseTotal: listing.priceAmount,
               currency: listing.currency,
               freeSalesLeft,
-              freeShipping: Boolean(listing.freeShipping),
+              freeShipping: false,
             });
             return (
               <div key={listing.id}>

@@ -11,7 +11,6 @@ import {
   firstBlockingStep,
   issuesForPhotos,
   issuesForPrice,
-  issuesForShipping,
   issuesForStory,
   loadDraft,
   moveItem,
@@ -46,7 +45,6 @@ function check(overrides: Partial<Parameters<typeof firstBlockingStep>[0]> = {})
     categories,
     cities,
     price: "1800",
-    freeShippingOver: "",
     ...overrides,
   };
 }
@@ -66,8 +64,6 @@ function draft(overrides: Partial<StoredSellDraft> = {}): StoredSellDraft {
     story: "Една реченица за палтото.",
     city: "Скопје",
     price: "1800",
-    freeShipping: false,
-    freeShippingOver: "",
     photos: [],
     ...overrides,
   };
@@ -109,23 +105,17 @@ describe("sell step validation", () => {
     expect(issuesForStory(story({ title: "а".repeat(81) }), categories, cities)).toEqual(["title"]);
   });
 
-  it("wants a whole price and treats a blank shipping threshold as fine", () => {
+  it("wants a whole price", () => {
     expect(issuesForPrice("")).toEqual(["price"]);
     expect(issuesForPrice("0")).toEqual(["price"]);
     expect(issuesForPrice("1.5")).toEqual(["price"]);
     expect(issuesForPrice("1800")).toEqual([]);
-    expect(issuesForShipping("")).toEqual([]);
-    expect(issuesForShipping("  ")).toEqual([]);
-    expect(issuesForShipping("500")).toEqual([]);
-    expect(issuesForShipping("0")).toEqual(["freeShippingOver"]);
-    expect(issuesForShipping("12.5")).toEqual(["freeShippingOver"]);
   });
 
   it("stops on the earliest step that is not ready", () => {
     expect(firstBlockingStep(check({ photoCount: 1, price: "" }))).toBe("photos");
     expect(firstBlockingStep(check({ story: story({ title: "" }) }))).toBe("story");
     expect(firstBlockingStep(check({ price: "" }))).toBe("price");
-    expect(firstBlockingStep(check({ freeShippingOver: "no" }))).toBe("shipping");
     expect(firstBlockingStep(check())).toBeNull();
   });
 
@@ -164,10 +154,9 @@ describe("sell draft autosave", () => {
     expect(parseStoredDraft("{")).toBeNull();
     expect(parseStoredDraft(JSON.stringify({ version: 2, step: "photos" }))).toBeNull();
     expect(parseStoredDraft(JSON.stringify({ ...draft(), step: "magic" }))).toBeNull();
-    const saved = parseStoredDraft(JSON.stringify(draft({ listingId: "lst_9", freeShipping: true })));
+    const saved = parseStoredDraft(JSON.stringify(draft({ listingId: "lst_9" })));
     expect(saved?.listingId).toBe("lst_9");
-    expect(saved?.freeShipping).toBe(true);
-    expect(draftHasWords(draft({ title: "", story: "", price: "", size: "", brand: "", category: "", city: "", condition: "", freeShipping: false, photos: [] }))).toBe(false);
+    expect(draftHasWords(draft({ title: "", story: "", price: "", size: "", brand: "", category: "", city: "", condition: "", photos: [] }))).toBe(false);
   });
 
   it("saves through a store and falls back when the quota refuses the photographs", () => {
@@ -207,8 +196,6 @@ describe("sell draft autosave", () => {
       city: "Скопје",
       country: "mk",
       sellerKind: "private" as const,
-      freeShipping: false,
-      freeShippingOver: "",
       photoIds: ["pht_1"],
     };
     expect(draftsMatch(draft({ photos: [{ name: "", type: "", serverId: "pht_1" }] }), current)).toBe(true);

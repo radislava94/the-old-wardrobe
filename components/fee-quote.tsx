@@ -13,17 +13,14 @@ export function FeeQuote({
   currency,
   freeSalesLeft,
   priceLabel,
-  shippingLabel,
   fees,
 }: {
   currency: CurrencyCode;
   freeSalesLeft: number;
   priceLabel: string;
-  shippingLabel: string;
   fees: FeePreviewCopy;
 }) {
   const [price, setPrice] = useState("");
-  void shippingLabel;
   const amount = Number(price);
   const quoted =
     Number.isFinite(amount) && amount > 0

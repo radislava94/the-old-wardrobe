@@ -1257,6 +1257,8 @@ body:has(.consent) { padding-bottom: 11rem; }
   color: var(--forest);
   border-color: var(--forest);
 }
+.parcel-note { display: flex; }
+.postage-face small { max-width: 22ch; font-style: italic; }
 .postage-face strong {
   font-family: var(--font-mono);
   letter-spacing: 0.12em;

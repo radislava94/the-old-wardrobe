@@ -21,8 +21,7 @@ export type StepIssue =
   | "story"
   | "condition"
   | "brand"
-  | "price"
-  | "freeShippingOver";
+  | "price";
 
 export type StoryInput = {
   title: string;
@@ -40,7 +39,6 @@ export type SellCheck = {
   categories: readonly string[];
   cities: readonly string[];
   price: string;
-  freeShippingOver: string;
 };
 
 export const DRAFT_VERSION = 1;
@@ -70,8 +68,6 @@ export type StoredSellDraft = {
   story: string;
   city: string;
   price: string;
-  freeShipping: boolean;
-  freeShippingOver: string;
   photos: StoredPhoto[];
 };
 
@@ -119,21 +115,11 @@ export function issuesForPrice(price: string): StepIssue[] {
   return [];
 }
 
-/** Free shipping is optional. A blank threshold is a valid choice. */
-export function issuesForShipping(freeShippingOver: string): StepIssue[] {
-  const raw = freeShippingOver.trim();
-  if (!raw) return [];
-  if (!/^\d{1,12}$/.test(raw)) return ["freeShippingOver"];
-  const amount = Number(raw);
-  if (!Number.isSafeInteger(amount) || amount < 1) return ["freeShippingOver"];
-  return [];
-}
-
 export function issuesForStep(step: SellStep, input: SellCheck): StepIssue[] {
   if (step === "photos") return issuesForPhotos(input.photoCount);
   if (step === "story") return issuesForStory(input.story, input.categories, input.cities);
   if (step === "price") return issuesForPrice(input.price);
-  return issuesForShipping(input.freeShippingOver);
+  return [];
 }
 
 /** The earliest step that still needs a kind correction, or null when all are ready. */
@@ -186,8 +172,6 @@ export function draftHasWords(draft: StoredSellDraft): boolean {
       draft.brand.trim() ||
       draft.category.trim() ||
       draft.city.trim() ||
-      draft.freeShippingOver.trim() ||
-      draft.freeShipping ||
       draft.photos.length > 0,
   );
 }
@@ -205,8 +189,6 @@ export function draftsMatch(
     city: string;
     country: string;
     sellerKind: "private" | "business";
-    freeShipping: boolean;
-    freeShippingOver: string;
     photoIds: string[];
   },
 ): boolean {
@@ -225,9 +207,7 @@ export function draftsMatch(
     draft.category === current.category &&
     draft.city === current.city &&
     draft.country === current.country &&
-    draft.sellerKind === current.sellerKind &&
-    draft.freeShipping === current.freeShipping &&
-    draft.freeShippingOver === current.freeShippingOver
+    draft.sellerKind === current.sellerKind
   );
 }
 
@@ -291,8 +271,6 @@ export function parseStoredDraft(raw: string | null): StoredSellDraft | null {
     story: clip(record.story, 600),
     city: clip(record.city, 80),
     price: clip(record.price, 12),
-    freeShipping: record.freeShipping === true,
-    freeShippingOver: clip(record.freeShippingOver, 12),
     photos,
   };
 }

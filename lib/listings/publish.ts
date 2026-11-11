@@ -45,12 +45,6 @@ export function validateFields(input: SaveListingInput): { field: string; code: 
     const cities = countries[input.country].cities as readonly string[];
     if (!cities.includes(input.city.trim())) fields.push({ field: "city", code: "fields" });
   }
-  if (
-    input.freeShippingOver !== null &&
-    (!Number.isInteger(input.freeShippingOver) || input.freeShippingOver < 1)
-  ) {
-    fields.push({ field: "freeShippingOver", code: "fields" });
-  }
   return fields;
 }
 
@@ -194,8 +188,8 @@ function applyText(listing: StoredListing, input: SaveListingInput, country: Cou
     condition: input.condition.trim(),
     city: input.city.trim(),
     brand: input.brand.trim(),
-    freeShipping: input.freeShipping,
-    freeShippingOver: input.freeShippingOver,
+    freeShipping: false,
+    freeShippingOver: null,
     era: input.brand.trim() || input.condition.trim(),
   };
 }
@@ -305,8 +299,8 @@ export async function saveListingRecord(
       visibility: "draft",
       photosCompliant: false,
       legacyPhotoUrl: null,
-      freeShipping: input.freeShipping,
-      freeShippingOver: input.freeShippingOver,
+      freeShipping: false,
+      freeShippingOver: null,
       era: input.brand.trim() || input.condition.trim(),
       createdAt: new Date().toISOString().slice(0, 10),
     };

@@ -19,6 +19,7 @@ export function ListingCard({
   summary,
   ratingLabel,
   ratingFigure,
+  shipping,
 }: {
   href: string;
   title: string;
@@ -35,6 +36,7 @@ export function ListingCard({
   summary: RatingSummary;
   ratingLabel: string;
   ratingFigure: string;
+  shipping: string[];
 }) {
   return (
     <article className={sold ? "card sold" : "card"} style={{ ["--r" as string]: rotation }}>
@@ -63,6 +65,11 @@ export function ListingCard({
           <div>
             <h3>{title}</h3>
             <p className="era">{era}</p>
+            <p className="ship-note">
+              {shipping.map((line) => (
+                <span key={line}>{line}</span>
+              ))}
+            </p>
           </div>
           <span className="price">{price}</span>
         </div>

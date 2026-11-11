@@ -360,6 +360,21 @@ test("legacy single photo stays visible and is not compliant", async () => {
   assert.equal(after?.legacyPhotoUrl, "https://old.example/one.jpg");
 });
 
+test("a free-shipping request is stored as not free", async () => {
+  const { store, blob } = harness();
+  const saved = await saveForSeller(
+    store,
+    blob,
+    seller,
+    input({ intent: "draft", freeShipping: true, freeShippingOver: 4000 }),
+  );
+  assert.equal(saved.ok, true);
+  if (!saved.ok) return;
+  const row = store.read().listings.get(saved.listing.id);
+  assert.equal(row?.freeShipping, false);
+  assert.equal(row?.freeShippingOver, null);
+});
+
 test("draft intent does not unpublish a public listing", async () => {
   const { store, objects, blob } = harness();
   const listing = await draftListing(store, blob);

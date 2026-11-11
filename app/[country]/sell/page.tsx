@@ -108,8 +108,6 @@ export default async function SellPage({
               story: "",
               photoUrl: "",
               sellerKind: profile?.sellerKind === "business" ? "business" : "private",
-              freeShipping: false,
-              freeShippingOver: "",
             }}
             copy={sellCopy(dict)}
             freeSalesLeft={freeSalesLeft}

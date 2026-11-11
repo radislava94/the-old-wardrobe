@@ -150,8 +150,6 @@ export function SellForm({
     photoIds?: string[];
     photoPreviews?: { id: string; url: string | null }[];
     sellerKind: "private" | "business";
-    freeShipping: boolean;
-    freeShippingOver: string;
   };
   blobConfigured: boolean;
   copy: {
@@ -175,10 +173,6 @@ export function SellForm({
     conditions: Option[];
     country: string;
     currency: string;
-    freeShipping: string;
-    freeShippingHint: string;
-    freeShippingOver: string;
-    freeShippingOverHint: string;
     sellerKind: string;
     sellerPrivate: string;
     sellerBusiness: string;
@@ -191,9 +185,7 @@ export function SellForm({
     aiWarningLabel: string;
     flow: Dictionary["sell"]["flow"];
     sizeTagPattern: string;
-    shippingFree: string;
     shippingNone: string;
-    shippingOverPattern: string;
     errors: Record<string, string>;
   };
   freeSalesLeft: number;
@@ -220,8 +212,6 @@ export function SellForm({
   const [story, setStory] = useState(initial.story);
   const [city, setCity] = useState(initial.city);
   const [price, setPrice] = useState(initial.price);
-  const [freeShipping, setFreeShipping] = useState(initial.freeShipping);
-  const [freeShippingOver, setFreeShippingOver] = useState(initial.freeShippingOver);
   const [photos, setPhotos] = useState<LocalPhoto[]>(() =>
     (initial.photoIds ?? []).map((id) => ({
       key: id,
@@ -255,7 +245,7 @@ export function SellForm({
           merchandiseTotal: amount,
           currency,
           freeSalesLeft,
-          freeShipping,
+          freeShipping: false,
         })
       : null;
   const stepIndex = SELL_STEPS.indexOf(step);
@@ -266,14 +256,7 @@ export function SellForm({
   const shippingLines = previewShipping();
 
   function previewShipping(): string[] {
-    const lines: string[] = [];
-    if (freeShipping) lines.push(copy.shippingFree);
-    const over = freeShippingOver.trim();
-    if (/^\d{1,12}$/.test(over) && Number(over) >= 1) {
-      lines.push(fillPattern(copy.shippingOverPattern, { amount: formatMoney(Number(over), country) }));
-    }
-    if (lines.length === 0) lines.push(copy.shippingNone);
-    return lines;
+    return [copy.shippingNone];
   }
 
   function check(): SellCheck {
@@ -283,7 +266,6 @@ export function SellForm({
       categories: categories.map((item) => item.value),
       cities: selected?.cities ?? [],
       price,
-      freeShippingOver,
     };
   }
 
@@ -299,7 +281,6 @@ export function SellForm({
       price: copy.flow.fieldPrice,
       condition: copy.flow.fieldCondition,
       brand: copy.flow.fieldBrand,
-      freeShippingOver: copy.flow.fieldShippingOver,
       country: copy.flow.fieldCountry,
     };
     return known[code] ?? copy.errors[code] ?? copy.flow.stepHint;
@@ -325,8 +306,6 @@ export function SellForm({
           city: initial.city,
           country: initial.country,
           sellerKind: initial.sellerKind,
-          freeShipping: initial.freeShipping,
-          freeShippingOver: initial.freeShippingOver,
           photoIds: initial.photoIds ?? [],
         })
       : true;
@@ -360,8 +339,6 @@ export function SellForm({
         story,
         city,
         price,
-        freeShipping,
-        freeShippingOver,
         photos: photos.map((photo) => ({
           name: photo.name,
           type: photo.type,
@@ -381,8 +358,6 @@ export function SellForm({
         city: initial.city,
         country: initial.country,
         sellerKind: initial.sellerKind,
-        freeShipping: initial.freeShipping,
-        freeShippingOver: initial.freeShippingOver,
         photoIds: initial.photoIds ?? [],
       });
       setSavedLocally(result.saved && changed);
@@ -405,8 +380,6 @@ export function SellForm({
     story,
     city,
     price,
-    freeShipping,
-    freeShippingOver,
     photos,
     initial,
   ]);
@@ -516,8 +489,6 @@ export function SellForm({
     setStory(draft.story);
     setCity(draft.city);
     setPrice(draft.price);
-    setFreeShipping(draft.freeShipping);
-    setFreeShippingOver(draft.freeShippingOver);
     setStep(draft.step);
     setListingId(initial.id || draft.listingId || "");
     for (const photo of photos) {
@@ -575,7 +546,6 @@ export function SellForm({
   }
 
   function payload(intent: "draft" | "publish", ids: string[]) {
-    const over = freeShippingOver.trim();
     return {
       id: listingId || undefined,
       intent,
@@ -588,8 +558,8 @@ export function SellForm({
       brand,
       condition,
       price: Number(price),
-      freeShipping,
-      freeShippingOver: over ? Number(over) : null,
+      freeShipping: false,
+      freeShippingOver: null,
       sellerKind,
       photoIds: ids,
     };
@@ -1144,7 +1114,7 @@ export function SellForm({
                   }
                   platformFee={quoted ? formatStoredMoney(quoted.commissionAmount, quoted.currency) : undefined}
                   cap={formatStoredMoney(quoted?.capAmount ?? commissionConfig.cap[currency], currency)}
-                  courier={quoted ? (freeShipping ? fees.courierSeller : fees.courierBuyer) : undefined}
+                  courier={quoted ? fees.courierBuyer : undefined}
                   reason={quoted ? fees.reasons[quoted.rateReason] : undefined}
                   labels={{
                     platformFee: fees.platformFee,
@@ -1162,55 +1132,11 @@ export function SellForm({
                 <h2 id={`${formId}-shipping`} tabIndex={-1} ref={headingRef}>
                   {copy.flow.shippingTitle}
                 </h2>
-                <p>{copy.flow.shippingLead}</p>
               </div>
-              <label className={freeShipping ? "postage is-on" : "postage"}>
-                <input
-                  type="checkbox"
-                  name="freeShipping"
-                  checked={freeShipping}
-                  onChange={(event) => setFreeShipping(event.target.checked)}
-                />
-                <span className="postage-face">
-                  <strong>{freeShipping ? copy.flow.stampYes : copy.flow.stampNo}</strong>
-                  <small>{copy.freeShippingHint}</small>
-                </span>
-              </label>
-              <label>
-                <span>{copy.freeShippingOver}</span>
-                <input
-                  name="freeShippingOver"
-                  type="number"
-                  min={1}
-                  step={1}
-                  inputMode="numeric"
-                  value={freeShippingOver}
-                  aria-invalid={invalid.has("freeShippingOver") || undefined}
-                  onChange={(event) => setFreeShippingOver(event.target.value)}
-                />
-                <small>{copy.freeShippingOverHint}</small>
-              </label>
-              <div id={`${formId}-fees-ship`}>
-                <FeeLines
-                  freeLeft={fees.freeLeft}
-                  youReceive={
-                    quoted
-                      ? receiveAmount(
-                          fees.youReceivePattern,
-                          formatStoredMoney(quoted.sellerPayoutAmount, quoted.currency),
-                        )
-                      : fees.enterPrice
-                  }
-                  platformFee={quoted ? formatStoredMoney(quoted.commissionAmount, quoted.currency) : undefined}
-                  cap={formatStoredMoney(quoted?.capAmount ?? commissionConfig.cap[currency], currency)}
-                  courier={quoted ? (freeShipping ? fees.courierSeller : fees.courierBuyer) : undefined}
-                  reason={quoted ? fees.reasons[quoted.rateReason] : undefined}
-                  labels={{
-                    platformFee: fees.platformFee,
-                    cap: fees.cap,
-                    courierCharge: fees.courierCharge,
-                  }}
-                />
+              <div className="parcel-note">
+                <div className="postage-face">
+                  <small>{copy.flow.shippingLead}</small>
+                </div>
               </div>
             </section>
           ) : null}

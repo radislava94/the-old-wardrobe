@@ -19,7 +19,6 @@ import { FeeLines } from "@/components/fee-lines";
 import { formatStoredMoney } from "@/lib/commission/format";
 import { freeSalesLeftFor } from "@/lib/commission/remaining";
 import { saleQuote } from "@/lib/commission/quote";
-import { formatMoney } from "@/lib/money";
 import { toggleFavourite } from "@/lib/favourites/actions";
 import { privacyPath, sellPath, signInPath } from "@/lib/paths";
 
@@ -168,13 +167,7 @@ export default async function AccountPage({
         <section className="account-block">
           <h2>{dict.listing.bundleTitle}</h2>
           <p className="hint">{dict.listing.bundleHint}</p>
-          {groups.map((group) => {
-            const currencies = new Set(group.items.map((item) => item.currency));
-            const total =
-              currencies.size === 1
-                ? group.items.reduce((sum, item) => sum + item.priceAmount, 0)
-                : null;
-            return (
+          {groups.map((group) => (
               <div key={group.id}>
                 <h3>{group.sellerName}</h3>
                 <ul className="own-listings">
@@ -182,21 +175,6 @@ export default async function AccountPage({
                     <li key={item.id}>
                       <span>
                         <Link href={`/${item.country}/listing/${item.slug}`}>{item.title}</Link>
-                        {total != null && item.freeShippingOver != null ? (
-                          <p className="hint">
-                            {total >= item.freeShippingOver
-                              ? dict.listing.bundleMet(
-                                  item.title,
-                                  formatMoney(total, item.country),
-                                  formatMoney(item.freeShippingOver, item.country),
-                                )
-                              : dict.listing.bundleShort(
-                                  item.title,
-                                  formatMoney(total, item.country),
-                                  formatMoney(item.freeShippingOver, item.country),
-                                )}
-                          </p>
-                        ) : null}
                       </span>
                       <form action={removeFromBundle}>
                         <input type="hidden" name="bundleId" value={group.id} />
@@ -236,8 +214,7 @@ export default async function AccountPage({
                   </form>
                 ) : null}
               </div>
-            );
-          })}
+          ))}
         </section>
 
         <section className="account-block">
@@ -293,7 +270,7 @@ export default async function AccountPage({
               merchandiseTotal: listing.priceAmount,
               currency: listing.currency,
               freeSalesLeft,
-              freeShipping: Boolean(listing.freeShipping),
+              freeShipping: false,
             });
             return (
               <div key={listing.id}>
@@ -304,7 +281,7 @@ export default async function AccountPage({
                   )}
                   platformFee={formatStoredMoney(quoted.commissionAmount, quoted.currency)}
                   cap={formatStoredMoney(quoted.capAmount, quoted.currency)}
-                  courier={listing.freeShipping ? dict.fees.courierSeller : dict.fees.courierBuyer}
+                  courier={dict.fees.courierBuyer}
                   reason={dict.fees.reasons[quoted.rateReason]}
                   labels={{
                     platformFee: dict.fees.platformFee,

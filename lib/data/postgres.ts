@@ -151,8 +151,8 @@ function rowFromDraft(id: string, slug: string, sellerId: string, draft: Listing
     createdAt: new Date().toISOString().slice(0, 10),
     brand: draft.brand || null,
     photoUrl: draft.photoUrl,
-    freeShipping: draft.freeShipping,
-    freeShippingOver: draft.freeShippingOver,
+    freeShipping: false,
+    freeShippingOver: null,
   };
 }
 

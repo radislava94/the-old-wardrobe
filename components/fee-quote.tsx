@@ -13,21 +13,18 @@ export function FeeQuote({
   currency,
   freeSalesLeft,
   priceLabel,
-  shippingLabel,
   fees,
 }: {
   currency: CurrencyCode;
   freeSalesLeft: number;
   priceLabel: string;
-  shippingLabel: string;
   fees: FeePreviewCopy;
 }) {
   const [price, setPrice] = useState("");
-  const [freeShipping, setFreeShipping] = useState(false);
   const amount = Number(price);
   const quoted =
     Number.isFinite(amount) && amount > 0
-      ? saleQuote({ merchandiseTotal: amount, currency, freeSalesLeft, freeShipping })
+      ? saleQuote({ merchandiseTotal: amount, currency, freeSalesLeft, freeShipping: false })
       : null;
 
   return (
@@ -43,14 +40,6 @@ export function FeeQuote({
           onChange={(event) => setPrice(event.target.value)}
         />
       </label>
-      <label className="choice">
-        <input
-          type="checkbox"
-          checked={freeShipping}
-          onChange={(event) => setFreeShipping(event.target.checked)}
-        />
-        <span>{shippingLabel}</span>
-      </label>
       <FeeLines
         freeLeft={fees.freeLeft}
         youReceive={
@@ -63,7 +52,7 @@ export function FeeQuote({
         }
         platformFee={quoted ? formatStoredMoney(quoted.commissionAmount, quoted.currency) : undefined}
         cap={formatStoredMoney(quoted?.capAmount ?? commissionConfig.cap[currency], currency)}
-        courier={quoted ? (freeShipping ? fees.courierSeller : fees.courierBuyer) : undefined}
+        courier={quoted ? fees.courierBuyer : undefined}
         reason={quoted ? fees.reasons[quoted.rateReason] : undefined}
         labels={{
           platformFee: fees.platformFee,

@@ -41,7 +41,6 @@ export async function placeCodOrder(input: {
   if (rows.some((row) => row.status !== "available")) throw new Error("sold");
 
   const merchandiseTotal = rows.reduce((sum, row) => sum + row.priceAmount, 0);
-  const allFree = rows.every((row) => row.freeShipping);
   const priced = priceCommission({
     merchandiseTotal,
     currency,
@@ -54,8 +53,8 @@ export async function placeCodOrder(input: {
     buyerId: input.buyerId,
     sellerId,
     merchandiseTotal: priced.merchandiseTotal.toFixed(2),
-    shippingAmount: allFree ? "0.00" : null,
-    shippingPaidBy: allFree ? "seller" : "buyer",
+    shippingAmount: null,
+    shippingPaidBy: "buyer",
     buyerCashDue: priced.merchandiseTotal.toFixed(2),
     commissionAmount: priced.commissionAmount.toFixed(2),
     sellerPayoutAmount: priced.sellerPayoutAmount.toFixed(2),

@@ -30,9 +30,11 @@ function publicListings<T>(read: (store: ListingRepository) => Promise<T>): Prom
 
 /**
  * Pages keep calling `listingsRepo`. Postgres is used when DATABASE_URL
- * is set and the catalogue tables can be read. Otherwise the placeholder
- * catalog is served from memory, so `npm run build` needs no database
- * and a missing or unreachable database does not 500 a shop page.
+ * is set and the catalogue tables can be read. Listing reads still
+ * succeed when `drizzle/0003_publish.sql` has not been applied: those
+ * columns are left out and the existing rows stay public. Otherwise the
+ * placeholder catalog is served from memory, so `npm run build` needs no
+ * database and a missing or unreachable database does not 500 a shop page.
  *
  * `listBySeller`, `getById`, `createListing`, and `updateListing` do not
  * fall back. The account page and the sell flow must fail honestly.

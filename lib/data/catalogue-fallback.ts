@@ -5,8 +5,11 @@ import { getDb } from "../db/client";
 /**
  * Public catalogue reads use Postgres when it can answer.
  * If the database cannot be reached, or `listings`, `profiles`, or
- * `reviews` is missing, those reads serve the in-memory placeholder
- * catalog instead of failing the page.
+ * `reviews` is missing, or a catalogue query names a column that is
+ * not there, those reads serve the in-memory placeholder catalog
+ * instead of failing the page. A database that only lacks the columns
+ * from `drizzle/0003_publish.sql` does not land here: listing reads
+ * omit those columns and keep the existing rows.
  *
  * Account, session, and sell paths do not use this helper. They keep
  * talking to Postgres and surface the failure.
@@ -21,6 +24,10 @@ const CACHE_MS = 10_000;
 const MISSING_TABLE_CODES = new Set([
   "42P01", // undefined_table
   "3F000", // invalid_schema_name
+]);
+
+const MISSING_COLUMN_CODES = new Set([
+  "42703", // undefined_column
 ]);
 
 const UNREACHABLE_CODES = new Set([
@@ -122,11 +129,22 @@ function remember(mode: "postgres" | "memory"): void {
 function report(error: unknown): void {
   const kind = failureKind(error);
   const code = kind?.code ? ` (${kind.code})` : "";
-  const reason = kind?.kind === "missing-table" ? "missing catalogue table" : "unreachable database";
+  const reason =
+    kind?.kind === "missing-table"
+      ? "missing catalogue table"
+      : kind?.kind === "missing-column"
+        ? "missing catalogue column"
+        : "unreachable database";
   console.error(`Catalogue database is unavailable${code}: ${reason}. Serving the placeholder catalogue.`);
 }
 
-function failureKind(error: unknown): { kind: "missing-table" | "unreachable"; code: string } | null {
+export function isUndefinedColumn(error: unknown): boolean {
+  return failureKind(error)?.kind === "missing-column";
+}
+
+function failureKind(
+  error: unknown,
+): { kind: "missing-table" | "missing-column" | "unreachable"; code: string } | null {
   const seen = new Set<unknown>();
   const pending = [error];
   while (pending.length > 0) {
@@ -142,6 +160,7 @@ function failureKind(error: unknown): { kind: "missing-table" | "unreachable"; c
     for (const value of [record.code, record.errno]) {
       if (typeof value !== "string" || !value) continue;
       if (MISSING_TABLE_CODES.has(value)) return { kind: "missing-table", code: value };
+      if (MISSING_COLUMN_CODES.has(value)) return { kind: "missing-column", code: value };
       if (UNREACHABLE_CODES.has(value)) return { kind: "unreachable", code: value };
     }
     if (typeof record.message === "string") {
@@ -156,7 +175,8 @@ function failureKind(error: unknown): { kind: "missing-table" | "unreachable"; c
   return null;
 }
 
-function messageKind(message: string): "missing-table" | "unreachable" | null {
+function messageKind(message: string): "missing-table" | "missing-column" | "unreachable" | null {
+  if (/column ["'][\w.]+["'] does not exist/i.test(message)) return "missing-column";
   if (/relation ["'][\w.]+["'] does not exist/i.test(message)) return "missing-table";
   if (/schema ["'][\w.]+["'] does not exist/i.test(message)) return "missing-table";
   if (

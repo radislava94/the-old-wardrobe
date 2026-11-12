@@ -67,6 +67,7 @@ vi.mock("next/headers", () => ({
 }));
 
 import { resetCatalogueFallbackForTests } from "./catalogue-fallback";
+import { resetPublishSchemaForTests } from "../db/publish-schema";
 import { listingsRepo, reviewsRepo } from "./index";
 import { MemoryListingRepository } from "./memory";
 import { MemoryReviewRepository } from "./review-memory";
@@ -131,6 +132,7 @@ async function expectHonestFailure(error: unknown): Promise<void> {
 
 beforeEach(() => {
   resetCatalogueFallbackForTests();
+  resetPublishSchemaForTests();
   dbState.scenario = "throw";
   dbState.error = new Error("unset");
   dbState.queries = 0;
@@ -168,6 +170,15 @@ describe("public catalogue fallback", () => {
 
   it("still falls back when a catalogue query raises a missing-table error", async () => {
     const error = queryFailure("42P01", 'relation "reviews" does not exist');
+    dbState.scenario = "ready";
+    dbState.error = error;
+    await expectPlaceholderCatalogue();
+    expect(dbState.queries).toBeGreaterThan(0);
+    await expectHonestFailure(error);
+  });
+
+  it("still falls back when a catalogue query names a column that does not exist", async () => {
+    const error = queryFailure("42703", 'column "visibility" does not exist');
     dbState.scenario = "ready";
     dbState.error = error;
     await expectPlaceholderCatalogue();

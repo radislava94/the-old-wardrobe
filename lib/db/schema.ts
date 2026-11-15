@@ -5,6 +5,7 @@ import {
   date,
   index,
   integer,
+  numeric,
   pgTable,
   text,
   uniqueIndex,
@@ -217,6 +218,67 @@ export const bundleItems = pgTable(
       .references(() => listings.id, { onDelete: "cascade" }),
   },
   (table) => [uniqueIndex("bundle_items_unique").on(table.bundleId, table.listingId)],
+);
+
+const money = (name: string) => numeric(name, { precision: 12, scale: 2 });
+
+/** Cash on delivery. The buyer pays the courier. The platform fee is not in that cash. */
+export const orders = pgTable(
+  "orders",
+  {
+    id: text("id").primaryKey(),
+    buyerId: text("buyer_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    sellerId: text("seller_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    merchandiseTotal: money("merchandise_total").notNull(),
+    shippingAmount: money("shipping_amount"),
+    shippingPaidBy: text("shipping_paid_by").notNull(),
+    buyerCashDue: money("buyer_cash_due").notNull(),
+    commissionAmount: money("commission_amount").notNull(),
+    sellerPayoutAmount: money("seller_payout_amount").notNull(),
+    currency: text("currency").notNull(),
+    commissionRate: numeric("commission_rate", { precision: 6, scale: 4 }).notNull(),
+    thresholdAmount: money("threshold_amount").notNull(),
+    capAmount: money("cap_amount").notNull(),
+    rateReason: text("rate_reason").notNull(),
+    remitTo: text("remit_to").notNull(),
+    codStatus: text("cod_status").notNull(),
+    courierName: text("courier_name"),
+    createdAt: date("created_at", { mode: "string" }).notNull(),
+  },
+  (table) => [
+    index("orders_buyer").on(table.buyerId),
+    index("orders_seller").on(table.sellerId),
+    check("orders_shipping_paid_by", sql`${table.shippingPaidBy} in ('buyer', 'seller')`),
+    check(
+      "orders_rate_reason",
+      sql`${table.rateReason} in ('launch_promo', 'welcome_sale', 'under_threshold', 'standard')`,
+    ),
+    check("orders_remit_to", sql`${table.remitTo} in ('seller', 'platform')`),
+    check(
+      "orders_cod_status",
+      sql`${table.codStatus} in ('pending', 'paid', 'refused', 'cancelled')`,
+    ),
+    check("orders_currency", sql`${table.currency} in ('MKD', 'EUR', 'RSD', 'ALL')`),
+  ],
+);
+
+export const orderItems = pgTable(
+  "order_items",
+  {
+    orderId: text("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    listingId: text("listing_id")
+      .notNull()
+      .references(() => listings.id),
+    title: text("title").notNull(),
+    priceAmount: money("price_amount").notNull(),
+  },
+  (table) => [index("order_items_order").on(table.orderId)],
 );
 
 export const reviews = pgTable(

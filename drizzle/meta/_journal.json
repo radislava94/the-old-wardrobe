@@ -57,6 +57,13 @@
       "when": 1794300526422,
       "tag": "0007_bundles",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794300730183,
+      "tag": "0008_orders",
+      "breakpoints": true
     }
   ]
 }

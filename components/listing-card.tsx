@@ -1,6 +1,8 @@
 import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
+import type { CountryCode } from "@/lib/countries";
 import type { RatingSummary } from "@/lib/types";
+import { toggleFavourite } from "@/lib/favourites/actions";
 import { Stars } from "./stars";
 
 export function ListingCard({
@@ -20,6 +22,14 @@ export function ListingCard({
   ratingLabel,
   ratingFigure,
   shipping,
+  listingId,
+  slug,
+  country,
+  saved,
+  signedIn,
+  saveLabel,
+  unsaveLabel,
+  signInHref,
 }: {
   href: string;
   title: string;
@@ -37,16 +47,39 @@ export function ListingCard({
   ratingLabel: string;
   ratingFigure: string;
   shipping: string[];
+  listingId: string;
+  slug: string;
+  country: CountryCode;
+  saved: boolean;
+  signedIn: boolean;
+  saveLabel: string;
+  unsaveLabel: string;
+  signInHref: string;
 }) {
+  const heartLabel = saved ? unsaveLabel : saveLabel;
+  const heart = (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill={saved ? "#a2423a" : "none"} stroke="#a2423a" strokeWidth="2" aria-hidden="true">
+      <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" />
+    </svg>
+  );
   return (
     <article className={sold ? "card sold" : "card"} style={{ ["--r" as string]: rotation }}>
+      {signedIn ? (
+        <form className="heart-form" action={toggleFavourite}>
+          <input type="hidden" name="listingId" value={listingId} />
+          <input type="hidden" name="slug" value={slug} />
+          <input type="hidden" name="country" value={country} />
+          <button type="submit" className="heart" aria-label={heartLabel}>
+            {heart}
+          </button>
+        </form>
+      ) : (
+        <Link href={signInHref} className="heart" aria-label={saveLabel}>
+          {heart}
+        </Link>
+      )}
       <Link href={href} className="card-link">
         <span className="size">{sizeLabel}</span>
-        <span className="heart" aria-hidden="true">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a2423a" strokeWidth="2">
-            <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" />
-          </svg>
-        </span>
         <div className="ph">
           <Image
             src={image}

@@ -77,9 +77,7 @@ export default async function OrderPage({
           courier={
             order.shippingAmount != null && Number(order.shippingAmount) > 0
               ? formatStoredMoney(Number(order.shippingAmount), currency)
-              : order.shippingPaidBy === "seller"
-                ? dict.fees.courierSeller
-                : dict.fees.courierBuyer
+              : dict.fees.courierBuyer
           }
           reason={
             order.rateReason in dict.fees.reasons

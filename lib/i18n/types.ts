@@ -47,6 +47,7 @@ export type Dictionary = {
     remit: string;
     bundlePlace: string;
   };
+  topbar: string;
   nav: { browse: string; sell: string; about: string; main: string };
   searchPlaceholder: string;
   searchLabel: string;
@@ -315,6 +316,19 @@ export type Dictionary = {
     rightsBody: string;
     contactTitle: string;
     contactBody: string;
+  };
+  report: {
+    title: string;
+    reason: string;
+    notAsDescribed: string;
+    prohibited: string;
+    other: string;
+    note: string;
+    notePlaceholder: string;
+    submit: string;
+    stored: string;
+    already: string;
+    signIn: string;
   };
   fees: {
     freeLeft: (count: number) => string;

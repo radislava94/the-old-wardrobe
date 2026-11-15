@@ -594,6 +594,8 @@ footer .brand p { margin-top: 10px; font-style: italic; opacity: 0.85; max-width
   .fee-line { grid-template-columns: 1fr; }
 }
 .fee-lines .hint { margin-top: 4px; }
+.report-form { margin-top: 28px; }
+.report-form h2 { font-size: 28px; margin-bottom: 0; }
 
 .missing { padding: 72px 0 40px; max-width: 760px; }
 .missing h1 { font-size: 52px; }

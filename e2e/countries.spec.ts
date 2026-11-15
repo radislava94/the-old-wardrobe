@@ -63,7 +63,7 @@ for (const section of sections) {
     expect(href).toBeTruthy();
     expect(new URL(href!).pathname).toBe(section.path);
 
-    await expect(page.locator(".topbar")).toHaveCount(0);
+    await expect(page.locator(".topbar")).toHaveCount(1);
     await expect(page.getByText(section.handChecked)).toHaveCount(0);
 
     const prices = page.locator(".price");

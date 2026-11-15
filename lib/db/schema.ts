@@ -281,6 +281,31 @@ export const orderItems = pgTable(
   (table) => [index("order_items_order").on(table.orderId)],
 );
 
+/** A person reported a listing. One row per person per listing. */
+export const listingReports = pgTable(
+  "listing_reports",
+  {
+    id: text("id").primaryKey(),
+    listingId: text("listing_id")
+      .notNull()
+      .references(() => listings.id, { onDelete: "cascade" }),
+    reporterId: text("reporter_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    reason: text("reason").notNull(),
+    note: text("note"),
+    createdAt: date("created_at", { mode: "string" }).notNull(),
+  },
+  (table) => [
+    uniqueIndex("listing_reports_listing_reporter").on(table.listingId, table.reporterId),
+    index("listing_reports_listing").on(table.listingId),
+    check(
+      "listing_reports_reason",
+      sql`${table.reason} in ('not_as_described', 'prohibited', 'other')`,
+    ),
+  ],
+);
+
 export const reviews = pgTable(
   "reviews",
   {

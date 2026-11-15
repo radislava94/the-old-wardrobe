@@ -2,6 +2,7 @@ import { eq, or } from "drizzle-orm";
 import { getSession } from "@/lib/auth/session";
 import { profileForAuthUser } from "@/lib/auth/profile";
 import { getDb } from "@/lib/db/client";
+import { selectListingRows } from "@/lib/data/postgres";
 import { account, listings, reviews, session } from "@/lib/db/schema";
 
 export const runtime = "nodejs";
@@ -31,7 +32,7 @@ export async function GET() {
       .from(session)
       .where(eq(session.userId, current.user.id)),
     profile
-      ? db.select().from(listings).where(eq(listings.sellerId, profile.id))
+      ? selectListingRows(() => eq(listings.sellerId, profile.id))
       : Promise.resolve([]),
     profile
       ? db

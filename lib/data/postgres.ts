@@ -1,10 +1,19 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, type SQL } from "drizzle-orm";
 import type { CountryCode } from "../countries";
 import { getDb } from "../db/client";
 import { toListing, toUser } from "../db/map";
+import {
+  cachePublishSchema,
+  clearPublishSchemaCache,
+  PUBLISH_SCHEMA_LEGACY,
+  readPublishSchema,
+  selectsPublishColumns,
+  type PublishSchema,
+} from "../db/publish-schema";
 import { listingPhotos, listings, profiles } from "../db/schema";
 import type { CategoryKey, Listing, ListingDraft, User } from "../types";
 import { slugifyName } from "../auth/handle";
+import { isUndefinedColumn } from "./catalogue-fallback";
 import { byNewest, searchListings } from "./listing-query";
 import type { ListingRepository } from "./repository";
 
@@ -13,13 +22,19 @@ import type { ListingRepository } from "./repository";
  * Callers decide when a database is configured. This class expects
  * DATABASE_URL and lets connection and missing-table errors throw.
  * Public catalogue reads catch those in `readPublicCatalogue`.
+ *
+ * Selects skip `visibility` and `photos_compliant` until
+ * `drizzle/0003_publish.sql` is applied, so a country page still
+ * renders the rows that already exist.
  */
 export class PostgresListingRepository implements ListingRepository {
   async listByCountry(country: CountryCode): Promise<Listing[]> {
-    const rows = await getDb()
-      .select()
-      .from(listings)
-      .where(and(eq(listings.country, country), inArray(listings.visibility, ["public", "sold"])));
+    const rows = await selectListingRows((schema) =>
+      and(
+        eq(listings.country, country),
+        schema.visibility ? inArray(listings.visibility, ["public", "sold"]) : undefined,
+      ),
+    );
     return decoratePublic(rows.map(toListing)).then((items) => items.sort(byNewest));
   }
 
@@ -32,10 +47,9 @@ export class PostgresListingRepository implements ListingRepository {
   }
 
   async getBySlug(country: CountryCode, slug: string): Promise<Listing | null> {
-    const rows = await getDb()
-      .select()
-      .from(listings)
-      .where(and(eq(listings.country, country), eq(listings.slug, slug)));
+    const rows = await selectListingRows(() =>
+      and(eq(listings.country, country), eq(listings.slug, slug)),
+    );
     const row = rows[0];
     if (!row || row.visibility === "draft") return null;
     const [decorated] = await decoratePublic([toListing(row)]);
@@ -76,7 +90,7 @@ export class PostgresListingRepository implements ListingRepository {
   }
 
   async listBySeller(sellerId: string): Promise<Listing[]> {
-    const rows = await getDb().select().from(listings).where(eq(listings.sellerId, sellerId));
+    const rows = await selectListingRows(() => eq(listings.sellerId, sellerId));
     return rows
       .map(toListing)
       .map((listing) => (listing.visibility === "draft" ? { ...listing, photoUrl: undefined } : listing))
@@ -84,7 +98,7 @@ export class PostgresListingRepository implements ListingRepository {
   }
 
   async getById(id: string): Promise<Listing | null> {
-    const rows = await getDb().select().from(listings).where(eq(listings.id, id));
+    const rows = await selectListingRows(() => eq(listings.id, id));
     const row = rows[0];
     if (!row) return null;
     if (row.visibility === "draft") return { ...toListing(row), photoUrl: undefined };
@@ -95,13 +109,14 @@ export class PostgresListingRepository implements ListingRepository {
   async createListing(sellerId: string, draft: ListingDraft): Promise<Listing> {
     const id = `lst_${crypto.randomUUID().replaceAll("-", "").slice(0, 16)}`;
     const slug = await uniqueSlug(draft.country, slugifyName(draft.title));
+    const schema = await readPublishSchema();
     const rows = await getDb()
       .insert(listings)
       .values(rowFromDraft(id, slug, sellerId, draft))
-      .returning();
+      .returning(selectionFor(schema));
     const row = rows[0];
     if (!row) throw new Error("Could not save the listing.");
-    return toListing(row);
+    return toListing(completeRow(row, schema));
   }
 
   async updateListing(id: string, sellerId: string, draft: ListingDraft): Promise<Listing | null> {
@@ -111,6 +126,7 @@ export class PostgresListingRepository implements ListingRepository {
       current.country === draft.country
         ? current.slug
         : await uniqueSlug(draft.country, slugifyName(draft.title));
+    const schema = await readPublishSchema();
     const rows = await getDb()
       .update(listings)
       .set({
@@ -120,10 +136,87 @@ export class PostgresListingRepository implements ListingRepository {
         photo: current.photo,
       })
       .where(and(eq(listings.id, id), eq(listings.sellerId, sellerId)))
-      .returning();
+      .returning(selectionFor(schema));
     const row = rows[0];
-    return row ? toListing(row) : null;
+    return row ? toListing(completeRow(row, schema)) : null;
   }
+}
+
+const legacyListingColumns = {
+  id: listings.id,
+  slug: listings.slug,
+  country: listings.country,
+  sellerId: listings.sellerId,
+  title: listings.title,
+  description: listings.description,
+  category: listings.category,
+  priceAmount: listings.priceAmount,
+  currency: listings.currency,
+  size: listings.size,
+  era: listings.era,
+  condition: listings.condition,
+  city: listings.city,
+  status: listings.status,
+  photo: listings.photo,
+  createdAt: listings.createdAt,
+  brand: listings.brand,
+  photoUrl: listings.photoUrl,
+  freeShipping: listings.freeShipping,
+  freeShippingOver: listings.freeShippingOver,
+};
+
+type ListingRow = typeof listings.$inferSelect;
+
+type SelectedListing = Omit<ListingRow, "visibility" | "photosCompliant"> & {
+  visibility?: ListingRow["visibility"] | null;
+  photosCompliant?: ListingRow["photosCompliant"] | null;
+};
+
+function selectionFor(schema: PublishSchema) {
+  return {
+    ...legacyListingColumns,
+    ...(schema.visibility ? { visibility: listings.visibility } : {}),
+    ...(schema.photosCompliant ? { photosCompliant: listings.photosCompliant } : {}),
+  };
+}
+
+function completeRow(row: SelectedListing, schema: PublishSchema): ListingRow {
+  const visibility =
+    schema.visibility && (row.visibility === "draft" || row.visibility === "sold" || row.visibility === "public")
+      ? row.visibility
+      : row.status === "sold"
+        ? "sold"
+        : "public";
+  return {
+    ...row,
+    visibility,
+    photosCompliant: schema.photosCompliant && schema.listingPhotos ? Boolean(row.photosCompliant) : false,
+  };
+}
+
+/**
+ * One listing select that stays valid before and after 0003.
+ * `whereFor` sees the same schema the select uses, including the
+ * single retry that drops the new columns after `42703`.
+ */
+export async function selectListingRows(
+  whereFor: (schema: PublishSchema) => SQL | undefined,
+): Promise<ListingRow[]> {
+  const schema = await readPublishSchema();
+  try {
+    return await queryListings(schema, whereFor(schema));
+  } catch (error) {
+    if (!isUndefinedColumn(error) || !selectsPublishColumns(schema)) throw error;
+    clearPublishSchemaCache();
+    const rows = await queryListings(PUBLISH_SCHEMA_LEGACY, whereFor(PUBLISH_SCHEMA_LEGACY));
+    cachePublishSchema(PUBLISH_SCHEMA_LEGACY);
+    return rows;
+  }
+}
+
+async function queryListings(schema: PublishSchema, where: SQL | undefined): Promise<ListingRow[]> {
+  const rows = await getDb().select(selectionFor(schema)).from(listings).where(where);
+  return rows.map((row) => completeRow(row, schema));
 }
 
 function rowFromDraft(id: string, slug: string, sellerId: string, draft: ListingDraft) {

@@ -493,6 +493,8 @@ footer .brand p { margin-top: 10px; font-style: italic; opacity: 0.85; max-width
 
 .detail { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 48px; align-items: start; }
 .detail-copy h1 { font-size: 52px; margin-top: 8px; }
+.detail-actions { display: grid; gap: 8px; justify-items: start; }
+.save-signin { min-width: 44px; min-height: 44px; }
 .detail-copy h2, .similar h2 { font-size: 28px; margin: 22px 0 8px; }
 .story { font-size: 18px; max-width: 58ch; }
 .approx { color: var(--ink-soft); font-size: 13px; margin-top: -4px; }
@@ -588,6 +590,23 @@ footer .brand p { margin-top: 10px; font-style: italic; opacity: 0.85; max-width
   .logo .word { font-size: 24px; }
   .hero { padding: 36px 0 48px; }
   .hero .wrap, .detail { grid-template-columns: 1fr; gap: 28px; }
+  .detail-copy { display: flex; flex-direction: column; }
+  .detail-copy > .eyebrow { order: 1; }
+  .detail-copy > h1 { order: 2; }
+  .detail-copy > .price { order: 3; }
+  .detail-copy > .approx { order: 4; }
+  .detail-copy > .detail-actions { order: 5; }
+  .detail-copy > .status-line,
+  .detail-copy > .ship-note,
+  .detail-copy > h2,
+  .detail-copy > .story,
+  .detail-copy > .facts,
+  .detail-copy > .returns-note,
+  .detail-copy > .seller-card,
+  .detail-copy > .hint,
+  .detail-copy > .offer-form,
+  .detail-copy > .bundle-form,
+  .detail-copy > .favourite-form { order: 6; }
   .hero h1, .picker h1, .missing h1, .sell-intro h1, .detail-copy h1 { font-size: 40px; }
   .lead { font-size: 18px; }
   .hero .ctas .btn { flex: 1; padding: 14px 12px; font-size: 13px; }

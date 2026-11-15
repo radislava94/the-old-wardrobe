@@ -11,6 +11,8 @@ import { listingsRepo } from "@/lib/data";
 import { savedListings } from "@/lib/favourites/queries";
 import { offersForProfile } from "@/lib/offers/queries";
 import { respondToOffer } from "@/lib/offers/actions";
+import { bundlesForBuyer } from "@/lib/bundles/queries";
+import { removeFromBundle } from "@/lib/bundles/actions";
 import { toggleFavourite } from "@/lib/favourites/actions";
 import { privacyPath, sellPath, signInPath } from "@/lib/paths";
 
@@ -47,6 +49,7 @@ export default async function AccountPage({
   const profile = await ensureProfile(session.user, raw);
   const saved = await savedListings(profile.id);
   const mine = await offersForProfile(profile.id);
+  const groups = await bundlesForBuyer(profile.id);
 
   return (
     <section className="page-block">
@@ -151,6 +154,35 @@ export default async function AccountPage({
             ))}
           </ul>
           {saved.length === 0 ? <p>{dict.account.savedEmpty}</p> : null}
+        </section>
+
+        <section className="account-block">
+          <h2>{dict.listing.bundleTitle}</h2>
+          <p className="hint">{dict.listing.bundleHint}</p>
+          {groups.map((group) => {
+            return (
+              <div key={group.id}>
+                <h3>{group.sellerName}</h3>
+                <ul className="own-listings">
+                  {group.items.map((item) => (
+                    <li key={item.id}>
+                      <span>
+                        <Link href={`/${item.country}/listing/${item.slug}`}>{item.title}</Link>
+                      </span>
+                      <form action={removeFromBundle}>
+                        <input type="hidden" name="bundleId" value={group.id} />
+                        <input type="hidden" name="listingId" value={item.id} />
+                        <input type="hidden" name="country" value={raw} />
+                        <button type="submit" className="btn btn-ghost">
+                          {dict.listing.bundleRemove}
+                        </button>
+                      </form>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
         </section>
 
         <section className="account-block">

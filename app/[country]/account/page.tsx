@@ -13,7 +13,6 @@ import { offersForProfile } from "@/lib/offers/queries";
 import { respondToOffer } from "@/lib/offers/actions";
 import { bundlesForBuyer } from "@/lib/bundles/queries";
 import { removeFromBundle } from "@/lib/bundles/actions";
-import { formatMoney } from "@/lib/money";
 import { toggleFavourite } from "@/lib/favourites/actions";
 import { privacyPath, sellPath, signInPath } from "@/lib/paths";
 
@@ -161,11 +160,6 @@ export default async function AccountPage({
           <h2>{dict.listing.bundleTitle}</h2>
           <p className="hint">{dict.listing.bundleHint}</p>
           {groups.map((group) => {
-            const currencies = new Set(group.items.map((item) => item.currency));
-            const total =
-              currencies.size === 1
-                ? group.items.reduce((sum, item) => sum + item.priceAmount, 0)
-                : null;
             return (
               <div key={group.id}>
                 <h3>{group.sellerName}</h3>
@@ -174,21 +168,6 @@ export default async function AccountPage({
                     <li key={item.id}>
                       <span>
                         <Link href={`/${item.country}/listing/${item.slug}`}>{item.title}</Link>
-                        {total != null && item.freeShippingOver != null ? (
-                          <p className="hint">
-                            {total >= item.freeShippingOver
-                              ? dict.listing.bundleMet(
-                                  item.title,
-                                  formatMoney(total, item.country),
-                                  formatMoney(item.freeShippingOver, item.country),
-                                )
-                              : dict.listing.bundleShort(
-                                  item.title,
-                                  formatMoney(total, item.country),
-                                  formatMoney(item.freeShippingOver, item.country),
-                                )}
-                          </p>
-                        ) : null}
                       </span>
                       <form action={removeFromBundle}>
                         <input type="hidden" name="bundleId" value={group.id} />

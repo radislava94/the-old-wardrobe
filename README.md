@@ -74,7 +74,7 @@ Every variable the product knows about, and the milestone that needs it. Copy [`
 | `EMAIL_FROM` | auth | From address for that message, for example `The Old Wardrobe <hello@theoldwardrobe.example>`. |
 | `AI_GATEWAY_API_KEY` | later AI | Key the Vercel AI SDK expects for AI Gateway. Documented only — no AI features yet. On Vercel the SDK can use the injected `VERCEL_OIDC_TOKEN` instead. |
 
-`VERCEL_URL`, `VERCEL_ENV`, and `VERCEL_PROJECT_PRODUCTION_URL` are set by Vercel. They are not part of `.env.example`.
+`VERCEL_URL`, `VERCEL_ENV`, and `VERCEL_PROJECT_PRODUCTION_URL` are set by Vercel. They are not part of `.env.example`. A Vercel production build runs `npm run db:migrate` only when `VERCEL_ENV` is `production` and `DATABASE_URL` is set. See Deploy.
 
 ## Routes
 
@@ -108,7 +108,7 @@ Posts are MDX files under `content/blog/{mk|bg|sr-rs|sq-al}/{slug}.mdx`. Frontma
 - `lib/data/` — `ListingRepository` and `ReviewRepository`. Postgres when `DATABASE_URL` is set and the catalogue tables are readable; otherwise the in-memory catalog, including when the database is unreachable or those tables are missing. Account and sell writes do not use that fallback
 - `lib/db/` — Drizzle schema and a lazy Postgres client
 - `drizzle/` — SQL migrations
-- `scripts/` — `db:migrate` and `db:seed`
+- `scripts/` — `db:migrate`, `db:seed`, and the Vercel production build hook
 - `lib/rates.ts` — placeholder euro rates
 - `mockup/` — original static design and the source photographs
 - `public/brand/` — logo used in Organization JSON-LD
@@ -149,4 +149,6 @@ JSON-LD:
 
 ## Deploy
 
-The app is a standard Next.js App Router project and deploys on Vercel with `npm run build`. The build does not require `DATABASE_URL`. Set it to the Neon connection string before a running deployment should read Postgres, then run the migrations and seed against that database.
+The app is a standard Next.js App Router project. `npm run build` is `next build`. It does not open a database connection. GitHub Actions uses that command, so CI does not migrate.
+
+Vercel uses the build command in `vercel.json`: `npm run vercel-build`. When `VERCEL_ENV` is `production` and `DATABASE_URL` is set, that runs `npm run db:migrate` before `next build`. Drizzle applies only pending files, so the step is safe when `0003_publish` and later migrations are already applied. If that command fails, or `listings.visibility` is still missing afterwards, the build exits and `next build` does not run. Preview and development deployments skip the migration even when `DATABASE_URL` is set, so a preview cannot migrate the production database. The build does not seed the database.

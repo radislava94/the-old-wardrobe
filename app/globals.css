@@ -822,6 +822,9 @@ body:has(.consent) { padding-bottom: 11rem; }
 .favourite-form { margin-top: 14px; display: grid; gap: 8px; justify-items: start; }
 .save-signin { min-width: 44px; min-height: 44px; }
 .heart-form { margin: 0; }
+.offer-form { margin-top: 18px; }
+.offer-form h2 { font-size: 28px; }
+.offer-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .sell-layout > h1 { font-size: 56px; }
 
 @media (prefers-reduced-motion: reduce) {

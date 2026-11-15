@@ -154,6 +154,42 @@ export const favourites = pgTable(
   ],
 );
 
+/**
+ * A stored offer. Nothing is captured or paid.
+ * `buyer` is a buyer offering on a listing.
+ * `seller` is a private offer to someone who saved that listing.
+ */
+export const offers = pgTable(
+  "offers",
+  {
+    id: text("id").primaryKey(),
+    listingId: text("listing_id")
+      .notNull()
+      .references(() => listings.id, { onDelete: "cascade" }),
+    fromUserId: text("from_user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    toUserId: text("to_user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    amount: integer("amount").notNull(),
+    currency: text("currency").notNull(),
+    kind: text("kind").notNull(),
+    note: text("note"),
+    /** Seller's answer to a buyer offer. Nothing is paid either way. */
+    status: text("status").notNull().default("pending"),
+    createdAt: date("created_at", { mode: "string" }).notNull(),
+  },
+  (table) => [
+    index("offers_listing").on(table.listingId),
+    index("offers_to").on(table.toUserId),
+    check("offers_kind", sql`${table.kind} in ('buyer', 'seller')`),
+    check("offers_amount_positive", sql`${table.amount} > 0`),
+    check("offers_currency", sql`${table.currency} in ('MKD', 'EUR', 'RSD', 'ALL')`),
+    check("offers_status", sql`${table.status} in ('pending', 'accepted', 'declined')`),
+  ],
+);
+
 export const reviews = pgTable(
   "reviews",
   {

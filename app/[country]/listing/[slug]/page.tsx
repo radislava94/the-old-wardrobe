@@ -21,6 +21,9 @@ import { FavouriteButton } from "@/components/favourite-button";
 import { getSession } from "@/lib/auth/session";
 import { profileForAuthUser } from "@/lib/auth/profile";
 import { isFavourite } from "@/lib/favourites/queries";
+import { makeOffer, sendPrivateOffer } from "@/lib/offers/actions";
+import { saversOf } from "@/lib/offers/queries";
+import { OfferRecipients } from "@/components/offer-recipients";
 import { shippingLabels } from "@/lib/listings/shipping-label";
 import { emptySummary, formatRating } from "@/lib/ratings";
 import {
@@ -77,10 +80,13 @@ function related(listing: Listing, all: Listing[]): Listing[] {
 
 export default async function ListingPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ country: string; slug: string }>;
+  searchParams: Promise<{ offer?: string }>;
 }) {
   const { country: raw, slug } = await params;
+  const offerState = (await searchParams).offer;
   if (!isCountry(raw)) notFound();
   const listing = await listingsRepo.getBySlug(raw, slug);
   if (!listing) notFound();
@@ -94,6 +100,10 @@ export default async function ListingPage({
     listingsRepo.listByCountry(raw),
     reviewsRepo.summariesFor([listing.sellerId]),
   ]);
+  const savers =
+    viewer && seller && viewer.id === seller.id && listing.status === "available"
+      ? (await saversOf(listing.id)).filter((saver) => saver.userId !== seller.id)
+      : [];
   const summary = summaries[listing.sellerId] ?? emptySummary();
   const ratingFigure = summary.count
     ? formatRating(summary.average, countries[raw].intlLocale)
@@ -236,6 +246,64 @@ export default async function ListingPage({
                   {dict.listing.memberSince} {joined}
                 </p>
               </Link>
+            ) : null}
+            {offerState === "sent" ? (
+              <p className="hint" role="status">
+                {dict.listing.offerSent}
+              </p>
+            ) : null}
+            {listing.status === "available" && viewer && seller && viewer.id === seller.id ? (
+              <form className="sell-form offer-form" action={sendPrivateOffer}>
+                <h2>{dict.listing.offerPrivate}</h2>
+                <p className="hint">{dict.listing.offerHint}</p>
+                <input type="hidden" name="listingId" value={listing.id} />
+                <input type="hidden" name="slug" value={listing.slug} />
+                <input type="hidden" name="country" value={raw} />
+                {savers.length === 0 ? <p>{dict.listing.offerEmpty}</p> : (
+                <>
+                <OfferRecipients
+                  legend={dict.listing.offerRecipients}
+                  people={savers}
+                  requiredMessage={dict.listing.offerNeedRecipient}
+                />
+                <label>
+                  <span>
+                    {dict.listing.offerAmount} ({listing.currency})
+                  </span>
+                  <input name="amount" type="number" min={1} step={1} required />
+                </label>
+                <label>
+                  <span>{dict.listing.offerNote}</span>
+                  <input name="note" maxLength={400} />
+                </label>
+                <button type="submit" className="btn btn-ghost">
+                  {dict.listing.offerSend}
+                </button>
+                </>
+                )}
+              </form>
+            ) : null}
+            {listing.status === "available" && viewer && seller && viewer.id !== seller.id ? (
+              <form className="sell-form offer-form" action={makeOffer}>
+                <h2>{dict.listing.offerTitle}</h2>
+                <p className="hint">{dict.listing.offerHint}</p>
+                <input type="hidden" name="listingId" value={listing.id} />
+                <input type="hidden" name="slug" value={listing.slug} />
+                <input type="hidden" name="country" value={raw} />
+                <label>
+                  <span>
+                    {dict.listing.offerAmount} ({listing.currency})
+                  </span>
+                  <input name="amount" type="number" min={1} step={1} required />
+                </label>
+                <label>
+                  <span>{dict.listing.offerNote}</span>
+                  <input name="note" maxLength={400} />
+                </label>
+                <button type="submit" className="btn btn-ghost">
+                  {dict.listing.offerSend}
+                </button>
+              </form>
             ) : null}
             {viewer ? (
               <FavouriteButton

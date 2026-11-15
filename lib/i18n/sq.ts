@@ -158,6 +158,9 @@ const sq: Dictionary = {
     sellerBusiness: "Tregtar",
     returnsPrivate:
       "Ky është shitës privat. E drejta e kthimit që vlen kur blini nga një tregtar nuk vlen këtu.",
+    shippingFree: "Dërgesa e kësaj cope është falas.",
+    shippingOver: (amount) => `Dërgesë falas për porosi mbi ${amount}.`,
+    shippingNone: "Dërgesa nuk është në çmim.",
   },
   sell: {
     title: "Shit një copë",

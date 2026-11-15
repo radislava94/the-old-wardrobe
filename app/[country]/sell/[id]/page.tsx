@@ -89,6 +89,7 @@ export default async function EditListingPage({
         <div className="sell-intro">
           <p className="eyebrow">{dict.nav.sell}</p>
           <h1>{listing.title}</h1>
+          <p className="hint">{dict.sell.priceDropNote}</p>
         </div>
           <SellForm
           blobConfigured={Boolean(process.env.BLOB_READ_WRITE_TOKEN)}

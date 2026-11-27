@@ -32,12 +32,14 @@ export default async function EditListingPage({
     const dict = getDictionary(raw);
     return (
       <section className="page-block">
-        <div className="wrap sell-layout">
+        <div className="wrap sell-layout sell-layout-wide">
           <div className="sell-intro">
             <p className="eyebrow">{dict.nav.sell}</p>
             <h1>{dict.sell.title}</h1>
           </div>
           <SellForm
+            signedIn={false}
+            returnPath={`${sellPath(raw)}/${id}`}
             blobConfigured={Boolean(process.env.BLOB_READ_WRITE_TOKEN)}
             countries={countryCodes.map((code) => ({
               code,
@@ -62,8 +64,6 @@ export default async function EditListingPage({
               story: "",
               photoUrl: "",
               sellerKind: "private",
-              freeShipping: false,
-              freeShippingOver: "",
             }}
             copy={sellCopy(dict)}
             freeSalesLeft={commissionConfig.welcomeSales}
@@ -80,10 +80,14 @@ export default async function EditListingPage({
   if (!listing || !profile || listing.sellerId !== profile.id) notFound();
   const dict = getDictionary(raw);
   const freeSalesLeft = await freeSalesLeftFor(profile.id);
+  const owned = await listOwnedPhotos(listing.id);
+  const readyPhotos = owned.filter((photo) => photo.status === "ready");
+  const formCopy = sellCopy(dict);
+  const knownConditions = new Set(formCopy.conditions.map((item) => item.value));
 
   return (
     <section className="page-block">
-      <div className="wrap sell-layout">
+      <div className="wrap sell-layout sell-layout-wide">
         <Breadcrumbs
           label={dict.breadcrumbLabel}
           items={[
@@ -98,6 +102,8 @@ export default async function EditListingPage({
           <p className="hint">{dict.sell.priceDropNote}</p>
         </div>
           <SellForm
+          signedIn
+          returnPath={`${sellPath(listing.country)}/${listing.id}`}
           blobConfigured={Boolean(process.env.BLOB_READ_WRITE_TOKEN)}
           countries={countryCodes.map((code) => ({
             code,
@@ -121,78 +127,15 @@ export default async function EditListingPage({
             condition: listing.condition,
             story: listing.description,
             photoUrl: listing.visibility === "draft" ? "" : (listing.photoUrl ?? ""),
-            photoIds: (await listOwnedPhotos(listing.id))
-              .filter((photo) => photo.status === "ready")
-              .map((photo) => photo.id),
+            photoIds: readyPhotos.map((photo) => photo.id),
+            photoPreviews: readyPhotos.map((photo) => ({ id: photo.id, url: photo.url })),
             sellerKind: profile.sellerKind === "business" ? "business" : "private",
-            freeShipping: Boolean(listing.freeShipping),
-            freeShippingOver: listing.freeShippingOver ? String(listing.freeShippingOver) : "",
           }}
           copy={{
-            name: dict.sell.name,
-            namePlaceholder: dict.sell.namePlaceholder,
-            category: dict.sell.category,
-            size: dict.sell.size,
-            sizePlaceholder: dict.sell.sizePlaceholder,
-            price: dict.sell.price,
-            city: dict.sell.city,
-            story: dict.sell.story,
-            storyPlaceholder: dict.sell.storyPlaceholder,
-            photo: dict.sell.photo,
-            photoHint: dict.sell.photoHint,
-            photoLocal: dict.sell.photoLocal,
-            photoBlob: dict.sell.photoBlob,
-            photoCount: dict.sell.photoCount,
-            signIn: dict.sell.signIn,
-            saveDraft: dict.sell.saveDraft,
-            aiAsk: dict.sell.aiAsk,
-            aiApplyDescription: dict.sell.aiApplyDescription,
-            aiApplyWarning: dict.sell.aiApplyWarning,
-            aiWarningLabel: dict.sell.aiWarningLabel,
-            submit: dict.sell.submit,
-            brand: dict.sell.brand,
-            condition: dict.sell.condition,
-            conditions: [
-              { value: dict.sell.conditions.loved, label: dict.sell.conditions.loved },
-              { value: dict.sell.conditions.kept, label: dict.sell.conditions.kept },
-              { value: dict.sell.conditions.repair, label: dict.sell.conditions.repair },
-              ...(listing.condition &&
-              ![
-                dict.sell.conditions.loved,
-                dict.sell.conditions.kept,
-                dict.sell.conditions.repair,
-              ].includes(listing.condition)
-                ? [{ value: listing.condition, label: listing.condition }]
-                : []),
-            ],
-            country: dict.sell.country,
-            currency: dict.sell.currency,
-            freeShipping: dict.sell.freeShipping,
-            freeShippingHint: dict.sell.freeShippingHint,
-            freeShippingOver: dict.sell.freeShippingOver,
-            freeShippingOverHint: dict.sell.freeShippingOverHint,
-            sellerKind: dict.sell.sellerKind,
-            sellerPrivate: dict.sell.sellerPrivate,
-            sellerBusiness: dict.sell.sellerBusiness,
-            errors: {
-              fields: dict.sell.photoMissing,
-              photo: dict.sell.photoMissing,
-              "photo-type": dict.sell.photoType,
-              "photo-size": dict.sell.photoSize,
-              "photo-blob": dict.sell.photoBlob,
-              "photo-count": dict.sell.photoCount,
-              "photo-spoofed": dict.sell.photoSpoofed,
-              "photo-incomplete": dict.sell.photoIncomplete,
-              "photo-foreign": dict.sell.photoForeign,
-              "photo-missing": dict.sell.photoMissing,
-              database: dict.sell.database,
-              "ai-off": dict.sell.aiOff,
-              "ai-unavailable": dict.sell.aiUnavailable,
-              "ai-timeout": dict.sell.aiTimeout,
-              "ai-rate-limited": dict.sell.aiRateLimited,
-              "ai-invalid": dict.sell.aiInvalid,
-              forbidden: dict.sell.signIn,
-            },
+            ...formCopy,
+            conditions: knownConditions.has(listing.condition)
+              ? formCopy.conditions
+              : [...formCopy.conditions, { value: listing.condition, label: listing.condition }],
           }}
           freeSalesLeft={freeSalesLeft}
           fees={feePreviewCopy(dict, freeSalesLeft)}

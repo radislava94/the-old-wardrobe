@@ -119,7 +119,7 @@ Photographs are imported from `mockup/img` and served through `next/image`.
 
 ## Data
 
-A single `User` can buy and sell. Listings point at `sellerId`. There is no separate seller account. Each listing is stored with a price in the seller's currency and a status of `available` or `sold`. Cards and listings say shipping is not included in the price. They do not say shipping is free, and Offer JSON-LD does not add free-shipping details. A country page only loads listings whose country matches the URL. Display always runs the amount through `convert()` in `lib/rates.ts`, then formats it in the section currency.
+A single `User` can buy and sell. Listings point at `sellerId`. There is no separate seller account. Each listing is stored with a price in the seller's currency and a status of `available` or `sold`. The seller packs the parcel and sends it with a courier. The listing does not offer free delivery. Cards and listings say shipping is not included in the price. They do not say shipping is free, and Offer JSON-LD does not add free-shipping details. A country page only loads listings whose country matches the URL. Display always runs the amount through `convert()` in `lib/rates.ts`, then formats it in the section currency.
 
 The catalog is about 24 placeholder garments across Skopje, Bitola, Sofia, Plovdiv, Belgrade, Novi Sad, Tirana and Durrës. `npm run db:setup` copies those listings, sellers, and reviews into Postgres. Call sites still use `listingsRepo` and `reviewsRepo`. The client is created on first query, so a build with no database does not connect. Seeded reviews are sample copy: `first_party` is false, and `areFirstParty()` stays false.
 

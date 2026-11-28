@@ -16,10 +16,20 @@ import { listOwnedPhotos } from "@/lib/listings/actions";
 import { sellCopy } from "@/lib/listings/sell-copy";
 import { homePath, sellPath, signInPath } from "@/lib/paths";
 
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
-  title: "Edit listing",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ country: string; id: string }>;
+}): Promise<Metadata> {
+  const { country: raw } = await params;
+  if (!isCountry(raw)) {
+    return { robots: { index: false, follow: false }, title: "Edit listing" };
+  }
+  return {
+    robots: { index: false, follow: false },
+    title: getDictionary(raw).sell.title,
+  };
+}
 
 export default async function EditListingPage({
   params,

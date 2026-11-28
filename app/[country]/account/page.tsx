@@ -22,10 +22,20 @@ import { saleQuote } from "@/lib/commission/quote";
 import { toggleFavourite } from "@/lib/favourites/actions";
 import { privacyPath, sellPath, signInPath } from "@/lib/paths";
 
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
-  title: "Account",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ country: string }>;
+}): Promise<Metadata> {
+  const { country: raw } = await params;
+  if (!isCountry(raw)) {
+    return { robots: { index: false, follow: false }, title: "Account" };
+  }
+  return {
+    robots: { index: false, follow: false },
+    title: getDictionary(raw).account.title,
+  };
+}
 
 export default async function AccountPage({
   params,

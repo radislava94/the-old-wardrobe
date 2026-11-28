@@ -7,7 +7,6 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { JsonLd } from "@/components/json-ld";
 import { ListingCard } from "@/components/listing-card";
 import { ListingReport } from "@/components/listing-report";
-import { ReserveButton } from "@/components/reserve-button";
 import { ShareRow } from "@/components/share-row";
 import { Stars } from "@/components/stars";
 import { cardsFor } from "@/lib/cards";
@@ -380,15 +379,17 @@ export default async function ListingPage({
                   </button>
                 </form>
               ) : null}
-              {listing.status === "available" ? (
-                <ReserveButton
-                  label={dict.listing.reserve}
-                  note={dict.listing.reserveNote}
-                  clicked={dict.listing.reserveClicked}
-                />
-              ) : (
-                <p className="hint">{dict.listing.sold}</p>
-              )}
+              {listing.status === "sold" ? <p className="hint">{dict.listing.sold}</p> : null}
+              {listing.status === "available" && !viewer ? (
+                <p>
+                  <Link
+                    className="btn btn-primary"
+                    href={`${signInPath(raw)}?next=${encodeURIComponent(listingPath(raw, listing.slug))}`}
+                  >
+                    {dict.order.signIn}
+                  </Link>
+                </p>
+              ) : null}
               <ListingReport
                 listingId={listing.id}
                 slug={listing.slug}

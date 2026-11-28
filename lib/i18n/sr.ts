@@ -111,9 +111,8 @@ const sr: Dictionary = {
       {
         num: "03",
         title: "Kupi",
-        body: "Plati bezbedno, prati pošiljku i pokloni voljenom komadu novo poglavlje. Bolje je i za planetu.",
-        // TODO: "zaštita kupca" is mockup copy — no live buyer-protection product yet.
-        hint: "→ zaštita kupca je uključena",
+        body: "Poruči uz plaćanje kuriru. Prodavac spakuje komad i šalje ga sam.",
+        hint: "→ kupac plaća kuriru kad pošiljka stigne",
       },
     ],
   },
@@ -161,7 +160,7 @@ const sr: Dictionary = {
       "Plaćanje još nije uključeno. Dugme samo pokazuje kako će oglas izgledati.",
     available: "Dostupno",
     sold: "Prodato",
-    ships: "Preuzimanje ili dostava u Srbiji",
+    ships: "Prodavac šalje kurirskom službom u Srbiji",
     story: "Priča",
     share: {
       heading: "Podeli",

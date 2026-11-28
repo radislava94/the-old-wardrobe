@@ -1,4 +1,4 @@
-import { eq, inArray } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { getDb } from "../db/client";
 import { toReview } from "../db/map";
 import { reviews } from "../db/schema";
@@ -7,10 +7,11 @@ import type { RatingSummary, Review } from "../types";
 import type { ReviewRepository } from "./review-repository";
 
 /**
- * Postgres reviews. Seeded rows are sample copy (`first_party` false),
- * so `areFirstParty()` stays false until every stored review was
- * collected from a buyer. A paid order can store one review. Refused
- * and cancelled orders cannot. Product pages still omit aggregateRating.
+ * Postgres reviews. Seeded rows are sample copy (`first_party` false)
+ * and are left out of the lists and averages a shopper sees.
+ * `areFirstParty()` stays false until every stored review was collected
+ * from a buyer. A paid order can store one review. Refused and cancelled
+ * orders cannot. Product pages still omit aggregateRating.
  */
 export class PostgresReviewRepository implements ReviewRepository {
   async areFirstParty(): Promise<boolean> {
@@ -23,7 +24,7 @@ export class PostgresReviewRepository implements ReviewRepository {
     const rows = await getDb()
       .select()
       .from(reviews)
-      .where(eq(reviews.sellerId, sellerId));
+      .where(and(eq(reviews.sellerId, sellerId), eq(reviews.firstParty, true)));
     return rows
       .map(toReview)
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -38,7 +39,7 @@ export class PostgresReviewRepository implements ReviewRepository {
     const rows = await getDb()
       .select()
       .from(reviews)
-      .where(inArray(reviews.sellerId, wanted));
+      .where(and(inArray(reviews.sellerId, wanted), eq(reviews.firstParty, true)));
     const grouped = new Map<string, Review[]>();
     for (const id of wanted) grouped.set(id, []);
     for (const review of rows.map(toReview)) {

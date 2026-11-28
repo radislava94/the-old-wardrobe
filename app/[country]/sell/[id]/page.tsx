@@ -14,7 +14,7 @@ import { listingsRepo } from "@/lib/data";
 import { getDictionary } from "@/lib/i18n";
 import { listOwnedPhotos } from "@/lib/listings/actions";
 import { sellCopy } from "@/lib/listings/sell-copy";
-import { homePath, sellPath, signInPath } from "@/lib/paths";
+import { homePath, sellPath, signUpPath } from "@/lib/paths";
 
 export async function generateMetadata({
   params,
@@ -39,6 +39,8 @@ export default async function EditListingPage({
   const { country: raw, id } = await params;
   if (!isCountry(raw)) notFound();
   if (!process.env.DATABASE_URL?.trim()) {
+    const session = await getSession();
+    if (!session) redirect(signUpPath(raw, `${sellPath(raw)}/${id}`));
     const dict = getDictionary(raw);
     return (
       <section className="page-block">
@@ -48,7 +50,7 @@ export default async function EditListingPage({
             <h1>{dict.sell.title}</h1>
           </div>
           <SellForm
-            signedIn={false}
+            signedIn
             returnPath={`${sellPath(raw)}/${id}`}
             blobConfigured={Boolean(process.env.BLOB_READ_WRITE_TOKEN)}
             countries={countryCodes.map((code) => ({
@@ -84,7 +86,7 @@ export default async function EditListingPage({
     );
   }
   const session = await getSession();
-  if (!session) redirect(`${signInPath(raw)}?next=${encodeURIComponent(`${sellPath(raw)}/${id}`)}`);
+  if (!session) redirect(signUpPath(raw, `${sellPath(raw)}/${id}`));
   const profile = await profileForAuthUser(session.user.id);
   const listing = await listingsRepo.getById(id);
   if (!listing || !profile || listing.sellerId !== profile.id) notFound();

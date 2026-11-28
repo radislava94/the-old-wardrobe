@@ -24,6 +24,22 @@ describe("shop copy", () => {
     }
   });
 
+  it("names a new seller when there are no buyer ratings", () => {
+    for (const code of countryCodes) {
+      const line = getDictionary(code).rating.newSeller;
+      expect(line.trim().length).toBeGreaterThan(8);
+    }
+  });
+
+  it("offers a create-account line on the sign-in copy", () => {
+    expect(getDictionary("mk").auth.sellFirst).toBe("За да продаваш, прво креирај сметка.");
+    expect(getDictionary("mk").sell.guide.start).toBe("Почни");
+    expect(getDictionary("mk").auth.signUpTitle).toBe("Креирај сметка");
+    expect(getDictionary("mk").auth.switchToSignUp).toBe("Немаш сметка? Креирај сметка");
+    expect(getDictionary("mk").sell.flow.photosTitle).toBe("Додај фотографии");
+    expect(getDictionary("mk").sell.flow.photosProgress).toContain("од 8");
+  });
+
   it("keeps a sign-in line for cash on delivery", () => {
     for (const code of countryCodes) {
       const order = getDictionary(code).order;

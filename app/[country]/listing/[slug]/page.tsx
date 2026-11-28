@@ -8,7 +8,7 @@ import { JsonLd } from "@/components/json-ld";
 import { ListingCard } from "@/components/listing-card";
 import { ListingReport } from "@/components/listing-report";
 import { ShareRow } from "@/components/share-row";
-import { Stars } from "@/components/stars";
+import { SellerRating } from "@/components/seller-rating";
 import { cardsFor } from "@/lib/cards";
 import { countries, isCountry } from "@/lib/countries";
 import { listings } from "@/lib/data/catalog";
@@ -235,13 +235,14 @@ export default async function ListingPage({
                   <div>
                     <h2>{dict.listing.seller}</h2>
                     <p className="seller-name">{seller.name}</p>
-                    <Stars
+                    <SellerRating
                       summary={summary}
                       figure={ratingFigure}
+                      emptyLabel={dict.rating.newSeller}
                       label={
                         summary.count
                           ? dict.rating.aria(ratingFigure, dict.rating.count(summary.count))
-                          : dict.rating.noReviews
+                          : dict.rating.newSeller
                       }
                     />
                   </div>

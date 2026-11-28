@@ -233,6 +233,8 @@ export type Dictionary = {
       next: string;
       photosTitle: string;
       photosLead: string;
+      photosAdd: string;
+      photoLimit: string;
       photosDrop: string;
       photosProgressFew: string;
       photosProgress: string;
@@ -281,6 +283,19 @@ export type Dictionary = {
       photoAlt: string;
       accountDraft: string;
     };
+    guide: {
+      title: string;
+      lead: string;
+      start: string;
+      photosTitle: string;
+      photosBody: string;
+      describeTitle: string;
+      describeBody: string;
+      priceTitle: string;
+      priceBody: string;
+      shipTitle: string;
+      shipBody: string;
+    };
   };
   search: {
     allTitle: string;
@@ -295,6 +310,7 @@ export type Dictionary = {
     reviews: string;
     breakdown: string;
     noReviews: string;
+    newSeller: string;
     listings: string;
     leaveTitle: string;
     leaveRule: string;
@@ -367,6 +383,7 @@ export type Dictionary = {
     verifySent: string;
     unverified: string;
     signUpUnavailable: string;
+    sellFirst: string;
   };
   consent: {
     label: string;

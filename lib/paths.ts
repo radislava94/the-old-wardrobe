@@ -42,6 +42,12 @@ export function signInPath(country: CountryCode): string {
   return `/${country}/sign-in`;
 }
 
+/** Create-account tab, then back to `next` after sign-up or sign-in. */
+export function signUpPath(country: CountryCode, next: string): string {
+  const params = new URLSearchParams({ mode: "sign-up", next });
+  return `${signInPath(country)}?${params.toString()}`;
+}
+
 export function privacyPath(country: CountryCode): string {
   return `/${country}/privacy`;
 }

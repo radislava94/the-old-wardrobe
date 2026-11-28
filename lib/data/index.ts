@@ -83,9 +83,9 @@ function publicReviews<T>(read: (store: ReviewRepository) => Promise<T>): Promis
 }
 
 /**
- * Sample reviews stay non-first-party until a repository enforces
- * one review per completed order. Both stores honour that flag.
- * These reads follow the same placeholder fallback as the catalogue.
+ * Shopper-facing reviews are buyer ratings from a paid order.
+ * Sample copy is not included. These reads follow the same
+ * placeholder fallback as the catalogue.
  */
 export const reviewsRepo: ReviewRepository = {
   areFirstParty(): Promise<boolean> {

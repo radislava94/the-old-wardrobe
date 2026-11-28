@@ -58,8 +58,9 @@ export async function cardsFor(items: Listing[], country: CountryCode, dict: Dic
       summary,
       ratingLabel: summary.count
         ? dict.rating.aria(figure, dict.rating.count(summary.count))
-        : dict.rating.noReviews,
+        : dict.rating.newSeller,
       ratingFigure: figure,
+      newSeller: dict.rating.newSeller,
       saved: savedIds.has(listing.id),
       signedIn: Boolean(viewer),
       saveLabel: dict.account.favourite,

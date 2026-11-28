@@ -114,12 +114,11 @@ async function expectPlaceholderCatalogue(): Promise<void> {
     await listings.getBySlug("mk", "ponco-heklani-resi"),
   );
   expect(await listingsRepo.getUser("ana")).toEqual(await listings.getUser("ana"));
-  const sampleReviews = await reviews.listBySeller("ana");
-  expect(sampleReviews.length).toBeGreaterThan(0);
-  expect(await reviewsRepo.listBySeller("ana")).toEqual(sampleReviews);
-  const sampleSummary = await reviews.summariesFor(["ana"]);
-  expect(sampleSummary.ana?.count).toBeGreaterThan(0);
-  expect(await reviewsRepo.summariesFor(["ana"])).toEqual(sampleSummary);
+  expect(await reviews.listBySeller("ana")).toEqual([]);
+  expect(await reviewsRepo.listBySeller("ana")).toEqual([]);
+  const emptySummary = await reviews.summariesFor(["ana"]);
+  expect(emptySummary.ana?.count).toBe(0);
+  expect(await reviewsRepo.summariesFor(["ana"])).toEqual(emptySummary);
   expect(await reviewsRepo.areFirstParty()).toBe(false);
 }
 

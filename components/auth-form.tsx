@@ -17,7 +17,6 @@ export function AuthForm({
   facebook: boolean;
   signUpEnabled: boolean;
   copy: {
-    signInTitle: string;
     signUpTitle: string;
     email: string;
     password: string;
@@ -25,6 +24,8 @@ export function AuthForm({
     name: string;
     signIn: string;
     signUp: string;
+    switchToSignUp: string;
+    switchToSignIn: string;
     google: string;
     facebook: string;
     or: string;
@@ -36,7 +37,6 @@ export function AuthForm({
   };
 }) {
   const [mode, setMode] = useState<"sign-in" | "sign-up">("sign-in");
-  const activeMode = signUpEnabled ? mode : "sign-in";
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -45,23 +45,28 @@ export function AuthForm({
     document.cookie = `ow_country=${country}; Path=/; Max-Age=600; SameSite=Lax`;
   }
 
+  function switchMode(next: "sign-in" | "sign-up") {
+    setMode(next);
+    setError(null);
+    setNotice(null);
+  }
+
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
     setNotice(null);
+    if (mode === "sign-up" && !signUpEnabled) {
+      setError(copy.signUpUnavailable);
+      return;
+    }
     setPending(true);
     rememberCountry();
     const data = new FormData(event.currentTarget);
     const email = String(data.get("email") ?? "");
     const password = String(data.get("password") ?? "");
     const name = String(data.get("name") ?? "");
-    if (activeMode === "sign-up" && !signUpEnabled) {
-      setPending(false);
-      setError(copy.signUpUnavailable);
-      return;
-    }
     const result =
-      activeMode === "sign-up"
+      mode === "sign-up"
         ? await authClient.signUp.email({ email, password, name, callbackURL: nextPath })
         : await authClient.signIn.email({ email, password, callbackURL: nextPath });
     setPending(false);
@@ -76,7 +81,7 @@ export function AuthForm({
       );
       return;
     }
-    if (activeMode === "sign-up" && result.data?.user && !result.data.user.emailVerified) {
+    if (mode === "sign-up" && result.data?.user && !result.data.user.emailVerified) {
       setNotice(copy.verifySent);
       return;
     }
@@ -101,38 +106,23 @@ export function AuthForm({
           aria-selected={mode === "sign-in"}
           aria-controls="auth-panel"
           tabIndex={mode === "sign-in" ? 0 : -1}
-          onClick={() => {
-            setMode("sign-in");
-            setError(null);
-            setNotice(null);
-          }}
+          onClick={() => switchMode("sign-in")}
         >
-          {copy.signInTitle}
+          {copy.signIn}
         </button>
-        {signUpEnabled ? (
-          <button
-            type="button"
-            role="tab"
-            id="auth-tab-sign-up"
-            className={mode === "sign-up" ? "btn btn-ghost is-on" : "btn btn-ghost"}
-            aria-selected={mode === "sign-up"}
-            aria-controls="auth-panel"
-            tabIndex={mode === "sign-up" ? 0 : -1}
-            onClick={() => {
-              setMode("sign-up");
-              setError(null);
-              setNotice(null);
-            }}
-          >
-            {copy.signUpTitle}
-          </button>
-        ) : null}
+        <button
+          type="button"
+          role="tab"
+          id="auth-tab-sign-up"
+          className={mode === "sign-up" ? "btn btn-ghost is-on" : "btn btn-ghost"}
+          aria-selected={mode === "sign-up"}
+          aria-controls="auth-panel"
+          tabIndex={mode === "sign-up" ? 0 : -1}
+          onClick={() => switchMode("sign-up")}
+        >
+          {copy.signUpTitle}
+        </button>
       </div>
-      {signUpEnabled ? null : (
-        <p className="hint" role="status">
-          {copy.signUpUnavailable}
-        </p>
-      )}
       <p className="hint">{copy.both}</p>
       {google || facebook ? (
         <div className="auth-social">
@@ -153,10 +143,10 @@ export function AuthForm({
         className="sell-form"
         id="auth-panel"
         role="tabpanel"
-        aria-labelledby={activeMode === "sign-in" ? "auth-tab-sign-in" : "auth-tab-sign-up"}
+        aria-labelledby={mode === "sign-in" ? "auth-tab-sign-in" : "auth-tab-sign-up"}
         onSubmit={onSubmit}
       >
-        {activeMode === "sign-up" ? (
+        {mode === "sign-up" ? (
           <label>
             <span>{copy.name}</span>
             <input name="name" required maxLength={80} autoComplete="name" />
@@ -173,12 +163,24 @@ export function AuthForm({
             type="password"
             required
             minLength={8}
-            autoComplete={activeMode === "sign-up" ? "new-password" : "current-password"}
+            autoComplete={mode === "sign-up" ? "new-password" : "current-password"}
           />
           <small>{copy.passwordHint}</small>
         </label>
+        {mode === "sign-up" && !signUpEnabled ? (
+          <p className="hint" role="status">
+            {copy.signUpUnavailable}
+          </p>
+        ) : null}
         <button type="submit" className="btn btn-primary" disabled={pending}>
-          {activeMode === "sign-up" ? copy.signUp : copy.signIn}
+          {mode === "sign-up" ? copy.signUp : copy.signIn}
+        </button>
+        <button
+          type="button"
+          className="auth-alt"
+          onClick={() => switchMode(mode === "sign-in" ? "sign-up" : "sign-in")}
+        >
+          {mode === "sign-in" ? copy.switchToSignUp : copy.switchToSignIn}
         </button>
         {notice ? (
           <p className="hint" role="status">

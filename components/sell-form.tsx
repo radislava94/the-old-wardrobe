@@ -26,7 +26,6 @@ import { photoProblem } from "@/lib/listings/photo-rules";
 import type { PublishResult } from "@/lib/listings/publish-types";
 import {
   MAX_LISTING_PHOTOS,
-  MIN_LISTING_PHOTOS,
   SELL_STEPS,
   clearDraft,
   countablePhoto,
@@ -50,8 +49,6 @@ import { signInPath } from "@/lib/paths";
 import type { CategoryKey, CurrencyCode } from "@/lib/types";
 
 type Option = { value: string; label: string };
-
-const TILTS = ["-2.4deg", "1.8deg", "-1.2deg", "2.4deg", "-1.6deg", "1.1deg", "-0.8deg", "2deg"];
 
 const SPARKS = [
   { left: "14%", top: "28%", delay: "0s", color: "var(--mustard)" },
@@ -250,7 +247,7 @@ export function SellForm({
       : null;
   const stepIndex = SELL_STEPS.indexOf(step);
   const photoCount = photos.filter((photo) => countablePhoto({ serverId: photo.serverId, hasFile: Boolean(photo.file) })).length;
-  const progressPattern = photoCount < MIN_LISTING_PHOTOS ? copy.flow.photosProgressFew : copy.flow.photosProgress;
+  const progressPattern = copy.flow.photosProgress;
   const cover = photos[0]?.previewUrl || "";
   const shownPrice = issuesForPrice(price).length === 0 ? formatMoney(Number(price.trim()), country) : "";
   const shippingLines = previewShipping();
@@ -759,7 +756,7 @@ export function SellForm({
                 <p>{copy.flow.photosLead}</p>
               </div>
               <div
-                className={dropOver ? "photo-drop is-over" : "photo-drop"}
+                className={dropOver ? "photo-picker is-over" : "photo-picker"}
                 onDragOver={(event) => {
                   if (![...event.dataTransfer.types].includes("Files")) return;
                   event.preventDefault();
@@ -775,10 +772,10 @@ export function SellForm({
               >
                 <input
                   id={`${formId}-file`}
-                  className="photo-input"
+                  className="photo-file"
                   name="photo"
                   type="file"
-                  accept="image/jpeg,image/png,image/webp"
+                  accept="image/*"
                   multiple
                   aria-describedby={`${formId}-photo-hint`}
                   onChange={(event) => {
@@ -786,27 +783,23 @@ export function SellForm({
                     event.target.value = "";
                   }}
                 />
-                <label htmlFor={`${formId}-file`}>{copy.flow.photosDrop}</label>
-                <small id={`${formId}-photo-hint`}>
-                  {copy.photoCount} {blobConfigured ? copy.photoHint : copy.photoBlob}
-                </small>
+                <label htmlFor={`${formId}-file`} className="btn btn-primary photo-add">
+                  + {copy.flow.photosAdd}
+                </label>
+                <p className="photo-limit" id={`${formId}-photo-hint`}>
+                  {copy.flow.photoLimit}
+                </p>
               </div>
-              <p className="photo-progress" aria-live="polite">
-                <span className="photo-pips" aria-hidden="true">
-                  {Array.from({ length: MIN_LISTING_PHOTOS }, (_, index) => (
-                    <i key={index} className={index < photoCount ? "is-on" : undefined} />
-                  ))}
-                </span>
+              <p className="photo-meter" aria-live="polite">
                 {fillPattern(progressPattern, { count: photoCount })}
               </p>
               {photosTrimmed ? <p className="hint">{copy.flow.photosRetry}</p> : null}
               {photos.length > 0 ? (
-                <ul className="polaroid-pile">
+                <ul className="photo-grid">
                   {photos.map((photo, index) => (
                     <li key={photo.key}>
                       <article
-                        className={index === 0 ? "pile-shot is-cover" : "pile-shot"}
-                        style={{ ["--tilt" as string]: TILTS[index % TILTS.length] }}
+                        className={index === 0 ? "photo-thumb is-cover" : "photo-thumb"}
                         data-photo-key={photo.key}
                         tabIndex={0}
                         aria-label={`${index + 1}. ${photo.name || copy.flow.photosSaved}${index === 0 ? `, ${copy.flow.photosCover}` : ""}`}
@@ -836,14 +829,22 @@ export function SellForm({
                           });
                         }}
                       >
-                        {index === 0 ? <span className="cover-tape">{copy.flow.photosCover}</span> : null}
+                        {index === 0 ? <span className="cover-badge">{copy.flow.photosCover}</span> : null}
                         {photo.previewUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element -- local or already-stored preview
                           <img src={photo.previewUrl} alt={copy.flow.photoAlt} />
                         ) : (
                           <div className="ph-empty" role="img" aria-label={copy.flow.photosSaved} />
                         )}
-                        <div className="pile-actions">
+                        <button
+                          type="button"
+                          className="photo-remove"
+                          aria-label={copy.flow.photosRemove}
+                          onClick={() => void removePhoto(photo)}
+                        >
+                          ×
+                        </button>
+                        <div className="photo-order">
                           <button
                             type="button"
                             className="drag-handle"
@@ -870,9 +871,6 @@ export function SellForm({
                             onClick={() => shift(index, 1)}
                           >
                             ›
-                          </button>
-                          <button type="button" aria-label={copy.flow.photosRemove} onClick={() => void removePhoto(photo)}>
-                            ×
                           </button>
                         </div>
                       </article>

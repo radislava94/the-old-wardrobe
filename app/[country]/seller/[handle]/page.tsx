@@ -10,6 +10,7 @@ import { getSession } from "@/lib/auth/session";
 import { profileForAuthUser } from "@/lib/auth/profile";
 import { databaseEnabled } from "@/lib/db/runtime";
 import { unreviewedPaidOrders } from "@/lib/reviews/eligible";
+import { SellerRating } from "@/components/seller-rating";
 import { Stars } from "@/components/stars";
 import { cardsFor } from "@/lib/cards";
 import { countries, isCountry } from "@/lib/countries";
@@ -123,17 +124,17 @@ export default async function SellerPage({
               {dict.listing.memberSince} {joined}
             </p>
             <p className="story">{user.bio}</p>
-            <Stars
+            <SellerRating
               summary={summary}
               figure={figure}
               size="lg"
+              emptyLabel={dict.rating.newSeller}
               label={
                 summary.count
                   ? dict.rating.aria(figure, dict.rating.count(summary.count))
-                  : dict.rating.noReviews
+                  : dict.rating.newSeller
               }
             />
-            {summary.count === 0 ? <p className="hint">{dict.rating.noReviews}</p> : null}
           </div>
           {summary.count > 0 ? (
             <div className="breakdown">
@@ -167,6 +168,8 @@ export default async function SellerPage({
 
         <section className="seller-reviews">
           <h2>{dict.rating.reviews}</h2>
+          {reviewList.length === 0 ? <p className="new-seller">{dict.rating.newSeller}</p> : null}
+          {reviewList.length > 0 ? (
           <ol className="review-list">
             {await Promise.all(
               reviewList.map(async (review) => {
@@ -210,6 +213,7 @@ export default async function SellerPage({
               }),
             )}
           </ol>
+          ) : null}
           {query.review === "saved" ? <p className="hint">{dict.rating.savedReview}</p> : null}
           {openOrders.length > 0 ? (
             openOrders.map((order) => (

@@ -49,7 +49,6 @@ export default async function SignInPage({
             facebook={providers.facebook}
             signUpEnabled={providers.signUp}
             copy={{
-              signInTitle: dict.auth.signInTitle,
               signUpTitle: dict.auth.signUpTitle,
               email: dict.auth.email,
               password: dict.auth.password,
@@ -57,6 +56,8 @@ export default async function SignInPage({
               name: dict.auth.name,
               signIn: dict.auth.signIn,
               signUp: dict.auth.signUp,
+              switchToSignUp: dict.auth.switchToSignUp,
+              switchToSignIn: dict.auth.switchToSignIn,
               google: dict.auth.google,
               facebook: dict.auth.facebook,
               or: dict.auth.or,

@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { CountryCode } from "@/lib/countries";
 import type { RatingSummary } from "@/lib/types";
 import { toggleFavourite } from "@/lib/favourites/actions";
-import { Stars } from "./stars";
+import { SellerRating } from "./seller-rating";
 
 export function ListingCard({
   href,
@@ -22,6 +22,7 @@ export function ListingCard({
   summary,
   ratingLabel,
   ratingFigure,
+  newSeller,
   shipping,
   listingId,
   slug,
@@ -48,6 +49,7 @@ export function ListingCard({
   summary: RatingSummary;
   ratingLabel: string;
   ratingFigure: string;
+  newSeller: string;
   shipping: string[];
   listingId: string;
   slug: string;
@@ -116,9 +118,7 @@ export function ListingCard({
       </Link>
       <Link href={sellerHref} className="card-seller">
         <span className="seller-name">{sellerName}</span>
-        {summary.count > 0 ? (
-          <Stars summary={summary} label={ratingLabel} figure={ratingFigure} />
-        ) : null}
+        <SellerRating summary={summary} label={ratingLabel} figure={ratingFigure} emptyLabel={newSeller} />
       </Link>
     </article>
   );

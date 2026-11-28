@@ -233,6 +233,8 @@ export type Dictionary = {
       next: string;
       photosTitle: string;
       photosLead: string;
+      photosAdd: string;
+      photoLimit: string;
       photosDrop: string;
       photosProgressFew: string;
       photosProgress: string;
@@ -295,6 +297,7 @@ export type Dictionary = {
     reviews: string;
     breakdown: string;
     noReviews: string;
+    newSeller: string;
     listings: string;
     leaveTitle: string;
     leaveRule: string;

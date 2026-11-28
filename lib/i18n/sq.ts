@@ -68,6 +68,11 @@ const sq: Dictionary = {
     tagTitle: "E re këtë javë",
     tagBody: "186 gjetje nga papafingo",
   },
+  invite: {
+    nudge: "Shfleto papafingon, ose var një copë që s’e vesh më.",
+    title: "Dera është e hapur.",
+    body: "Hyr dhe shfleto gjetjet, ose lër një copë nga garderoba jote për dikë tjetër.",
+  },
   fresh: {
     title: "Freskët nga",
     titleEm: "papafingo",

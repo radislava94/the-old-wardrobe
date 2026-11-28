@@ -64,6 +64,11 @@ export type Dictionary = {
     tagTitle: string;
     tagBody: string;
   };
+  invite: {
+    nudge: string;
+    title: string;
+    body: string;
+  };
   fresh: {
     title: string;
     titleEm: string;

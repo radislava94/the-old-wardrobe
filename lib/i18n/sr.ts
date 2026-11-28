@@ -68,6 +68,11 @@ const sr: Dictionary = {
     tagTitle: "Novo ove nedelje",
     tagBody: "186 nalaza s tavana",
   },
+  invite: {
+    nudge: "Pregledaj tavan, ili okači komad koji više ne nosiš.",
+    title: "Vrata su otvorena.",
+    body: "Uđi i pregledaj nalaze, ili ostavi komad iz svog ormara za nekog drugog.",
+  },
   fresh: {
     title: "Sveže sa",
     titleEm: "tavana",

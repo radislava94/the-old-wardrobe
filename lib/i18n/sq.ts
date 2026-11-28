@@ -106,9 +106,8 @@ const sq: Dictionary = {
       {
         num: "03",
         title: "Bli",
-        body: "Paguaj i qetë, ndiq paketën dhe jepi një cope të dashur kapitullin tjetër. Më mirë edhe për planetin.",
-        // TODO: "mbrojtja e blerësit" është tekst i maketit — nuk ka ende një mbrojtje reale.
-        hint: "→ mbrojtja e blerësit është përfshirë",
+        body: "Porosit me pagesë te korrieri. Shitësi e paketon copën dhe e dërgon vetë.",
+        hint: "→ blerësi i paguan korrierit kur arrin paketa",
       },
     ],
   },
@@ -157,7 +156,7 @@ const sq: Dictionary = {
       "Pagesa ende nuk është e lidhur. Butoni vetëm tregon si do të duket shpallja.",
     available: "Në shitje",
     sold: "E shitur",
-    ships: "Tërheqje ose dërgesë brenda Shqipërisë",
+    ships: "Shitësi dërgon me korrier brenda Shqipërisë",
     story: "Historia",
     share: {
       heading: "Ndaj",

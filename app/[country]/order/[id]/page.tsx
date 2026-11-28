@@ -17,10 +17,20 @@ import { formatMoney } from "@/lib/money";
 import { signInPath } from "@/lib/paths";
 import type { CurrencyCode } from "@/lib/types";
 
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
-  title: "Order",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ country: string; id: string }>;
+}): Promise<Metadata> {
+  const { country: raw } = await params;
+  if (!isCountry(raw)) {
+    return { robots: { index: false, follow: false }, title: "Order" };
+  }
+  return {
+    robots: { index: false, follow: false },
+    title: getDictionary(raw).order.yourOrders,
+  };
+}
 
 export default async function OrderPage({
   params,

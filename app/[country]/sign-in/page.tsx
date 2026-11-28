@@ -7,10 +7,20 @@ import { isCountry } from "@/lib/countries";
 import { getDictionary } from "@/lib/i18n";
 import { privacyPath, safeNextPath } from "@/lib/paths";
 
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
-  title: "Sign in",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ country: string }>;
+}): Promise<Metadata> {
+  const { country: raw } = await params;
+  if (!isCountry(raw)) {
+    return { robots: { index: false, follow: false }, title: "Sign in" };
+  }
+  return {
+    robots: { index: false, follow: false },
+    title: getDictionary(raw).auth.signInTitle,
+  };
+}
 
 export default async function SignInPage({
   params,

@@ -74,10 +74,11 @@ export default async function CountryHome({
               <a className="btn btn-primary" href="#fresh">
                 {dict.hero.browse} →
               </a>
-              <Link className="btn btn-ghost" href={`/${raw}/sell`}>
+              <Link className="btn btn-sell" href={`/${raw}/sell`}>
                 {dict.hero.sell}
               </Link>
             </div>
+            <p className="hero-nudge">{dict.invite.nudge}</p>
             <div className="stats">
               {dict.hero.stats.map((stat) => (
                 <div key={stat.label}>
@@ -124,7 +125,10 @@ export default async function CountryHome({
               </h2>
               <p>{dict.fresh.kicker}</p>
             </div>
-            <Link href={searchPath(raw)}>{dict.fresh.seeAll} →</Link>
+            <div className="sh-actions">
+              <Link href={searchPath(raw)}>{dict.fresh.seeAll} →</Link>
+              <Link href={`/${raw}/sell`}>{dict.hero.sell} →</Link>
+            </div>
           </div>
           <div className="grid">
             {(await cardsFor(items, raw, dict)).map((card) => (
@@ -148,6 +152,18 @@ export default async function CountryHome({
                 <p className="hint">{step.hint}</p>
               </article>
             ))}
+          </div>
+          <div className="home-invite">
+            <h2>{dict.invite.title}</h2>
+            <p>{dict.invite.body}</p>
+            <div className="ctas">
+              <a className="btn btn-primary" href="#fresh">
+                {dict.hero.browse} →
+              </a>
+              <Link className="btn btn-sell" href={`/${raw}/sell`}>
+                {dict.hero.sell}
+              </Link>
+            </div>
           </div>
         </div>
       </section>

@@ -11,6 +11,7 @@ export function ListingCard({
   era,
   price,
   sizeLabel,
+  condition,
   sold,
   soldLabel,
   soldSmall,
@@ -36,6 +37,7 @@ export function ListingCard({
   era: string;
   price: string;
   sizeLabel: string;
+  condition: string;
   sold: boolean;
   soldLabel: string;
   soldSmall: string;
@@ -57,13 +59,15 @@ export function ListingCard({
   signInHref: string;
 }) {
   const heartLabel = saved ? unsaveLabel : saveLabel;
+  const wear = condition.trim();
+  const showWear = wear.length > 0 && wear.toLowerCase() !== era.trim().toLowerCase();
   const heart = (
     <svg width="16" height="16" viewBox="0 0 24 24" fill={saved ? "#a2423a" : "none"} stroke="#a2423a" strokeWidth="2" aria-hidden="true">
       <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" />
     </svg>
   );
   return (
-    <article className={sold ? "card sold" : "card"} style={{ ["--r" as string]: rotation }}>
+    <article className={sold ? "card listing-card sold" : "card listing-card"} style={{ ["--r" as string]: rotation }}>
       {signedIn ? (
         <form className="heart-form" action={toggleFavourite}>
           <input type="hidden" name="listingId" value={listingId} />
@@ -95,21 +99,26 @@ export function ListingCard({
           ) : null}
         </div>
         <div className="meta">
-          <div>
+          <div className="card-copy">
             <h3>{title}</h3>
             <p className="era">{era}</p>
+            {showWear ? <p className="card-wear">{wear}</p> : null}
+          </div>
+          <span className="price">{price}</span>
+          {shipping.length > 0 ? (
             <p className="ship-note">
               {shipping.map((line) => (
                 <span key={line}>{line}</span>
               ))}
             </p>
-          </div>
-          <span className="price">{price}</span>
+          ) : null}
         </div>
       </Link>
       <Link href={sellerHref} className="card-seller">
-        <span>{sellerName}</span>
-        <Stars summary={summary} label={ratingLabel} figure={ratingFigure} />
+        <span className="seller-name">{sellerName}</span>
+        {summary.count > 0 ? (
+          <Stars summary={summary} label={ratingLabel} figure={ratingFigure} />
+        ) : null}
       </Link>
     </article>
   );

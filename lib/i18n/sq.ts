@@ -329,6 +329,19 @@ const sq: Dictionary = {
       photoAlt: "Fotografi e copës",
       accountDraft: "Drafti u ruajt në llogari.",
     },
+    guide: {
+      title: "Si publikohet",
+      lead: "Katër hapa të shkurtër. Pastaj e plotëson shpalljen.",
+      start: "Fillo",
+      photosTitle: "Fotografitë",
+      photosBody: "Shto nga 3 deri në 8 fotografi. E para është kopertina.",
+      describeTitle: "Përshkrimi",
+      describeBody: "Shkruaj çfarë është copa, me disa fjali.",
+      priceTitle: "Çmimi dhe numri",
+      priceBody: "Vendos çmimin dhe madhësinë.",
+      shipTitle: "Dërgesa",
+      shipBody: "E dërgon me korrier, blerësi paguan në dorëzim. Komisioni shihet te çmimi.",
+    },
   },
   search: {
     allTitle: "Gjithçka në garderobë",
@@ -420,6 +433,7 @@ const sq: Dictionary = {
     unverified: "Emaili ende nuk është konfirmuar. Hapni lidhjen që dërguam.",
     signUpUnavailable:
       "Llogaria e re me email nuk është e disponueshme derisa të dërgojmë lidhjen e konfirmimit. Nuk krijohet llogari.",
+    sellFirst: "Për të shitur, së pari krijo një llogari.",
   },
   consent: {
     label: "Zgjedhja e kukive",

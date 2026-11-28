@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
+import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { PostGuide } from "@/components/post-guide";
 import { SellForm } from "@/components/sell-form";
 import { commissionConfig } from "@/lib/commission/config";
 import { feePreviewCopy } from "@/lib/commission/preview-copy";
@@ -10,7 +12,8 @@ import { categoryKeys } from "@/lib/categories";
 import { countries, countryCodes, isCountry, type CountryCode } from "@/lib/countries";
 import { getDictionary } from "@/lib/i18n";
 import { heroPhoto } from "@/lib/photos";
-import { homePath, sellPath } from "@/lib/paths";
+import { listingsRepo } from "@/lib/data";
+import { homePath, sellPath, signUpPath } from "@/lib/paths";
 import { UNITS_PER_EUR } from "@/lib/rates";
 import { getSession } from "@/lib/auth/session";
 import { profileForAuthUser } from "@/lib/auth/profile";
@@ -59,9 +62,34 @@ export default async function SellPage({
   if (!isCountry(raw)) notFound();
   const dict = getDictionary(raw);
   const country = countries[raw];
-  const session = await getSession();
-  const profile = session ? await profileForAuthUser(session.user.id) : null;
+  let session: Awaited<ReturnType<typeof getSession>> = null;
+  try {
+    session = await getSession();
+  } catch (error) {
+    console.error(error);
+  }
+  if (!session) redirect(signUpPath(raw, sellPath(raw)));
+  let profile: Awaited<ReturnType<typeof profileForAuthUser>> | null = null;
+  try {
+    profile = await profileForAuthUser(session.user.id);
+  } catch (error) {
+    console.error(error);
+  }
   const freeSalesLeft = profile ? await freeSalesLeftFor(profile.id) : commissionConfig.welcomeSales;
+  const dismissed = (await cookies()).get("ow_sell_guide")?.value === "1";
+  let showGuide = false;
+  if (!dismissed && process.env.DATABASE_URL?.trim()) {
+    if (!profile) {
+      showGuide = true;
+    } else {
+      try {
+        const mine = await listingsRepo.listBySeller(profile.id);
+        showGuide = mine.length === 0;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
 
   return (
     <section className="page-block">
@@ -76,14 +104,19 @@ export default async function SellPage({
         <div className="sell-intro">
           <p className="eyebrow">{dict.nav.sell}</p>
           <h1>{dict.sell.title}</h1>
-          <p className="lead">{dict.sell.intro}</p>
-          <p className="hint">{dict.sell.ratesNote}</p>
-          <p className="rates-table">
-            1 EUR = {UNITS_PER_EUR.MKD} MKD · {UNITS_PER_EUR.RSD} RSD · {UNITS_PER_EUR.ALL} ALL
-          </p>
+          {showGuide ? null : (
+            <>
+              <p className="lead">{dict.sell.intro}</p>
+              <p className="hint">{dict.sell.ratesNote}</p>
+              <p className="rates-table">
+                1 EUR = {UNITS_PER_EUR.MKD} MKD · {UNITS_PER_EUR.RSD} RSD · {UNITS_PER_EUR.ALL} ALL
+              </p>
+            </>
+          )}
         </div>
+        <PostGuide show={showGuide} copy={dict.sell.guide}>
         <SellForm
-            signedIn={Boolean(session)}
+            signedIn
             returnPath={sellPath(raw)}
             blobConfigured={Boolean(process.env.BLOB_READ_WRITE_TOKEN)}
             countries={countryCodes.map((code) => ({
@@ -113,6 +146,7 @@ export default async function SellPage({
             freeSalesLeft={freeSalesLeft}
             fees={feePreviewCopy(dict, freeSalesLeft)}
           />
+        </PostGuide>
       </div>
     </section>
   );

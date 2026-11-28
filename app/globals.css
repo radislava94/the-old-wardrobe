@@ -969,6 +969,37 @@ body:has(.consent) { padding-bottom: 11rem; }
   cursor: pointer;
   color: var(--ink);
 }
+.sell-first { font-size: clamp(22px, 5vw, 28px); margin: 4px 0 8px; max-width: 22ch; }
+.post-guide { display: grid; gap: 16px; margin-top: 8px; max-width: 40rem; }
+.post-guide h2 { font-size: clamp(32px, 8vw, 48px); line-height: 1.05; margin: 0; }
+.post-guide .lead { font-style: italic; color: var(--ink-soft); margin: 0; }
+.post-guide ol { list-style: none; display: grid; gap: 12px; }
+.post-guide li {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  background: #fbf6ea;
+  border: 1px solid rgba(59, 47, 36, 0.18);
+  padding: 12px 14px;
+}
+.post-guide .n {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--mustard);
+  color: var(--forest-dark);
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+.post-guide h3 { font-size: 20px; line-height: 1.2; margin: 0 0 4px; }
+.post-guide li p { margin: 0; }
+.post-guide .btn { width: 100%; min-height: 56px; }
+@media (min-width: 720px) {
+  .post-guide .btn { width: auto; min-width: 220px; }
+}
 .new-seller {
   display: block;
   margin: 0;

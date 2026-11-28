@@ -329,6 +329,19 @@ const sr: Dictionary = {
       photoAlt: "Fotografija komada",
       accountDraft: "Nacrt je sačuvan na nalogu.",
     },
+    guide: {
+      title: "Kako se objavljuje",
+      lead: "Četiri kratka koraka. Onda popunjavaš oglas.",
+      start: "Počni",
+      photosTitle: "Fotografije",
+      photosBody: "Dodaj od 3 do 8 fotografija. Prva je naslovna.",
+      describeTitle: "Opis",
+      describeBody: "Napiši šta je komad, u nekoliko rečenica.",
+      priceTitle: "Cena i broj",
+      priceBody: "Stavi cenu i veličinu.",
+      shipTitle: "Pošiljka",
+      shipBody: "Šalješ kurirem, kupac plaća pri preuzimanju. Provizija se vidi uz cenu.",
+    },
   },
   search: {
     allTitle: "Sve u ormaru",
@@ -426,6 +439,7 @@ const sr: Dictionary = {
     unverified: "Imejl još nije potvrđen. Otvorite link koji smo poslali.",
     signUpUnavailable:
       "Novi nalog imejlom je nedostupan dok ne možemo da pošaljemo link za potvrdu. Nalog se ne otvara.",
+    sellFirst: "Da prodaješ, prvo kreiraj nalog.",
   },
   consent: {
     label: "Izbor kolačića",

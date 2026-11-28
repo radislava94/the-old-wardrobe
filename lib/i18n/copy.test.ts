@@ -32,6 +32,8 @@ describe("shop copy", () => {
   });
 
   it("offers a create-account line on the sign-in copy", () => {
+    expect(getDictionary("mk").auth.sellFirst).toBe("За да продаваш, прво креирај сметка.");
+    expect(getDictionary("mk").sell.guide.start).toBe("Почни");
     expect(getDictionary("mk").auth.signUpTitle).toBe("Креирај сметка");
     expect(getDictionary("mk").auth.switchToSignUp).toBe("Немаш сметка? Креирај сметка");
     expect(getDictionary("mk").sell.flow.photosTitle).toBe("Додај фотографии");

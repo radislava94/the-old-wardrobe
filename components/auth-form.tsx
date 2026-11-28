@@ -9,6 +9,8 @@ export function AuthForm({
   google,
   facebook,
   signUpEnabled,
+  initialMode = "sign-in",
+  sellLead,
   copy,
 }: {
   country: string;
@@ -16,6 +18,8 @@ export function AuthForm({
   google: boolean;
   facebook: boolean;
   signUpEnabled: boolean;
+  initialMode?: "sign-in" | "sign-up";
+  sellLead?: string;
   copy: {
     signUpTitle: string;
     email: string;
@@ -36,7 +40,7 @@ export function AuthForm({
     signUpUnavailable: string;
   };
 }) {
-  const [mode, setMode] = useState<"sign-in" | "sign-up">("sign-in");
+  const [mode, setMode] = useState<"sign-in" | "sign-up">(initialMode);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -97,6 +101,7 @@ export function AuthForm({
 
   return (
     <div className="auth-panel">
+      {mode === "sign-up" && sellLead ? <p className="lead sell-first">{sellLead}</p> : null}
       <div className="auth-switch" role="tablist">
         <button
           type="button"

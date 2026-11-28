@@ -283,6 +283,19 @@ export type Dictionary = {
       photoAlt: string;
       accountDraft: string;
     };
+    guide: {
+      title: string;
+      lead: string;
+      start: string;
+      photosTitle: string;
+      photosBody: string;
+      describeTitle: string;
+      describeBody: string;
+      priceTitle: string;
+      priceBody: string;
+      shipTitle: string;
+      shipBody: string;
+    };
   };
   search: {
     allTitle: string;
@@ -370,6 +383,7 @@ export type Dictionary = {
     verifySent: string;
     unverified: string;
     signUpUnavailable: string;
+    sellFirst: string;
   };
   consent: {
     label: string;
